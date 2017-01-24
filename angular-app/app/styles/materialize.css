@@ -3002,12 +3002,10 @@ nav {
     padding: 0;
     white-space: nowrap; }
     nav .brand-logo.center {
-      left: 50%;
-      transform: translateX(-50%); }
+      left: 15%; }
     @media only screen and (max-width: 992px) {
       nav .brand-logo {
-        left: 50%;
-        transform: translateX(-50%); }
+        left: 15%; }
         nav .brand-logo.left, nav .brand-logo.right {
           padding: 0;
           transform: none; }

@@ -1,10 +1,11 @@
-<div class="navbar-fixed">
-	<nav>
+<div class="navbar-fixed group-nav">
+	<nav class="nav-extended">
 		<div class="nav-wrapper">
 			<a href="#" class="brand-logo">Latch</a>
 			<a href="#" data-activates="sideNavbar" class="button-collapse"><i class="material-icons">menu</i></a>
-			<ul id="nav-mobile" class="right hide-on-med-and-down black-text">
-				<li><a ui-sref="app.sample">Sample</a></li>
+			<ul id="nav-mobile" class="right">
+				<li><a ui-sref="app.sample"><i class="material-icons">search</i></a></li>
+				<li><a ui-sref="app.sample"><i class="material-icons">notifications</i></a></li>
 			</ul>
 			<ul class="side-nav" id="sideNavbar">
 				<li>
@@ -18,6 +19,11 @@
 					</div>
 				</li>
 				<li><a ui-sref="app.sample">Sample</a></li>
+			</ul>
+			<ul class="tabs tabs-transparent">
+				<li class="tab"><a ui-sref="#test1">Friends</a></li>
+				<li class="tab"><a class="active" ui-sref="#test2">Chats</a></li>
+				<li class="tab"><a ui-sref="#test3">Groups</a></li>
 			</ul>
 		</div>
 	</nav>

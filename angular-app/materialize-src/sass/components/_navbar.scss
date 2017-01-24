@@ -60,11 +60,11 @@ nav {
     white-space: nowrap;
 
     &.center {
-      left: 15%;
+      left: 92px;
     }
 
     @media #{$medium-and-down} {
-      left: 15%;
+      left: 92px;
 
       &.left, &.right {
         padding: 0;

@@ -1,0 +1,14 @@
+body > .container{
+	/*width: 100vw;*/
+	min-height: 100vh;
+}
+
+
+.center{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.logo-lg{
+	width: 200px;
+}

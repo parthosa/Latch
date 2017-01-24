@@ -22,7 +22,40 @@ angular.module('latchApp', ['ui.router'])
 
             })
     
-            // route for the test page
+            // route for the friends page
+            .state('app.friends', {
+                url:'sample',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/friends.html'
+//                        controller  : 'ContactController'                  
+                    }
+                }
+            })
+		
+			// route for the chats page
+            .state('app.chats', {
+                url:'chats',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/chats.html'
+//                        controller  : 'ContactController'                  
+                    }
+                }
+            })
+		
+			// route for the groups page
+            .state('app.groups', {
+                url:'sample',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/groups.html'
+//                        controller  : 'ContactController'                  
+                    }
+                }
+            })
+		
+			// route for the test page
             .state('app.sample', {
                 url:'sample',
                 views: {
@@ -31,7 +64,9 @@ angular.module('latchApp', ['ui.router'])
 //                        controller  : 'ContactController'                  
                     }
                 }
-            });
+            })
+		
+		;
         
         // route to redirect to home in case URL not defined
         $urlRouterProvider.otherwise('/');

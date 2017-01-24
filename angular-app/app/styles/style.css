@@ -3,14 +3,18 @@ html, body {
 	margin: 0;
 	padding: 0;
 }
-html {
-     position: relative;
-     min-height: 100%;
-}
 
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #E9E8E8;
     overflow-x: hidden;
     width: 100vw;
+}
+
+#sidenav-overlay  {
+	z-index: 995;
+}
+
+.group-nav {
+	height: 106px;
 }

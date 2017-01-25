@@ -46,8 +46,8 @@ def Register(request):
 		password = request.POST['password']
 		confirm_password = request.POST['confirm_password']
 
-		registered_users = UserProfile.objects.all()
-		registered_contacts = [x.contact for x in registered_users]
+		registered_users = User.objects.all()
+		registered_contacts = [x.username for x in registered_users]
 		if password == confirm_password:
 			if contact in registered_contacts:
 				if type(contact) is int:	

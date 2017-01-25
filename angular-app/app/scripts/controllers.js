@@ -302,16 +302,16 @@ angular.module('latchApp')
 	];
 
 	$scope.newMessage={};
-	$scope.newMessage.user=$rootScope.user.name,
-	$scope.newMessage.message=''
-	$scope.newMessage.session_id=''
-	$scope.newMessage.nick = 'yo',
-	$scope.newMessage.pic = 'http://www.canitinguru.com/image/data/aboutme.jpg',
-	$scope.newMessage.text = 'sahi world',
-	$scope.newMessage.time = '10:30pm'
+	$scope.newMessage.user=$rootScope.user.name;
+	$scope.newMessage.message='';
+	$scope.newMessage.session_id='';
+	$scope.newMessage.nick = 'yo';
+	$scope.newMessage.pic = 'http://www.canitinguru.com/image/data/aboutme.jpg';
+	$scope.newMessage.text = 'sahi world';
+	$scope.newMessage.time = '10:30pm';
 	
 	$scope.send = function(){
-		$scope.messages.append($scope.newMessage)
+		$scope.messages.push($scope.newMessage)
 		$scope.newMessage.text = ''
 		$.ajax({
 			method:'POST',

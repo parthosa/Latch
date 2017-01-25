@@ -63,14 +63,14 @@ angular.module('latchApp', ['ui.router'])
             })
     
             // route for the map page
-            .state('app.map', {
-                url:'map',
+            .state('app.location', {
+                url:'location',
                 views: {
                     'header@': {
                         templateUrl : 'views/header.html',
                     },
                     'content@': {
-                        templateUrl : 'views/map.html'
+                        templateUrl : 'views/location.html'
                     },
                     'footer@': {
                         templateUrl : 'views/footer.html',
@@ -124,36 +124,6 @@ angular.module('latchApp', ['ui.router'])
                     }
                 }
             })
-		
-			.state('app.profile', {
-                url:'profile',
-                views: {
-                    'header@': {
-                        templateUrl : 'views/header.html',
-                    },
-                    'content@': {
-                        templateUrl : 'views/groups.html'
-                    },
-                    'footer@': {
-                        templateUrl : 'views/footer.html',
-                    }
-                }
-            })
-		
-//			.state('app.groups', {
-//                url:'groups',
-//                views: {
-//                    'header@': {
-//                        templateUrl : 'views/header.html',
-//                    },
-//                    'content@': {
-//                        templateUrl : 'views/groups.html'
-//                    },
-//                    'footer@': {
-//                        templateUrl : 'views/footer.html',
-//                    }
-//                }
-//            })
 		
 			// route for the test page
             .state('app.sample', {

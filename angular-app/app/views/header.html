@@ -1,8 +1,8 @@
 <div class="navbar-fixed group-nav">
 	<nav class="nav-extended">
 		<div class="nav-wrapper">
-			<a href="#" class="brand-logo">Latch</a>
-			<a href="#" data-activates="sideNavbar" class="button-collapse"><i class="material-icons">menu</i></a>
+			<a class="brand-logo">Latch</a>
+			<a href="" data-activates="sideNavbar" class="button-collapse"><i class="material-icons">menu</i></a>
 			<ul id="nav-mobile" class="right">
 				<li><a ui-sref="app.sample"><i class="material-icons">search</i></a></li>
 				<li><a ui-sref="app.sample"><i class="material-icons">notifications</i></a></li>
@@ -21,10 +21,14 @@
 				<li><a ui-sref="app.sample">Sample</a></li>
 			</ul>
 			<ul class="tabs tabs-transparent">
-				<li class="tab"><a ng-class="{active: isActive('friends')}" ui-sref="app.friends">Friends</a></li>
+				<li class="tab"><a ng-class="{active: isActive('location')}" ui-sref="app.location">Location</a></li>
 				<li class="tab"><a ng-class="{active: isActive('chats')}" ui-sref="app.chats">Chats</a></li>
 				<li class="tab"><a ng-class="{active: isActive('groups')}" ui-sref="app.groups">Groups</a></li>
 			</ul>
 		</div>
 	</nav>
 </div>
+
+<script>
+		$(".button-collapse").sideNav();
+</script>

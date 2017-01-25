@@ -124,6 +124,12 @@ def profile_pic(request):
 
 @csrf_exempt
 @login_required
+def logout_user(request):
+	logout(request)
+	return JsonResponse({'status': 1, 'message': 'You have been successfully logged out'})
+
+@csrf_exempt
+@login_required
 def interests(request):
 	user_p = UserProfile.objects.get(user = request.user)
 	if request.POST:

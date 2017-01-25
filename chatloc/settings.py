@@ -98,6 +98,7 @@ WSGI_APPLICATION = 'chatloc.wsgi.application'
 MEDIA_ROOT = 'dps'
 MEDIA_URL = '/media/'
 
+LOGIN_URL = '/main/accounts/login/'
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 

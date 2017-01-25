@@ -5,6 +5,7 @@ urlpatterns = [
     url(r'^(?P<label>[\w-]{,50})/$', views.test_room, name='chat_room'),
     url(r'^accounts/login/social/$', views.social_login, name='social_login'),
     url(r'^accounts/login/$', views.login_user, name='login'),
+    url(r'^user/logout/$', views.logout_user, name='logout'),
     url(r'^accounts/register/$', views.Register, name='Register'),
     url(r'^accounts/test/$', views.test, name='test'),
     url(r'^user/nick/$', views.nick_name, name='nick_name'),

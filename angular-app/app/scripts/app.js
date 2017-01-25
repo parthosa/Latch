@@ -5,34 +5,29 @@ angular.module('latchApp', ['ui.router'])
         $stateProvider
         
             // route for the home page
-            //  .state('app', {
-            //     url:'/',
-            //     templateUrl : 'views/landing.html'
-            // })
-
-            // .state('app.register', {
-            //     url:'register',
-            //     views: {
-            //         'register': {
-            //             templateUrl : 'views/register.html',
-            //         }
-            //     }
-
-            // })
-
-            //  .state('app.login', {
-            //     url:'login',
-            //     views: {
-            //         'login': {
-            //             templateUrl : 'views/login.html',
-            //         }
-            //     }
-
-            // })
-    
-
-            .state('app', {
+             .state('app', {
                 url:'/',
+                templateUrl : 'views/landing.html'
+            })
+
+             .state('register', {
+                url:'/register',
+                templateUrl : 'views/register.html'
+            })
+
+              .state('login', {
+                url:'/login',
+                templateUrl : 'views/login.html'
+            })
+
+               .state('nick', {
+                url:'/nick',
+                templateUrl : 'views/nick.html'
+            })
+
+
+            .state('app.main', {
+                url:'main',
                 views: {
                     'header': {
                         templateUrl : 'views/header.html',
@@ -95,7 +90,7 @@ angular.module('latchApp', ['ui.router'])
 		;
         
         // route to redirect to home in case URL not defined
-        // $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/');
 	
     })
 

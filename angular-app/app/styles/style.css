@@ -1,0 +1,141 @@
+html, body {
+    overflow-x: hidden !important;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #E9E8E8;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+#sidenav-overlay  {
+	z-index: 995;
+}
+
+.group-nav {
+	height: 106px;
+}
+
+.main-content{
+	/*width: 100vw;*/
+	min-height: 100vh;
+}
+
+
+.center{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.logo-lg{
+	width: 200px;
+}
+
+.login-reg {
+	margin-top: 50px;
+}
+
+.cust-btn {
+    margin-top: 20px;
+    color: black !important;
+    background: white !important;
+    font-size: 1.3em;
+    padding: 8.1px !important;
+    height: auto !important;
+}
+
+/*register page*/
+.input-field {
+    background: white;
+    margin: 14px 0px;
+    border-radius: 1px;
+}
+
+.input-field input {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;;
+    padding: 6.5px 2px !important;;
+    font-size: 1.3em !important;;
+    box-shadow: none !important;
+}
+
+
+
+/*profile page*/
+.full-width{
+	width: 100vw;
+	height: 100vh;
+}
+
+.profile-sec{
+	display: flex;
+	justify-content: space-around;
+	flex-direction: column;
+}
+
+
+.profile-pic-wrap{
+	height: 300px;
+	background: url('../images/batman.png');
+	background-size:cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.profile-pic-wrap img {
+    width: 100%;
+    /*max-width: 200px;*/
+}
+
+.back_icon i.material-icons {
+    font-size: 2.4em;
+}
+
+.info-row {
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    margin: 11px 8px;
+}
+
+p.info-value {
+    margin-left: 15px !important;
+    font-size: 1.2em;
+}
+
+.info-row p {
+    /* font-size: 1.2em; */
+}
+
+.info-icon i {
+    font-size: 2.3em;
+}
+
+p.info-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#map {
+	height: calc(100vh - 106px);
+	overflow: hidden;
+}
+
+@media screen and (max-width: 601px){
+
+	.profile-section {
+		display: block;
+	}
+
+	.profile-section-inner{
+		    display: flex;
+	    flex-direction: column;
+	    justify-content: space-between;
+	    height: 100%;
+	}
+}*/

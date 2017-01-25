@@ -11,10 +11,10 @@ $(document).ready(function () {
 	Materialize.updateTextFields();
 });
 
-$('#sign-up').click(function (ev) {
+$(document).on('click','#sign-up',function (ev) {
 	 Materialize.toast('Try Again', 1000)
 })
 
-$('#sign-in').click(function (ev) {
+$(document).on('click','#sign-in',function (ev) {
 	 Materialize.toast('Try Again', 1000)
 })

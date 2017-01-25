@@ -50,6 +50,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+TEMPPLATE_CONTEXT_PROCESSORS = (
+    'django.template.context_processors.request',
+    "django.contrib.auth.context_processors.auth",
+)
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
@@ -64,6 +69,8 @@ ROOT_URLCONF = 'chatloc.urls'
 
 WSGI_APPLICATION = 'chatloc.wsgi.application'
 
+MEDIA_ROOT = 'dps'
+MEDIA_URL = '/media/'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

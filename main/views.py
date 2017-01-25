@@ -13,6 +13,7 @@ from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 import re
+from operator import itemgetter
 
 def social_login(request):
 	if request.POST:
@@ -90,6 +91,20 @@ def nick_name(request):
 		return JsonResponse(response)
 
 @login_required
+def profile_pic(request):
+	user_p = UserProfile.objects.get(user = request.user)
+	if 'getfromfb' in request.POST:
+		fbdp = request.POST['fbdp']
+		user_p.dp_url = fbdp
+		user_p.save()
+		response = {'status':1, 'message': 'dp has been successfully saved'}
+	else:
+		user_image = request.POST['dp']
+		user_p.dp = user_image
+		user_p.save()
+
+
+@login_required
 def interests(request):
 	user_p = UserProfile.objects.get(user = request.user)
 	if request.POST:
@@ -109,13 +124,29 @@ def interests(request):
 		return JsonResponse(response)
 
 @login_required
+def get_location(request):
+	if request.POST:
+		lat = request.POST['lat']
+		longitude = request.POST['longitude']
+		user_p = UserProfile.objects.get(user = request.user)
+		user_p.lat = lat
+		user_p.longitude = longitude
+		location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
+		json_data = json.loads(urlopen(location_url))
+		locality = json_data['resourceSets'][0]['resources'][0]['address']['locality']
+		user_p.locality = locality
+		user_p.save()
+		return JsonResponse({'status': 1, 'message': 'Your current location has been saved successfully.'})
+
+@login_required
 def add_to_chatroom(request):
-	lat = 28.7041 #test case
-	longitude = 77.1025 #test case
+	user_p = UserProfile.objects.get(user = request.user)
+	lat = user_p.lat #test case
+	longitude = user_p.longitude #test case
 	location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
 	json_data = json.loads(urlopen(location_url))
 	locality = json_data['resourceSets'][0]['resources'][0]['address']['locality']
-	user_p = UserProfile.objects.get(user = request.user)
+
 	groups = []
 	for interest in user_p.interests.all():
 		try:
@@ -136,6 +167,21 @@ def add_to_chatroom(request):
 			# groups.append(user_group.name)
 
 	response = {'status': 1, 'message': 'You have been added to the following groups', 'groups': groups}
+
+@login_required
+def send_nearby(request):
+	user_p = UserProfile.objects.get(user = request.user)
+	locality = user_p.locality
+	nearby_users = UserProfile.objects.filter(locality = locality)
+	nearby_list = []
+	for user in nearby_users:
+		distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
+		json_data = json.loads(urlopen(distance_url))
+		b_distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
+		nearby_list.append({'nick': user.nick_name, 'distance': 1.60934*b_distance})
+	nearby_users = sorted(nearby_list, itemgetter('distance'))
+
+	return JsonResponse({'status': 1, 'nearby_users': nearby_users})
 
 @login_required
 def get_members_chatroom(request, room_name):
@@ -163,18 +209,18 @@ def go_anonymous(request):
 		response = {'status': 1, 'message': 'You have gone anonymous'}
 		return JsonResponse(response)
 
-# def test_room(request, label):
-# 	try:
-# 		group = Group.objects.get(name = label)
-# 	except ObjectDoesNotExist:
-# 		group = Group.objects.create(name = label)
+def test_room(request, label):
+	try:
+		group = Group.objects.get(name = label)
+	except ObjectDoesNotExist:
+		group = Group.objects.create(name = label)
 
-# 	try:
-# 		messages = reversed(group.message.order_by('-timestamp')[:])
-# 	except:
-# 		message = 'fgh'
+	try:
+		messages = reversed(group.message.order_by('-timestamp')[:])
+	except:
+		message = 'fgh'
 
-# 	return render(request, 'chat/room.html', {'room': group, 'messages': message})
+	return render(request, 'chat/room.html', {'room': group, 'messages': message})
 
 @login_required
 def get_chatroom(request, group_name):
@@ -211,4 +257,7 @@ def node_api_message(request ,group_name):
         return HttpResponseServerError(str(e))
 
 # zomato api key - 74c47b6322c6a40d4bef924bf238548c
+
+# @login_required
+# def suggest_rest
 

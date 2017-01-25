@@ -16,7 +16,8 @@ def ws_connect(message):
 		print 23
 		interest = Interest.objects.get(name = label.split('_')[1])
 		room = chat_room.objects.create(locality = label.split('_')[0], interest = interest)
-	Group(label, channel_layer=message.channel_layer).add(message.reply_channel)
+	Group('chat-' + label, channel_layer=message.channel_layer).add(message.reply_channel)
+
 	print Group(label).name
 	message.channel_session['room'] = room.name
 	print message.channel_session['room']

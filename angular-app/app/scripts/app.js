@@ -4,39 +4,51 @@ angular.module('latchApp', ['ui.router'])
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
         
-            // route for the home page
-             .state('app', {
+
+            .state('app', {
                 url:'/',
-                templateUrl : 'views/landing.html'
-            })
+                views: {
+                    'content': {
+                        templateUrl : 'views/landing.html'
+//                        controller  : 'IndexController'
+                    }
+                }
 
-             .state('register', {
-                url:'/register',
-                templateUrl : 'views/register.html'
             })
+    		
+			.state('app.register', {
+                url:'register',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/register.html'
+//                        controller  : 'IndexController'
+                    }
+                }
 
-              .state('login', {
-                url:'/login',
-                templateUrl : 'views/login.html'
             })
+		
+			.state('app.login', {
+                url:'login',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/login.html'
+//                        controller  : 'IndexController'
+                    }
+                }
 
-               .state('nick', {
-                url:'/nick',
-                templateUrl : 'views/nick.html'
             })
-
 
             .state('app.main', {
                 url:'main',
                 views: {
-                    'header': {
+                    'header@': {
                         templateUrl : 'views/header.html',
                     },
-                    'content': {
+                    'content@': {
                         templateUrl : 'views/home.html'
 //                        controller  : 'IndexController'
                     },
-                    'footer': {
+                    'footer@': {
                         templateUrl : 'views/footer.html',
                     }
                 }
@@ -102,7 +114,7 @@ angular.module('latchApp', ['ui.router'])
             },
             link: function(scope, element, attributes, ngModel) {
 
-                ngModel.$validators.compareTo = function(modelValue) {
+                ngModel.$validators.compareTo = function(modelValue) { 
                     return modelValue == scope.otherModelValue;
                 };
 

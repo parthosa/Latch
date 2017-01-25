@@ -29,22 +29,17 @@ body{
 }
 
 
-/*.center{
+.center{
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	flex-direction: column;
-}*/
+}
 .logo-lg{
 	width: 200px;
 }
 
 .login-reg {
 	margin-top: 50px;
-}
-
-.center.valign-wrapper .row.valign{
-	width: 100%
 }
 
 .cust-btn {

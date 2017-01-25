@@ -4,37 +4,11 @@ angular.module('latchApp', ['ui.router'])
     .config(function($stateProvider, $urlRouterProvider) {
         $stateProvider
         
-            // route for the home page
-            //  .state('app', {
-            //     url:'/',
-            //     templateUrl : 'views/landing.html'
-            // })
-
-            // .state('app.register', {
-            //     url:'register',
-            //     views: {
-            //         'register': {
-            //             templateUrl : 'views/register.html',
-            //         }
-            //     }
-
-            // })
-
-            //  .state('app.login', {
-            //     url:'login',
-            //     views: {
-            //         'login': {
-            //             templateUrl : 'views/login.html',
-            //         }
-            //     }
-
-            // })
-		
-			.state('app', {
+            .state('app', {
                 url:'/',
                 views: {
-                    'content@': {
-                        template : '<h1>bc</h1>'
+                    'content': {
+                        templateUrl : 'views/landing.html'
 //                        controller  : 'IndexController'
                     }
                 }

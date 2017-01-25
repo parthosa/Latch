@@ -1,7 +1,7 @@
 'use strict';
 
 var globalVar;
-var baseUrl = 'http://172.17.45.40:8000';
+var baseUrl = 'http://172.17.45.101:8000';
 angular.module('latchApp')
 	.controller('MainController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 		$rootScope.isActive = function (arg) {
@@ -19,7 +19,7 @@ angular.module('latchApp')
 	$scope.array = [1, 2, 3, 4];
     }])
 
-	.controller('RegisterController', ['$rootScope', '$scope', '$state','$http','$location', function($rootScope, $scope, $state,$http,$location) {
+	.controller('RegisterController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
     	$scope.user = {};
         $scope.user.name = 'partho'
         $scope.user.contact = 'hell.partho@gmail.com'
@@ -33,11 +33,11 @@ angular.module('latchApp')
                 method:'POST',
                 url:baseUrl+'/main/accounts/register/',
                 data:$scope.user,
+                type:'jsonp',
                 success:function (response) {
                     if(response.status==1)
-                        $location.path('/chats');
-                     else
-                        Materialize.toast(response.message, 1000)
+                        $location.path('/nick');
+                    Materialize.toast(response.message, 1000)
 
                 },
                 error:function (response) {
@@ -47,7 +47,7 @@ angular.module('latchApp')
         }
     }])
     
-	.controller('LoginController', ['$rootScope', '$scope', '$state','$http', function($rootScope, $scope, $state,$http) {
+	.controller('LoginController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
     	$scope.user = {};
         $scope.user.contact = 'hell.partho@gmail.com';
         $scope.user.password = 'tech';
@@ -59,11 +59,32 @@ angular.module('latchApp')
                 url:baseUrl+'/main/accounts/login/',
                 data:$scope.user,
                 success:function (response) {
-                    console.log(response)
                      if(response.status==1)
                         $location.path('/chats');
-                     else
-                        Materialize.toast(response.message, 1000)
+                    Materialize.toast(response.message, 1000)
+
+                },
+                error:function (response) {
+                }
+            })
+        }
+
+}])
+
+.controller('NickController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
+        $scope.user = {};
+        $scope.user.nick = 'parthosa';
+
+        $scope.submit = function(){
+
+            $.ajax({
+                method:'POST',
+                url:baseUrl+'/main/user/nick/',
+                data:$scope.user,
+                success:function (response) {
+                     if(response.status==1)
+                        $location.path('/chats');
+                    Materialize.toast(response.message, 1000)
 
                 },
                 error:function (response) {

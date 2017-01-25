@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['*']
 
 SITE_ID = 1
 
@@ -38,11 +38,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'main',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -55,6 +57,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.template.context_processors.request',
     "django.contrib.auth.context_processors.auth",
 )
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:9611',
+ )
 
 # CHANNEL_LAYERS = {
 #     "default": {

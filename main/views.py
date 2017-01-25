@@ -92,7 +92,7 @@ def login_user(request):
 			return JsonResponse({'status':1, 'message': 'Successfully logged in'})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
-
+@csrf_exempt
 @login_required
 def nick_name(request):
 	if request.POST:

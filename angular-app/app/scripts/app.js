@@ -124,36 +124,8 @@ angular.module('latchApp', ['ui.router'])
                     }
                 }
             })
-		
-			.state('app.profile', {
-                url:'profile',
-                views: {
-                    'header@': {
-                        templateUrl : 'views/header.html',
-                    },
-                    'content@': {
-                        templateUrl : 'views/groups.html'
-                    },
-                    'footer@': {
-                        templateUrl : 'views/footer.html',
-                    }
-                }
-            })
-		
-//			.state('app.groups', {
-//                url:'groups',
-//                views: {
-//                    'header@': {
-//                        templateUrl : 'views/header.html',
-//                    },
-//                    'content@': {
-//                        templateUrl : 'views/groups.html'
-//                    },
-//                    'footer@': {
-//                        templateUrl : 'views/footer.html',
-//                    }
-//                }
-//            })
+
+
 		
 			// route for the test page
             .state('app.sample', {

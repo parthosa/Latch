@@ -20,12 +20,58 @@ angular.module('latchApp')
 		$scope.array = [1,2,3,4];
     }])
 
-	.controller('RegisterController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
-    	
+	.controller('RegisterController', ['$rootScope', '$scope', '$state','$http','$location', function($rootScope, $scope, $state,$http,$location) {
+    	$scope.user = {};
+        $scope.user.name = 'partho'
+        $scope.user.email = 'hell.partho@gmail.com'
+        $scope.user.password = 'tech'
+        $scope.user.confirm_password = 'tech'
+
+        $scope.submit = function(){
+            $location.path('/main');
+            
+            $http({
+                method:'POST',
+                url:'/',
+                data:$scope.user,
+                success:function (response) {
+                    if(response.status!=1)
+                        Materialize.toast('Try Again', 1000)
+                     else
+                        $location.path('/main');
+
+                },
+                error:function (response) {
+                    console.log(response)
+                }
+            })
+        }
     }])
     
-	.controller('LoginController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
-    	
+	.controller('LoginController', ['$rootScope', '$scope', '$state','$http', function($rootScope, $scope, $state,$http) {
+    	$scope.user = {};
+        $scope.user.email = '';
+        $scope.user.password = '';
+
+        $scope.submit = function(){
+            $location.path('/main');
+
+            $http({
+                method:'POST',
+                url:'/',
+                data:$scope.user,
+                success:function (response) {
+                     if(response.status!=1)
+                        Materialize.toast('Try Again', 1000)
+                     else
+                        $location.path('/main');
+
+                },
+                error:function (response) {
+                    console.log(response)
+                }
+            })
+        }
     }])
     
 	.controller('MapController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {

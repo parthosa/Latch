@@ -13,6 +13,7 @@ from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 import re
+from operator import itemgetter
 
 def social_login(request):
 	if request.POST:
@@ -36,14 +37,16 @@ def social_login(request):
 			login(request, user_login)
 			return JsonResponse({'status': 2, 'message': 'You will be redirected to where we can know you better! :D'})
 
+@csrf_exempt
 def Register(request):
+	print request.POST
 	if request.POST:
 		name = request.POST['name']
 		contact = request.POST['contact'] # could be either phone or email id
 		password = request.POST['password']
 		confirm_password = request.POST['confirm_password']
 
-		registered_users = User.objects.all()
+		registered_users = UserProfile.objects.all()
 		registered_contacts = [x.contact for x in registered_users]
 		if password == confirm_password:
 			if contact in registered_contacts:
@@ -61,6 +64,7 @@ def Register(request):
 					member = UserProfile()
 					member.name = name
 					member.user = user
+					member.save()
 					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D'})
 			else:
 				user = User.objects.create_user(username = contact, password = password)
@@ -75,6 +79,20 @@ def Register(request):
 		else:
 			return JsonResponse({'status': 0, 'message': 'Your password did not match'})
 
+@csrf_exempt
+def login_user(request):
+	# print request.POST
+	if request.method == 'POST':
+		contact = request.POST['contact']
+		password = request.POST['password']
+		user = authenticate(username = contact, password = password)
+
+		if user:
+			login(request,user)
+			return JsonResponse({'status':1, 'message': 'Successfully logged in'})
+		else:
+			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
+
 @login_required
 def nick_name(request):
 	if request.POST:
@@ -88,6 +106,20 @@ def nick_name(request):
 			response = {'status': 0, 'message': 'This nick name is already registered. Kindly come up with something else.'}
 
 		return JsonResponse(response)
+
+@login_required
+def profile_pic(request):
+	user_p = UserProfile.objects.get(user = request.user)
+	if 'getfromfb' in request.POST:
+		fbdp = request.POST['fbdp']
+		user_p.dp_url = fbdp
+		user_p.save()
+		response = {'status':1, 'message': 'dp has been successfully saved'}
+	else:
+		user_image = request.POST['dp']
+		user_p.dp = user_image
+		user_p.save()
+
 
 @login_required
 def interests(request):
@@ -109,13 +141,29 @@ def interests(request):
 		return JsonResponse(response)
 
 @login_required
+def get_location(request):
+	if request.POST:
+		lat = request.POST['lat']
+		longitude = request.POST['longitude']
+		user_p = UserProfile.objects.get(user = request.user)
+		user_p.lat = lat
+		user_p.longitude = longitude
+		location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
+		json_data = json.loads(urlopen(location_url))
+		locality = json_data['resourceSets'][0]['resources'][0]['address']['locality']
+		user_p.locality = locality
+		user_p.save()
+		return JsonResponse({'status': 1, 'message': 'Your current location has been saved successfully.'})
+
+@login_required
 def add_to_chatroom(request):
-	lat = 28.7041 #test case
-	longitude = 77.1025 #test case
+	user_p = UserProfile.objects.get(user = request.user)
+	lat = user_p.lat #test case
+	longitude = user_p.longitude #test case
 	location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
 	json_data = json.loads(urlopen(location_url))
 	locality = json_data['resourceSets'][0]['resources'][0]['address']['locality']
-	user_p = UserProfile.objects.get(user = request.user)
+
 	groups = []
 	for interest in user_p.interests.all():
 		try:
@@ -136,6 +184,21 @@ def add_to_chatroom(request):
 			# groups.append(user_group.name)
 
 	response = {'status': 1, 'message': 'You have been added to the following groups', 'groups': groups}
+
+@login_required
+def send_nearby(request):
+	user_p = UserProfile.objects.get(user = request.user)
+	locality = user_p.locality
+	nearby_users = UserProfile.objects.filter(locality = locality)
+	nearby_list = []
+	for user in nearby_users:
+		distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
+		json_data = json.loads(urlopen(distance_url))
+		b_distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
+		nearby_list.append({'nick': user.nick_name, 'distance': 1.60934*b_distance})
+	nearby_users = sorted(nearby_list, itemgetter('distance'))
+
+	return JsonResponse({'status': 1, 'nearby_users': nearby_users})
 
 @login_required
 def get_members_chatroom(request, room_name):
@@ -163,18 +226,18 @@ def go_anonymous(request):
 		response = {'status': 1, 'message': 'You have gone anonymous'}
 		return JsonResponse(response)
 
-# def test_room(request, label):
-# 	try:
-# 		group = Group.objects.get(name = label)
-# 	except ObjectDoesNotExist:
-# 		group = Group.objects.create(name = label)
+def test_room(request, label):
+	try:
+		group = Group.objects.get(name = label)
+	except ObjectDoesNotExist:
+		group = Group.objects.create(name = label)
 
-# 	try:
-# 		messages = reversed(group.message.order_by('-timestamp')[:])
-# 	except:
-# 		message = 'fgh'
+	try:
+		messages = reversed(group.message.order_by('-timestamp')[:])
+	except:
+		message = 'fgh'
 
-# 	return render(request, 'chat/room.html', {'room': group, 'messages': message})
+	return render(request, 'chat/room.html', {'room': group, 'messages': message})
 
 @login_required
 def get_chatroom(request, group_name):
@@ -211,4 +274,7 @@ def node_api_message(request ,group_name):
         return HttpResponseServerError(str(e))
 
 # zomato api key - 74c47b6322c6a40d4bef924bf238548c
+
+# @login_required
+# def suggest_rest
 

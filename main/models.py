@@ -11,6 +11,11 @@ class UserProfile(models.Model):
 	groups = models.ManyToManyField('Group', related_name = 'user_group')
 	anonymous = models.BooleanField(default = False)
 	timestamp = models.DateTimeField(default = datetime.now)
+	lat = models.CharField(max_length = 30, null = True)
+	longitude = models.CharField(max_length = 30, null = True)
+	locality = models.CharField(max_length = 100, null = True)
+	dp = models.ImageField(upload_to='dps', null = True)
+	dp_url = models.SlugField(max_length = 500, null = True)
 
 	def __unicode__(self):
 		return self.name

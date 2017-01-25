@@ -15,9 +15,42 @@ angular.module('latchApp')
 
     }])
 
-    .controller('sampleController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    .controller('SampleController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
     	$scope.data = 'abc';
 		$scope.array = [1,2,3,4];
     }])
-        
+
+	.controller('RegisterController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	.controller('LoginController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	.controller('MapController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	.controller('ChatController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	.controller('GroupController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	.controller('ProfileController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	.controller('MessageController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+
+	.controller('SidebarController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    	
+    }])
+    
+	
 ;

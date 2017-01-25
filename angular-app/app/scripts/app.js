@@ -10,7 +10,6 @@ angular.module('latchApp', ['ui.router'])
                 views: {
                     'content': {
                         templateUrl : 'views/landing.html'
-//                        controller  : 'IndexController'
                     }
                 }
 
@@ -21,7 +20,6 @@ angular.module('latchApp', ['ui.router'])
                 views: {
                     'content@': {
                         templateUrl : 'views/register.html'
-//                        controller  : 'IndexController'
                     }
                 }
 
@@ -32,7 +30,6 @@ angular.module('latchApp', ['ui.router'])
                 views: {
                     'content@': {
                         templateUrl : 'views/login.html'
-//                        controller  : 'IndexController'
                     }
                 }
 
@@ -43,7 +40,6 @@ angular.module('latchApp', ['ui.router'])
                 views: {
                     'content@': {
                         templateUrl : 'views/profile.html'
-//                        controller  : 'IndexController'
                     }
                 }
 
@@ -58,7 +54,6 @@ angular.module('latchApp', ['ui.router'])
                     },
                     'content@': {
                         templateUrl : 'views/home.html'
-//                        controller  : 'IndexController'
                     },
                     'footer@': {
                         templateUrl : 'views/footer.html',
@@ -67,16 +62,15 @@ angular.module('latchApp', ['ui.router'])
 
             })
     
-            // route for the friends page
-            .state('app.friends', {
-                url:'friends',
+            // route for the map page
+            .state('app.map', {
+                url:'map',
                 views: {
                     'header@': {
                         templateUrl : 'views/header.html',
                     },
                     'content@': {
-                        templateUrl : 'views/friends.html'
-//                        controller  : 'IndexController'
+                        templateUrl : 'views/map.html'
                     },
                     'footer@': {
                         templateUrl : 'views/footer.html',
@@ -93,7 +87,6 @@ angular.module('latchApp', ['ui.router'])
                     },
                     'content@': {
                         templateUrl : 'views/chats.html'
-//                        controller  : 'IndexController'
                     },
                     'footer@': {
                         templateUrl : 'views/footer.html',
@@ -110,13 +103,57 @@ angular.module('latchApp', ['ui.router'])
                     },
                     'content@': {
                         templateUrl : 'views/groups.html'
-//                        controller  : 'IndexController'
                     },
                     'footer@': {
                         templateUrl : 'views/footer.html',
                     }
                 }
             })
+		
+			.state('app.message', {
+                url:'message',
+                views: {
+                    'header@': {
+                        templateUrl : 'views/header.html',
+                    },
+                    'content@': {
+                        templateUrl : 'views/groups.html'
+                    },
+                    'footer@': {
+                        templateUrl : 'views/footer.html',
+                    }
+                }
+            })
+		
+			.state('app.profile', {
+                url:'profile',
+                views: {
+                    'header@': {
+                        templateUrl : 'views/header.html',
+                    },
+                    'content@': {
+                        templateUrl : 'views/groups.html'
+                    },
+                    'footer@': {
+                        templateUrl : 'views/footer.html',
+                    }
+                }
+            })
+		
+//			.state('app.groups', {
+//                url:'groups',
+//                views: {
+//                    'header@': {
+//                        templateUrl : 'views/header.html',
+//                    },
+//                    'content@': {
+//                        templateUrl : 'views/groups.html'
+//                    },
+//                    'footer@': {
+//                        templateUrl : 'views/footer.html',
+//                    }
+//                }
+//            })
 		
 			// route for the test page
             .state('app.sample', {

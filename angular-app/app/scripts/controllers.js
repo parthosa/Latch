@@ -280,8 +280,47 @@ angular.module('latchApp')
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 	$rootScope.title='John Doe'
+	$rootScope.user = {
+		name:'partho'
+	}
+	$scope.messages=[
+		{
+			nick:'partho',
+			pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
+			text:'hello world',
+			time:'15:30pm'
+		},
+		{
+			nick:'pragati',
+			pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
+			text:'bol world',
+			time:'18:30pm'
+		}
+	];
+
+	$scope.newMessage={};
+	$scope.newMessage.user=$rootScope.user.name,
+	$scope.newMessage.message=''
+	$scope.newMessage.session_id=''
+	$scope.newMessage.nick = 'yo',
+	$scope.newMessage.pic = 'http://www.canitinguru.com/image/data/aboutme.jpg',
+	$scope.newMessage.text = 'sahi world',
+	$scope.newMessage.time = '10:30pm'
+	
+	$scope.send = function(){
+		$scope.messages.append($scope.newMessage)
+		$scope.newMessage.text = ''
+		$.ajax({
+			method:'POST',
+			url:baseUrl+'/main/user/message',
+			data:$scope.newMessage,
+			success:function(response){
+			}
+		})
+	}
 
     }])
+
 
 .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 

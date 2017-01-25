@@ -11,6 +11,15 @@ angular.module('latchApp')
 			} else
 				return false;
 		}
+		
+		$rootScope.title = '';
+		
+		$rootScope.back = function(){
+			if ($state.current.url == 'register'||'login')
+				$location.path('/');
+			if ($state.current.url == 'nick')
+				$location.path('/');
+		}
 
     }])
 
@@ -20,15 +29,12 @@ angular.module('latchApp')
     }])
 
 	.controller('RegisterController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
-		$rootScope.title = 'Register'
-		$rootScope.back = function(){
-			$location.path('/')
-		}
+		$rootScope.title = 'Register';
     	$scope.user = {};
-        $scope.user.name = 'partho'
-        $scope.user.contact = 'hell.partho@gmail.com'
-        $scope.user.password = 'tech'
-        $scope.user.confirm_password = 'tech'
+        $scope.user.name = 'partho';
+        $scope.user.contact = 'hell.partho@gmail.com';
+        $scope.user.password = 'tech';
+        $scope.user.confirm_password = 'tech';
 
         $scope.submit = function(){
             // $location.path('/chats');
@@ -53,9 +59,6 @@ angular.module('latchApp')
     
 	.controller('LoginController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
 		$rootScope.title = 'Login'
-		$rootScope.back = function(){
-			$location.path('/')
-		}
     	$scope.user = {};
         $scope.user.contact = 'hell.partho@gmail.com';
         $scope.user.password = 'tech';
@@ -258,7 +261,7 @@ angular.module('latchApp')
 }])
 
 .controller('HeaderSmallController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-		// $scope.title = 'Hello'
+		// $scope.title = 'Hello';
     }])
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
@@ -270,16 +273,16 @@ angular.module('latchApp')
     }])
 
 .controller('GroupInfoController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-	$rootScope.title='Group Info'
+	$rootScope.title='Group Info';
     }])
 
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-	$rootScope.title='Profile'
+	$rootScope.title='Profile';
 
     }])
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-	$rootScope.title='John Doe'
+	$rootScope.title='John Doe';
 
     }])
 

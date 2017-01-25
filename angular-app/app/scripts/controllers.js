@@ -1,7 +1,7 @@
 'use strict';
 
 var globalVar;
-var baseUrl = 'http://172.17.45.101:8000';
+var baseUrl = 'http://localhost:8000';
 angular.module('latchApp')
 	.controller('MainController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 		$rootScope.isActive = function (arg) {
@@ -20,6 +20,10 @@ angular.module('latchApp')
     }])
 
 	.controller('RegisterController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
+		$rootScope.title = 'Register'
+		$rootScope.back = function(){
+			$location.path('/')
+		}
     	$scope.user = {};
         $scope.user.name = 'partho'
         $scope.user.contact = 'hell.partho@gmail.com'
@@ -48,6 +52,10 @@ angular.module('latchApp')
     }])
     
 	.controller('LoginController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
+		$rootScope.title = 'Login'
+		$rootScope.back = function(){
+			$location.path('/')
+		}
     	$scope.user = {};
         $scope.user.contact = 'hell.partho@gmail.com';
         $scope.user.password = 'tech';
@@ -72,6 +80,8 @@ angular.module('latchApp')
 }])
 
 .controller('NickController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
+		$rootScope.title = 'Nick'
+
         $scope.user = {};
         $scope.user.nick = 'parthosa';
 
@@ -247,6 +257,10 @@ angular.module('latchApp')
 	initMap();
 }])
 
+.controller('HeaderSmallController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+		// $scope.title = 'Hello'
+    }])
+
 .controller('ChatController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
     }])
@@ -255,11 +269,17 @@ angular.module('latchApp')
 
     }])
 
+.controller('GroupInfoController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+	$rootScope.title='Group Info'
+    }])
+
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+	$rootScope.title='Profile'
 
     }])
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+	$rootScope.title='John Doe'
 
     }])
 

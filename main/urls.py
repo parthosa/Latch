@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^accounts/login/social/$', views.social_login, name='social_login'),
     url(r'^accounts/login/$', views.login_user, name='login'),
     url(r'^accounts/register/$', views.Register, name='Register'),
+    url(r'^accounts/test/$', views.test, name='test'),
     url(r'^user/nick/$', views.nick_name, name='nick_name'),
     url(r'^user/interests/$', views.interests, name='interests'),
     url(r'^user/add_chatroom/$', views.add_to_chatroom, name='add_chatroom'),

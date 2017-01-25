@@ -18,6 +18,9 @@ angular.module('latchApp', ['ui.router'])
 			.state('app.register', {
                 url:'register',
                 views: {
+                     'header@': {
+                        templateUrl : 'views/header_chat.html',
+                    },
                     'content@': {
                         templateUrl : 'views/register.html'
                     }
@@ -28,7 +31,9 @@ angular.module('latchApp', ['ui.router'])
 			.state('app.login', {
                 url:'login',
                 views: {
-
+                     'header@': {
+                        templateUrl : 'views/header_chat.html',
+                    },
                     'content@': {
                         templateUrl : 'views/login.html'
                     }
@@ -40,7 +45,9 @@ angular.module('latchApp', ['ui.router'])
             .state('app.nick', {
                 url:'nick',
                 views: {
-
+                     'header@': {
+                        templateUrl : 'views/header_chat.html',
+                    },
                     'content@': {
                         templateUrl : 'views/nick.html'
                     }
@@ -109,6 +116,8 @@ angular.module('latchApp', ['ui.router'])
                     }
                 }
             })
+
+
 		
 			// route for the groups page
             .state('app.groups', {
@@ -130,13 +139,13 @@ angular.module('latchApp', ['ui.router'])
                 url:'message',
                 views: {
                     'header@': {
-                        templateUrl : 'views/header.html',
+                        templateUrl : 'views/header_chat.html',
                     },
                     'content@': {
-                        templateUrl : 'views/groups.html'
+                        templateUrl : 'views/chat_screen.html'
                     },
                     'footer@': {
-                        templateUrl : 'views/footer.html',
+                        templateUrl : 'views/chat_footer.html',
                     }
                 }
             })

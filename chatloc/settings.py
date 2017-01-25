@@ -61,7 +61,7 @@ TEMPPLATE_CONTEXT_PROCESSORS = (
 )
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:9611',
+    'localhost:9008',
  )
 
 TEMPLATES = [

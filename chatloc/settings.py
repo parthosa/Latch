@@ -24,7 +24,9 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
+
+SITE_ID = 1
 
 
 # Application definition
@@ -37,7 +39,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'main',
-    'channels',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -50,20 +51,20 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-TEMPPLATE_CONTEXT_PROCESSORS = (
+TEMPLATE_CONTEXT_PROCESSORS = (
     'django.template.context_processors.request',
     "django.contrib.auth.context_processors.auth",
 )
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
-        "CONFIG": {
-        "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')]
-        },
-        'ROUTING': 'main.routing.channel_routing',
-    },
-}
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "asgi_redis.RedisChannelLayer",
+#         "CONFIG": {
+#         "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')]
+#         },
+#         'ROUTING': 'main.routing.channel_routing',
+#     },
+# }
 
 ROOT_URLCONF = 'chatloc.urls'
 

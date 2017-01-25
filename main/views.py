@@ -37,14 +37,16 @@ def social_login(request):
 			login(request, user_login)
 			return JsonResponse({'status': 2, 'message': 'You will be redirected to where we can know you better! :D'})
 
+@csrf_exempt
 def Register(request):
+	print request.POST
 	if request.POST:
 		name = request.POST['name']
 		contact = request.POST['contact'] # could be either phone or email id
 		password = request.POST['password']
 		confirm_password = request.POST['confirm_password']
 
-		registered_users = User.objects.all()
+		registered_users = UserProfile.objects.all()
 		registered_contacts = [x.contact for x in registered_users]
 		if password == confirm_password:
 			if contact in registered_contacts:
@@ -62,6 +64,7 @@ def Register(request):
 					member = UserProfile()
 					member.name = name
 					member.user = user
+					member.save()
 					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D'})
 			else:
 				user = User.objects.create_user(username = contact, password = password)
@@ -75,6 +78,20 @@ def Register(request):
 				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D'})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Your password did not match'})
+
+@csrf_exempt
+def login_user(request):
+	# print request.POST
+	if request.method == 'POST':
+		contact = request.POST['contact']
+		password = request.POST['password']
+		user = authenticate(username = contact, password = password)
+
+		if user:
+			login(request,user)
+			return JsonResponse({'status':1, 'message': 'Successfully logged in'})
+		else:
+			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
 
 @login_required
 def nick_name(request):

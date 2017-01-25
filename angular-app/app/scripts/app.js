@@ -38,6 +38,18 @@ angular.module('latchApp', ['ui.router'])
 
             })
 
+            .state('app.profile', {
+                url:'profile',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/profile.html'
+//                        controller  : 'IndexController'
+                    }
+                }
+
+            })
+
+
             .state('app.main', {
                 url:'main',
                 views: {

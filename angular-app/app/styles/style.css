@@ -7,8 +7,9 @@ html, body {
 body {
     font-family: 'Roboto', sans-serif;
     background-color: #E9E8E8;
-    overflow-x: hidden;
+    overflow: hidden;
     width: 100vw;
+    height: 100vh;
 }
 
 #sidenav-overlay  {
@@ -74,13 +75,24 @@ body{
 	height: 100vh;
 }
 
+.profile-sec{
+	display: flex;
+	justify-content: space-around;
+	flex-direction: column;
+}
+
+
 .profile-pic-wrap{
-	height: 270px;
-	background: url('../img/batman.png');
+	height: 300px;
+	background: url('../images/batman.png');
 	background-size:cover;
 	background-repeat: no-repeat;
 	background-position: center;
-	margin:10px;
+}
+
+.profile-pic-wrap img {
+    width: 100%;
+    /*max-width: 200px;*/
 }
 
 .back_icon i.material-icons {
@@ -119,3 +131,30 @@ p.info-icon {
   width: 100%;
   height: 100%;
 }
+
+/*.profile-section {
+	display: flex;
+	align-items: center;
+}
+
+/*	.profile-section-inner{
+		    display: flex;
+	    flex-direction: column;
+	    justify-content: space-between;
+	    height: 100%;
+	}
+*/
+
+@media screen and (max-width: 601px){
+
+	.profile-section {
+		display: block;
+	}
+
+	.profile-section-inner{
+		    display: flex;
+	    flex-direction: column;
+	    justify-content: space-between;
+	    height: 100%;
+	}
+}*/

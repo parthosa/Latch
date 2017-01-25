@@ -29,19 +29,51 @@ angular.module('latchApp', ['ui.router'])
             //     }
 
             // })
-    
-
-            .state('app', {
+		
+			.state('app', {
                 url:'/',
                 views: {
-                    'header': {
+                    'content@': {
+                        template : '<h1>bc</h1>'
+//                        controller  : 'IndexController'
+                    }
+                }
+
+            })
+    		
+			.state('app.register', {
+                url:'register',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/register.html'
+//                        controller  : 'IndexController'
+                    }
+                }
+
+            })
+		
+			.state('app.login', {
+                url:'login',
+                views: {
+                    'content@': {
+                        templateUrl : 'views/login.html'
+//                        controller  : 'IndexController'
+                    }
+                }
+
+            })
+
+            .state('app.main', {
+                url:'main',
+                views: {
+                    'header@': {
                         templateUrl : 'views/header.html',
                     },
-                    'content': {
+                    'content@': {
                         templateUrl : 'views/home.html'
 //                        controller  : 'IndexController'
                     },
-                    'footer': {
+                    'footer@': {
                         templateUrl : 'views/footer.html',
                     }
                 }
@@ -107,7 +139,7 @@ angular.module('latchApp', ['ui.router'])
             },
             link: function(scope, element, attributes, ngModel) {
 
-                ngModel.$validators.compareTo = function(modelValue) {
+                ngModel.$validators.compareTo = function(modelValue) { 
                     return modelValue == scope.otherModelValue;
                 };
 

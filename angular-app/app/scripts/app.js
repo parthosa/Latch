@@ -69,11 +69,17 @@ angular.module('latchApp', ['ui.router'])
     
             // route for the friends page
             .state('app.friends', {
-                url:'sample',
+                url:'friends',
                 views: {
+                    'header@': {
+                        templateUrl : 'views/header.html',
+                    },
                     'content@': {
                         templateUrl : 'views/friends.html'
-//                        controller  : 'ContactController'                  
+//                        controller  : 'IndexController'
+                    },
+                    'footer@': {
+                        templateUrl : 'views/footer.html',
                     }
                 }
             })
@@ -82,20 +88,32 @@ angular.module('latchApp', ['ui.router'])
             .state('app.chats', {
                 url:'chats',
                 views: {
+                    'header@': {
+                        templateUrl : 'views/header.html',
+                    },
                     'content@': {
                         templateUrl : 'views/chats.html'
-//                        controller  : 'ContactController'                  
+//                        controller  : 'IndexController'
+                    },
+                    'footer@': {
+                        templateUrl : 'views/footer.html',
                     }
                 }
             })
 		
 			// route for the groups page
             .state('app.groups', {
-                url:'sample',
+                url:'groups',
                 views: {
+                    'header@': {
+                        templateUrl : 'views/header.html',
+                    },
                     'content@': {
                         templateUrl : 'views/groups.html'
-//                        controller  : 'ContactController'                  
+//                        controller  : 'IndexController'
+                    },
+                    'footer@': {
+                        templateUrl : 'views/footer.html',
                     }
                 }
             })

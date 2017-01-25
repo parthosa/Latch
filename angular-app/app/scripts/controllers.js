@@ -3,8 +3,15 @@
 var globalVar;
 
 angular.module('latchApp')
-    .controller('MainController', ['$scope', function($scope) {
-        
+    .controller('MainController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+        $rootScope.isActive = function (arg) {
+			if ($state.current.url == arg){
+				console.log($state.current.url);
+				return true;
+			}
+			else
+				return false;
+		}
 
     }])
 

@@ -1,7 +1,7 @@
 'use strict';
 
 var globalVar;
-
+var baseUrl = 'http://172.17.45.40:8000';
 angular.module('latchApp')
 	.controller('MainController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 		$rootScope.isActive = function (arg) {
@@ -22,22 +22,22 @@ angular.module('latchApp')
 	.controller('RegisterController', ['$rootScope', '$scope', '$state','$http','$location', function($rootScope, $scope, $state,$http,$location) {
     	$scope.user = {};
         $scope.user.name = 'partho'
-        $scope.user.email = 'hell.partho@gmail.com'
+        $scope.user.contact = 'hell.partho@gmail.com'
         $scope.user.password = 'tech'
         $scope.user.confirm_password = 'tech'
 
         $scope.submit = function(){
-            $location.path('/main');
+            // $location.path('/chats');
             
-            $http({
+            $.ajax({
                 method:'POST',
-                url:'/',
+                url:baseUrl+'/main/accounts/register/',
                 data:$scope.user,
                 success:function (response) {
-                    if(response.status!=1)
-                        Materialize.toast('Try Again', 1000)
+                    if(response.status==1)
+                        $location.path('/chats');
                      else
-                        $location.path('/main');
+                        Materialize.toast(response.message, 1000)
 
                 },
                 error:function (response) {
@@ -49,25 +49,24 @@ angular.module('latchApp')
     
 	.controller('LoginController', ['$rootScope', '$scope', '$state','$http', function($rootScope, $scope, $state,$http) {
     	$scope.user = {};
-        $scope.user.email = '';
-        $scope.user.password = '';
+        $scope.user.contact = 'hell.partho@gmail.com';
+        $scope.user.password = 'tech';
 
         $scope.submit = function(){
-            $location.path('/main');
 
-            $http({
+            $.ajax({
                 method:'POST',
-                url:'/',
+                url:baseUrl+'/main/accounts/login/',
                 data:$scope.user,
                 success:function (response) {
-                     if(response.status!=1)
-                        Materialize.toast('Try Again', 1000)
+                    console.log(response)
+                     if(response.status==1)
+                        $location.path('/chats');
                      else
-                        $location.path('/main');
+                        Materialize.toast(response.message, 1000)
 
                 },
                 error:function (response) {
-                    console.log(response)
                 }
             })
         }

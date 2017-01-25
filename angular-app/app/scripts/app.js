@@ -28,6 +28,7 @@ angular.module('latchApp', ['ui.router'])
 			.state('app.login', {
                 url:'login',
                 views: {
+
                     'content@': {
                         templateUrl : 'views/login.html'
                     }
@@ -38,6 +39,9 @@ angular.module('latchApp', ['ui.router'])
             .state('app.profile', {
                 url:'profile',
                 views: {
+                     'header@': {
+                        templateUrl : 'views/header_chat.html',
+                    },
                     'content@': {
                         templateUrl : 'views/profile.html'
                     }
@@ -125,7 +129,20 @@ angular.module('latchApp', ['ui.router'])
                 }
             })
 
-		
+	       .state('app.groups_info', {
+                url:'groups_info',
+                views: {
+                    'header@': {
+                        templateUrl : 'views/header_chat.html',
+                    },
+                    'content@': {
+                        templateUrl : 'views/groups_info.html'
+                    },
+                    'footer@': {
+                        templateUrl : 'views/footer.html',
+                    }
+                }
+            })
 			// route for the test page
             .state('app.sample', {
                 url:'sample',

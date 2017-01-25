@@ -11,9 +11,9 @@
 				<li>
 					<div class="userView">
 						<div class="background side-nav-bg right-align">
-							<img class="responsive-img " src="images/key.svg">
+							<img class="responsive-img " src="">
 						</div>
-						<a href="#!user"><img class="circle" src="images/user.png"></a>
+						<a href="#!user"><img class="circle" src="images/batman.png"></a>
 						<a href="#!name"><span class="white-text name">Guest</span></a>
 						<a href="#!email"><span class="white-text email"></span></a>
 					</div>
@@ -21,9 +21,9 @@
 				<li><a ui-sref="app.sample">Sample</a></li>
 			</ul>
 			<ul class="tabs tabs-transparent">
-				<li class="tab"><a ui-sref="#test1">Friends</a></li>
-				<li class="tab"><a class="active" ui-sref="app.chats">Chats</a></li>
-				<li class="tab"><a ui-sref="#test3">Groups</a></li>
+				<li class="tab"><a ng-class="{active: isActive('friends')}" ui-sref="app.friends">Friends</a></li>
+				<li class="tab"><a ng-class="{active: isActive('chats')}" ui-sref="app.chats">Chats</a></li>
+				<li class="tab"><a ng-class="{active: isActive('groups')}" ui-sref="app.groups">Groups</a></li>
 			</ul>
 		</div>
 	</nav>

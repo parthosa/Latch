@@ -19,10 +19,6 @@ body {
 	height: 106px;
 }
 
-body{
-	background: #ffeb3b !important
-}
-
 .main-content{
 	/*width: 100vw;*/
 	min-height: 100vh;

@@ -107,6 +107,7 @@ def nick_name(request):
 
 		return JsonResponse(response)
 
+@csrf_exempt
 @login_required
 def profile_pic(request):
 	user_p = UserProfile.objects.get(user = request.user)
@@ -121,6 +122,7 @@ def profile_pic(request):
 		user_p.save()
 
 
+@csrf_exempt
 @login_required
 def interests(request):
 	user_p = UserProfile.objects.get(user = request.user)
@@ -140,6 +142,7 @@ def interests(request):
 		response = {'interests': interest_names, 'user_name': user_p.name}
 		return JsonResponse(response)
 
+@csrf_exempt
 @login_required
 def get_location(request):
 	if request.POST:
@@ -155,6 +158,7 @@ def get_location(request):
 		user_p.save()
 		return JsonResponse({'status': 1, 'message': 'Your current location has been saved successfully.'})
 
+@csrf_exempt
 @login_required
 def add_to_chatroom(request):
 	user_p = UserProfile.objects.get(user = request.user)
@@ -185,6 +189,7 @@ def add_to_chatroom(request):
 
 	response = {'status': 1, 'message': 'You have been added to the following groups', 'groups': groups}
 
+@csrf_exempt
 @login_required
 def send_nearby(request):
 	user_p = UserProfile.objects.get(user = request.user)
@@ -200,6 +205,7 @@ def send_nearby(request):
 
 	return JsonResponse({'status': 1, 'nearby_users': nearby_users})
 
+@csrf_exempt
 @login_required
 def get_members_chatroom(request, room_name):
 	if request.POST:
@@ -214,6 +220,7 @@ def get_members_chatroom(request, room_name):
 
 		return JsonResponse(response)
 
+@csrf_exempt
 @login_required
 def go_anonymous(request):
 	user_p = UserProfile.objects.get(user = request.user)
@@ -239,6 +246,7 @@ def test_room(request, label):
 
 	return render(request, 'chat/room.html', {'room': group, 'messages': message})
 
+@csrf_exempt
 @login_required
 def get_chatroom(request, group_name):
 	user_p = UserProfile.objects.get(user = request.user)
@@ -251,6 +259,7 @@ def get_chatroom(request, group_name):
 	response = {'messages': msg_list}
 	return JsonResponse(response)
 
+@csrf_exempt
 @login_required
 def node_api_message(request ,group_name):
     try:

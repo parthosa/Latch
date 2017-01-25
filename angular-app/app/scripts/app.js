@@ -19,7 +19,7 @@ angular.module('latchApp', ['ui.router'])
                 url:'register',
                 views: {
                      'header@': {
-                        templateUrl : 'views/header_chat.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
                         templateUrl : 'views/register.html'
@@ -32,7 +32,7 @@ angular.module('latchApp', ['ui.router'])
                 url:'login',
                 views: {
                      'header@': {
-                        templateUrl : 'views/header_chat.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
                         templateUrl : 'views/login.html'
@@ -46,7 +46,7 @@ angular.module('latchApp', ['ui.router'])
                 url:'nick',
                 views: {
                      'header@': {
-                        templateUrl : 'views/header_chat.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
                         templateUrl : 'views/nick.html'
@@ -59,7 +59,7 @@ angular.module('latchApp', ['ui.router'])
                 url:'profile',
                 views: {
                      'header@': {
-                        templateUrl : 'views/header_chat.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
                         templateUrl : 'views/profile.html'
@@ -139,7 +139,7 @@ angular.module('latchApp', ['ui.router'])
                 url:'message',
                 views: {
                     'header@': {
-                        templateUrl : 'views/header_chat.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
                         templateUrl : 'views/chat_screen.html'
@@ -154,7 +154,7 @@ angular.module('latchApp', ['ui.router'])
                 url:'groups_info',
                 views: {
                     'header@': {
-                        templateUrl : 'views/header_chat.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
                         templateUrl : 'views/groups_info.html'

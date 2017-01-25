@@ -255,6 +255,8 @@ div[ui-view="footer"]{
   height: 57px;
   width: 57px;
   border-radius: 50%;
+  background-size: cover !important;
+    background-position: center !important;
 }
 .message-wrapper .text-wrapper {
   padding: 5px 9px;
@@ -280,6 +282,8 @@ div[ui-view="footer"]{
   float: left;
   color: #ffffff;
 }
+
+
 .message-wrapper.them .text-wrapper:before {
   border-width: 0 10px 10px 0;
   border-color: transparent #F44336 transparent transparent;

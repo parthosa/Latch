@@ -1,0 +1,17 @@
+<div class="navbar-fixed chat-nav" ng-controller="HeaderSmallController">
+	<nav class="nav-extended valign-wrapper">
+		<div class="nav-wrapper valign">
+
+			<a class="brand-logo">{{title}}</a>
+			<a ng-click='back()' class="button-back"><i class="material-icons">arrow_back</i></a>
+			<ul id="nav-mobile" class="right">
+				<li><a ui-sref="app.sample"><i class="material-icons">more_vert</i></a></li>
+			</ul>
+			
+		</div>
+	</nav>
+</div>
+
+<script>
+		$(".button-collapse").sideNav();
+</script>

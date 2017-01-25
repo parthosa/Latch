@@ -144,9 +144,9 @@ angular.module('latchApp', ['ui.router'])
                     'content@': {
                         templateUrl : 'views/chat_screen.html'
                     },
-                    'footer@': {
-                        templateUrl : 'views/chat_footer.html',
-                    }
+                    // 'footer@': {
+                    //     templateUrl : 'views/chat_footer.html',
+                    // }
                 }
             })
 

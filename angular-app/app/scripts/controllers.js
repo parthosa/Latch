@@ -7,20 +7,12 @@ angular.module('latchApp')
 
         $rootScope.isActive = function(arg) {
             if ($state.current.url == arg) {
-                console.log($state.current.url);
+//                console.log($state);
                 return true;
             } else
                 return false;
         }
 
-        //    $rootScope.title = '';
-
-        $rootScope.back = function() {
-            if ($state.current.url == 'register' || 'login')
-                $location.path('/');
-            if ($state.current.url == 'nick')
-                $location.path('/');
-        }
 
     }])
 
@@ -32,9 +24,9 @@ angular.module('latchApp')
 .controller('RegisterController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
 
     $rootScope.title = 'Register';
-    $rootScope.back = function() {
-        $state.go('app');
-    }
+//    $rootScope.back = function() {
+//        $state.go('app');
+//    }
 
     $scope.user = {};
     $scope.user.name = 'partho';
@@ -66,10 +58,7 @@ angular.module('latchApp')
 
 .controller('LoginController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
     $rootScope.title = 'Login';
-    $rootScope.back = function() {
-        $state.go('app');
 
-    }
     $scope.user = {};
     $scope.user.contact = 'hell.partho@gmail.com';
     $scope.user.password = 'tech';
@@ -223,17 +212,13 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
     $rootScope.title = 'Profile';
-    $rootScope.back = function() {
-        $state.go('app.chats');
-    }
+
 }])
 
 .controller('SettingsController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
     $rootScope.title = 'Settings';
-    $rootScope.back = function() {
-        $state.go('app.chats');
-    }
+
 }])
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function($rootScope, $scope, $state, chatData, $location) {
@@ -242,11 +227,6 @@ angular.module('latchApp')
         nick: 'partho',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
     }
-
-    $rootScope.back = function() {
-        $state.go('app.chats');
-    }
-
 
     // sending chat id to recieve messages
 

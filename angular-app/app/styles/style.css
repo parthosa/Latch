@@ -50,6 +50,15 @@ height: 74px;
 }
 
 
+p.chat-message {
+    font-size: 1em;
+    width: 75%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    line-height: 30px;
+}
+
 .center{
     display: flex;
     justify-content: center;
@@ -270,6 +279,7 @@ div[ui-view="footer"]{
   /* word-break: break-all; */
   opacity: 1;
   font-size: 1.6em;
+  transition: opacity 0.4s;
 }
 .message-wrapper .text-wrapper:before {
   content: '';
@@ -305,6 +315,10 @@ div[ui-view="footer"]{
   position: absolute;
   top: 0;
   right: -9px;
+}
+
+.not-sent{
+  opacity: 0.5 !important;
 }
 
 h3.message-text {

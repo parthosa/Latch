@@ -61,7 +61,7 @@ TEMPPLATE_CONTEXT_PROCESSORS = (
 )
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:9911',
+    'localhost:9917',
 	'127.0.0.1:39693'
  )
 

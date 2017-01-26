@@ -359,6 +359,7 @@ angular.module('latchApp')
 		}
 	];
 
+
 	$scope.newMessageText='';
 	
 	$scope.send = function(){
@@ -378,6 +379,9 @@ angular.module('latchApp')
 
 
 		$scope.messages.push(newMessage);
+		var scrollTop = $('.chat-screen').scrollTop()+$($('.message-wrapper')[0]).outerHeight()
+		$('.chat-screen').scrollTop(scrollTop)
+		console.log(scrollTop)
 		$scope.newMessageText = '';
 
 		

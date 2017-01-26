@@ -12,7 +12,7 @@ angular.module('latchApp')
 				return false;
 		}
 		
-		$rootScope.title = '';
+		// $rootScope.title = '';
 		
 		$rootScope.back = function(){
 			if ($state.current.url == 'register'||'login')

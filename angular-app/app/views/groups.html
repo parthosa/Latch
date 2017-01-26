@@ -1,6 +1,6 @@
 <div class="row" ng-controller="GroupController">
 	<h4 class="center">Interest Groups</h4>
-	<div class="col s6" ng-repeat="group in groups">
+	<div class="col s6" ng-repeat="group in groups | filter:search.query">
 		<div class="card" ng-click="redirect(this)">
 			<div class="card-content center-align">
 				<span class="card-title">{{group.nick}}</span>

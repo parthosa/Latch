@@ -324,6 +324,14 @@ div[ui-view="footer"]{
   opacity: 0.5 !important;
 }
 
+nav .nav-wrapper form, nav .nav-wrapper form .input-field{
+  height: 100%;
+}
+
+#search {
+  height: 56px;
+    margin-bottom: 0;
+}
 
 .chat-screen p {
     margin: 0;

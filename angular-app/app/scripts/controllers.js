@@ -12,7 +12,23 @@ angular.module('latchApp')
             } else
                 return false;
         }
+        
+        
 
+        $rootScope.search = {
+          visible: false,
+          query: '',
+          toggle: function() {
+            $rootScope.search.visible = true;
+            setTimeout(function() {
+            $('#search')[0].focus();
+            },300);
+          },
+          close: function () {
+            $rootScope.search.visible = false;
+            $rootScope.search.query = '';
+          }
+        };
 
     }])
 
@@ -191,6 +207,7 @@ angular.module('latchApp')
         time: '15:30pm'
 
     }];
+  
 
     $scope.redirect = function(el) {
         chatData.chatId = el.chat.id;
@@ -208,17 +225,17 @@ angular.module('latchApp')
         nick: 'Food',
         id: '234',
         pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
-        members: 7
+        members: '3'
     }, {
         nick: 'Car',
         id: '341',
         pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
-        members: 7
+        members: '7'
     }, {
         nick: 'Chutiye',
         id: '123',
         pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
-        members: 7
+        members: '8'
     }];
   
     $scope.redirect = function(el) {

@@ -14,7 +14,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 import re
 from operator import itemgetter
+from django.contrib.sessions.models import Session
 
+@csrf_exempt
 def social_login(request):
 	if request.POST:
 		fbid = request.POST['fbid']
@@ -89,16 +91,21 @@ def login_user(request):
 
 		if user:
 			login(request,user)
-			return JsonResponse({'status':1, 'message': 'Successfully logged in'})
+			print request.session.session_key
+			return JsonResponse({'status':1, 'message': 'Successfully logged in', 'user_session': request.session.session_key})
+			
 		else:
 			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
 @csrf_exempt
-@login_required
 def nick_name(request):
 	if request.POST:
 		nick = request.POST['nick']
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
 		if not nick in [x.nick_name for x in UserProfile.objects.all()]:	
-			user_p = UserProfile.objects.get(user = request.user)
+			user_p = UserProfile.objects.get(user = user)
 			user_p.nick_name = nick
 			user_p.save()
 			response = {'status': 1, 'message': 'Nick name was successfully saved'}
@@ -108,9 +115,12 @@ def nick_name(request):
 		return JsonResponse(response)
 
 @csrf_exempt
-@login_required
 def profile_pic(request):
-	user_p = UserProfile.objects.get(user = request.user)
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
+	user_p = UserProfile.objects.get(user = user)
 	if 'getfromfb' in request.POST:
 		fbdp = request.POST['fbdp']
 		user_p.dp_url = fbdp
@@ -123,14 +133,16 @@ def profile_pic(request):
 
 
 @csrf_exempt
-@login_required
 def logout_user(request):
 	logout(request)
 	return JsonResponse({'status': 1, 'message': 'You have been successfully logged out'})
 
 @csrf_exempt
-@login_required
 def interests(request):
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
 	user_p = UserProfile.objects.get(user = request.user)
 	if request.POST:
 		for interest in request.POST:
@@ -149,12 +161,15 @@ def interests(request):
 		return JsonResponse(response)
 
 @csrf_exempt
-@login_required
 def get_location(request):
 	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
 		lat = request.POST['lat']
 		longitude = request.POST['longitude']
-		user_p = UserProfile.objects.get(user = request.user)
+		user_p = UserProfile.objects.get(user = user)
 		user_p.lat = lat
 		user_p.longitude = longitude
 		location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
@@ -165,9 +180,12 @@ def get_location(request):
 		return JsonResponse({'status': 1, 'message': 'Your current location has been saved successfully.'})
 
 @csrf_exempt
-@login_required
 def add_to_chatroom(request):
-	user_p = UserProfile.objects.get(user = request.user)
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
+	user_p = UserProfile.objects.get(user = user)
 	lat = user_p.lat #test case
 	longitude = user_p.longitude #test case
 	location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
@@ -196,9 +214,12 @@ def add_to_chatroom(request):
 	response = {'status': 1, 'message': 'You have been added to the following groups', 'groups': groups}
 
 @csrf_exempt
-@login_required
 def send_nearby(request):
-	user_p = UserProfile.objects.get(user = request.user)
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
+	user_p = UserProfile.objects.get(user = user)
 	locality = user_p.locality
 	nearby_users = UserProfile.objects.filter(locality = locality)
 	nearby_list = []
@@ -212,10 +233,13 @@ def send_nearby(request):
 	return JsonResponse({'status': 1, 'nearby_users': nearby_users})
 
 @csrf_exempt
-@login_required
 def get_members_chatroom(request, room_name):
 	if request.POST:
-		user_p = UserProfile.objects.get(user = request.user)
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
+		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = room_name)
 		if user_p in groups.members.all():
 			g_members = groups.members.all()
@@ -227,9 +251,12 @@ def get_members_chatroom(request, room_name):
 		return JsonResponse(response)
 
 @csrf_exempt
-@login_required
 def go_anonymous(request):
-	user_p = UserProfile.objects.get(user = request.user)
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
+	user_p = UserProfile.objects.get(user = user)
 	if user_p.anonymous == True:
 		response = {'status': 0, 'message': 'You are already anonymous'}
 		return JsonResponse(response)
@@ -253,9 +280,12 @@ def test_room(request, label):
 	return render(request, 'chat/room.html', {'room': group, 'messages': message})
 
 @csrf_exempt
-@login_required
 def get_chatroom(request, group_name):
-	user_p = UserProfile.objects.get(user = request.user)
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
+	user_p = UserProfile.objects.get(user = user)
 	messages = reversed(Message.objects.filter(group = group_name).order_by('-timestamp'))
 	user_group = User_group(user = user_p, group = group_name)
 	msg_list = []
@@ -266,32 +296,48 @@ def get_chatroom(request, group_name):
 	return JsonResponse(response)
 
 @csrf_exempt
-@login_required
 def node_api_message(request ,group_name):
-    try:
+	print 1
+	try:
         #Get User from sessionid
-        session = Session.objects.get(session_key=request.POST.get('sessionid'))
-        user_id = session.get_decoded().get('_auth_user_id')
-        user = User.objects.get(id=user_id)
- 
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
         #Create message
-        user_p = UserProfile.objects.get(user = request.user)
-        group = Group.objects.get(name = group_name)
-        message = Message.objects.create(message = request.POST['message'], user = request.user, group = group, timestamp = datetime.now)
-        group.message.add(message)
-        group.save()
+		user_p = UserProfile.objects.get(user = user)
+		group = Group.objects.get(name = group_name)
+		message = Message.objects.create(message = request.POST['message'], user = request.user, group = group, timestamp = datetime.now)
+ 		group.message.add(message)
+		group.save()
         #Once comment has been created post it to the chat channel
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
+		r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
         
-        return HttpResponse("Everything worked :)")
-    except Exception, e:
-        return HttpResponseServerError(str(e))
+		return HttpResponse("Everything worked :)")
+	except Exception, e:
+		return HttpResponseServerError(str(e))
 
 # zomato api key - 74c47b6322c6a40d4bef924bf238548c
+@csrf_exempt
+def test_node_api(request):
+	if request.POST:
+		c = request.POST['comment']
+		print c
+		return JsonResponse({'message': c})
+	else:
+		print request.session.session_key
+		return JsonResponse({'partho_chutiya': request.session.session_key})
 
+<<<<<<< HEAD
+def test_chat(request):
+	print request.session.session_key
+	context = {'comments': ['asda'], 'partho_chutiya': request.session.session_key}
+	return render(request, 'main/index.html', context)
+=======
 # @login_required
 # def suggest_rest
 def test(request):
 	print request.user.username
 	return JsonResponse({'done': 'yes'})
+>>>>>>> 2752ca267570880887d11194a53788f6e890b228

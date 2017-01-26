@@ -297,7 +297,6 @@ def get_chatroom(request, group_name):
 
 @csrf_exempt
 def node_api_message(request ,group_name):
-	print 1
 	try:
         #Get User from sessionid
 		session_key = request.POST['session_key']
@@ -307,7 +306,7 @@ def node_api_message(request ,group_name):
         #Create message
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = group_name)
-		message = Message.objects.create(message = request.POST['message'], user = request.user, group = group, timestamp = datetime.now)
+		message = Message.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now)
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -329,15 +328,12 @@ def test_node_api(request):
 		print request.session.session_key
 		return JsonResponse({'partho_chutiya': request.session.session_key})
 
-<<<<<<< HEAD
 def test_chat(request):
 	print request.session.session_key
 	context = {'comments': ['asda'], 'partho_chutiya': request.session.session_key}
 	return render(request, 'main/index.html', context)
-=======
 # @login_required
 # def suggest_rest
 def test(request):
 	print request.user.username
 	return JsonResponse({'done': 'yes'})
->>>>>>> 2752ca267570880887d11194a53788f6e890b228

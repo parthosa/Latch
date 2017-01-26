@@ -27,7 +27,25 @@
         window.scrollBy(0, 10000000000);
         entry_el.focus();
       });
-                     
+        
+      // get csrf
+      function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              var cookies = document.cookie.split(';');
+              for (var i = 0; i < cookies.length; i++) {
+                  var cookie = jQuery.trim(cookies[i]);
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      var csrftoken = getCookie('csrftoken');
+
       entry_el.keypress(function(event){
         //When enter is pressed send input value to node server
         console.log(event.target);
@@ -35,7 +53,7 @@
         var msg = entry_el.attr('value');
         if(msg){
           console.log(msg);
-           socket.emit('send_message', msg+','+sessionid);
+           socket.emit('send_message', msg+','+sessionid+','+csrftoken);
            //, function(data){
                 // console.log(data);
            // });

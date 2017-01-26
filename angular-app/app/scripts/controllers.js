@@ -29,7 +29,12 @@ angular.module('latchApp')
     }])
 
 	.controller('RegisterController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
-		$rootScope.title = 'Register';
+
+		$rootScope.title = 'Register'
+		$rootScope.back = function(){
+			 $state.go('app');
+		}
+		
     	$scope.user = {};
         $scope.user.name = 'partho';
         $scope.user.contact = 'hell.partho@gmail.com';
@@ -46,7 +51,8 @@ angular.module('latchApp')
                 type:'jsonp',
                 success:function (response) {
                     if(response.status==1)
-                        $location.path('/nick');
+                        $state.go('app.nick');
+                       
                     Materialize.toast(response.message, 1000)
 
                 },
@@ -59,6 +65,10 @@ angular.module('latchApp')
     
 	.controller('LoginController', ['$rootScope', '$scope', '$state','$location', function($rootScope, $scope, $state,$location) {
 		$rootScope.title = 'Login'
+		$rootScope.back = function(){
+			 $state.go('app');
+			
+		}
     	$scope.user = {};
         $scope.user.contact = 'hell.partho@gmail.com';
         $scope.user.password = 'tech';
@@ -71,7 +81,7 @@ angular.module('latchApp')
                 data:$scope.user,
                 success:function (response) {
                      if(response.status==1)
-                        $location.path('/chats');
+                        $state.go('app.chats');
                     Materialize.toast(response.message, 1000)
 
                 },
@@ -96,7 +106,7 @@ angular.module('latchApp')
                 data:$scope.user,
                 success:function (response) {
                      if(response.status==1)
-                        $location.path('/chats');
+                        $state.go('app.chats');
                     Materialize.toast(response.message, 1000)
 
                 },
@@ -264,7 +274,39 @@ angular.module('latchApp')
 		// $scope.title = 'Hello';
     }])
 
-.controller('ChatController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+.controller('ChatController', ['$rootScope', '$scope', '$state','$location', 'chatData',function ($rootScope, $scope, $state,$location,chatData) {
+    	$scope.chats = [
+    		{
+    			nick:'Partho',
+    			id:'234',
+				pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
+				last_message:'hii',
+				time:'15:30pm'
+
+    		},
+    		{
+    			nick:'amritanshu',
+    			id:'341',
+				pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
+				last_message:'bol chut',
+				time:'05:30pm'
+
+    		},
+    		{
+    			nick:'Partho',
+    			id:'123',
+				pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
+				last_message:'hii',
+				time:'15:30pm'
+
+    		}
+    	];
+
+    	$scope.redirect = function(el){
+    		chatData.chatId = el.chat.id
+    		$rootScope.title = el.chat.nick;
+    		$location.url('/message')
+    	}
 
     }])
 
@@ -277,47 +319,103 @@ angular.module('latchApp')
     }])
 
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-	$rootScope.title='Profile';
 
+	$rootScope.title='Profile'
+	$rootScope.back = function(){
+			$state.go('app.chats');
+	}
     }])
 
-.controller('MessageController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-	$rootScope.title='John Doe'
+.controller('MessageController', ['$rootScope', '$scope', '$state','chatData','$location', function ($rootScope, $scope, $state,chatData,$location) {
+	// $rootScope.title='John Doe'
 	$rootScope.user = {
-		name:'partho'
+		nick:'partho',
+		pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
 	}
+
+	$rootScope.back = function(){
+			$state.go('app.chats');
+	}
+
+
+	// sending chat id to recieve messages
+
+	$.ajax({
+		method:'POST',
+		url:'http://localhost:8000/main/user/nick',
+		data:{
+			'chatId':chatData.chatId,
+
+		},
+		success:function(response){
+			console.log(response)
+		},
+		error:function(response){
+			// console.log(response)
+		}
+	})
 	$scope.messages=[
 		{
 			nick:'partho',
 			pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
 			text:'hello world',
-			time:'15:30pm'
+			time:'15:30pm',
+			msg_id:'p314'
 		},
 		{
 			nick:'pragati',
 			pic:'http://www.canitinguru.com/image/data/aboutme.jpg',
 			text:'bol world',
-			time:'18:30pm'
+			time:'18:30pm',
+			msg_id:'u232'
 		}
 	];
 
-	$scope.newMessage={};
-	$scope.newMessage.user=$rootScope.user.name;
-	$scope.newMessage.message='';
-	$scope.newMessage.session_id='';
-	$scope.newMessage.nick = 'yo';
-	$scope.newMessage.pic = 'http://www.canitinguru.com/image/data/aboutme.jpg';
-	$scope.newMessage.text = 'sahi world';
-	$scope.newMessage.time = '10:30pm';
+	$scope.newMessageText='';
 	
 	$scope.send = function(){
-		$scope.messages.push($scope.newMessage)
-		$scope.newMessage.text = ''
+		var time = new Date().toLocaleTimeString('en-US', { hour: 'numeric', hour12: true, minute: 'numeric' });
+
+
+		var newMessage={
+			user:$rootScope.user.nick,
+			text:$scope.newMessageText,
+			chat_id:'',
+			nick: $rootScope.user.nick,
+			pic: $rootScope.user.pic,
+			time: time,
+			sent:false,
+			msg_id:'iu99'
+		}
+
+
+		$scope.messages.push(newMessage);
+		$scope.newMessageText = '';
+
+		
+
+			
+
 		$.ajax({
 			method:'POST',
 			url:baseUrl+'/main/user/message',
-			data:$scope.newMessage,
+			data:newMessage,
 			success:function(response){
+				// var respMessage={
+				// 	text:$scope.newMessageText,
+				// 	nick: $rootScope.user.nick,
+				// 	pic: $rootScope.user.pic,
+				// 	time: time,
+				// 	msg_id:'iu99',
+				// 	sent:false
+				// }
+				var respMessage = response;
+				for (var i = $scope.messages.length - 1; i >= 0; i--) 
+					if($scope.messages[i].msg_id==respMessage.msg_id)
+						$scope.messages[i].sent=true
+			},
+			error:function(response){
+				Materialize.toast(response.message,1000);
 			}
 		})
 	}

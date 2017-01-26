@@ -4,6 +4,9 @@
   "description": "chat bot framework",
   "dependencies": {
     "express": "4.10.2",
-    "socket.io": "1.2.0"
+    "options": "0.0.6",
+    "redis": "^2.6.5",
+    "socket.io": "^0.9.17",
+    "utils": "^0.3.1"
   }
 }

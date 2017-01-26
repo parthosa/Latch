@@ -299,14 +299,17 @@ def get_chatroom(request, group_name):
 def node_api_message(request):
 	try:
         #Get User from sessionid
-		session_key = request.POST['session_key']
+	        post_string = request.POST['key']
+	        post_item_list = post_string.split(',')
+		session_key = post_item_list[1]
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		user = User.objects.get(pk=uid)
         #Create message
+
 		user_p = UserProfile.objects.get(user = user)
-		group = Group.objects.get(name = group_name)
-		message = Message.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now)
+		group = Group.objects.get(name = post_item_list[3])
+		message = Message.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now)
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -380,9 +383,9 @@ def test_node_api(request):
 	print 1
 	# if request.POST:
 	print request.POST
-	c = request.POST['comment']
-	print c
-	return JsonResponse({'message': c})
+	# c = request.POST['comment']
+	# print c
+	return JsonResponse({'message': 'c'})
 	# else:
 	# 	print 2
 	# 	print request.session.session_key

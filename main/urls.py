@@ -17,5 +17,5 @@ urlpatterns = [
     url(r'^user/anonymous/$', views.go_anonymous, name='anonymous'),
     url(r'^room/(?P<room_name>[\w-]{,50})/$', views.get_chatroom, name='get_chatroom'),
     # url(r'^room/(?P<group_name>[\w-]{,50})/message_send/$', views.node_api_message, name='node_api_message'),
-    url(r'^node_api/$', views.test_node_api, name='node_api_message'),
+    url(r'^node_api/$', views.test_node_api, name='node_api_message')
 ]

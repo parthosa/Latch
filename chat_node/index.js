@@ -73,12 +73,12 @@ io.sockets.on('connection', function (socket) {
     
     //Client is sending message through socket.io
     socket.on('send_message', function (message) {
-        message=message.split(',');
+        message_split=message.split(',');
         console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
         values = querystring.stringify({
-            comment: message[0],
+            message
             // csrftoken:message[2]// sessionid: message[1],
             // sessionid: socket.handshake.cookie['sessionid'],
         });
@@ -95,33 +95,42 @@ io.sockets.on('connection', function (socket) {
         // });
         // request.post('http://localhost:8001/main/node_api/',{name:1});
         var options = {
-            host: 'localhost',
-            port: 8001,
-            path: '/main/node_api/',
-            // url: 'http://localhost:8001/main/node_api',
+            // host: 'localhost',
+            // port: 8001,
+            // path: '/main/node_api/',
+            url: 'http://localhost:8001/main/node_api/',
             method: 'POST',
+            form: {'dsg': values},
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 // 'Content-Length': values.length,
                 // "X-CSRFToken": message[2],
-                'Cookie': 'csrftoken=' + message[2]
+                'Cookie': 'csrftoken=' + message_split[2]
             }
         };
         // console.log(6);
         // var req = {}
         // //Send message to Django server
-        var req=http.request(options, function(res){
-            // res.setEncoding('utf8');
-            console.log(4);
-            //Print out error message
-            // res.on('data', function(message){
-            //     if(message != 'Everything worked :)'){
-            //         console.log('Message: ' + message);
-            //     }
-            // });
+        request(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                // Print out the response body
+                console.log(body)
+                socket.emit('response', body)
+            }
+            console.log(body);
         });
-        req.write('dsghgjh');
-        req.end();
+        // var req=http.request(options, function(res){
+        //     // res.setEncoding('utf8');
+        //     console.log(4);
+        //     //Print out error message
+        //     // res.on('data', function(message){
+        //     //     if(message != 'Everything worked :)'){
+        //     //         console.log('Message: ' + message);
+        //     //     }
+        //     // });
+        // });
+        // req.write('dsghgjh');
+        // req.end();
         // request.post('http://localhost:8001/main/node_api/', {'comment': message[0]});
         // while(req=={}){
         //     console.log(7);

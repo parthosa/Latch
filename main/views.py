@@ -378,14 +378,15 @@ def get_indi_chat(request):
 @csrf_exempt
 def test_node_api(request):
 	print 1
-	if request.POST:
-		print request.POST
-		c = request.POST['comment']
-		print c
-		return JsonResponse({'message': c})
-	else:
-		print request.session.session_key
-		return JsonResponse({'partho_chutiya': request.session.session_key})
+	# if request.POST:
+	print request.POST
+	c = request.POST['comment']
+	print c
+	return JsonResponse({'message': c})
+	# else:
+	# 	print 2
+	# 	print request.session.session_key
+	# 	return JsonResponse({'partho_chutiya': request.session.session_key})
 
 def test_chat(request):
 	print request.session.session_key

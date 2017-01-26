@@ -193,16 +193,42 @@ angular.module('latchApp')
     }];
 
     $scope.redirect = function(el) {
-        chatData.chatId = el.chat.id
+        chatData.chatId = el.chat.id;
+        chatData.chatUrl = '/users';
         $location.url('/message');
         $rootScope.title = el.chat.nick;
+        $rootScope.chatPic = el.chat.pic;
         //            console.log($rootScope.title);
     }
 
 }])
 
-.controller('GroupController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
-
+.controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function($rootScope, $scope, $state, $location, chatData) {
+    $scope.groups = [{
+        nick: 'Food',
+        id: '234',
+        pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
+        members: 7
+    }, {
+        nick: 'Car',
+        id: '341',
+        pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
+        members: 7
+    }, {
+        nick: 'Chutiye',
+        id: '123',
+        pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
+        members: 7
+    }];
+  
+    $scope.redirect = function(el) {
+        chatData.chatId = el.group.id;
+        chatData.chatUrl = '/groups';
+        $location.url('/message');
+        $rootScope.title = el.group.nick;
+        $rootScope.chatPic = el.group.pic;
+        //            console.log($rootScope.title);
+    }
 }])
 
 .controller('GroupInfoController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
@@ -284,7 +310,7 @@ angular.module('latchApp')
         $scope.messages.push(newMessage);
         var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
         $('.chat-screen').scrollTop(scrollTop)
-        console.log(scrollTop)
+//        console.log(scrollTop)
         $scope.newMessageText = '';
 
 
@@ -293,7 +319,7 @@ angular.module('latchApp')
 
         $.ajax({
             method: 'POST',
-            url: baseUrl + '/main/user/message',
+            url: baseUrl +chatUrl+ '/main/user/message',
             data: newMessage,
             success: function(response) {
                 // var respMessage={

@@ -1,35 +1,13 @@
-<div class="row">
+<div class="row" ng-controller="GroupController">
 	<h4 class="center">Interest Groups</h4>
-	<div class="col s6">
-		<div class="card">
+	<div class="col s6" ng-repeat="group in groups">
+		<div class="card" ng-click="redirect(this)">
 			<div class="card-content center-align">
-				<span class="card-title">Batman</span>
+				<span class="card-title">{{group.nick}}</span>
 				<p>
-				<img class="responsive-img" src="images/batman.png">
+				<img class="responsive-img" ng-src="{{group.pic}}">
 				</p>
-				<p>7 Members</p>
-			</div>
-		</div>
-	</div>
-	<div class="col s6">
-		<div class="card">
-			<div class="card-content center-align">
-				<span class="card-title">Batman</span>
-				<p>
-				<img class="responsive-img" src="images/batman.png">
-				</p>
-				<p>7 Members</p>
-			</div>
-		</div>
-	</div>
-	<div class="col s6">
-		<div class="card">
-			<div class="card-content center-align">
-				<span class="card-title">Batman</span>
-				<p>
-				<img class="responsive-img" src="images/batman.png">
-				</p>
-				<p>7 Members</p>
+				<p>{{group.members}} Members</p>
 			</div>
 		</div>
 	</div>

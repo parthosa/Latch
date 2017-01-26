@@ -200,13 +200,12 @@ angular.module('latchApp', ['ui.router'])
 
     $rootScope.$on('$locationChangeStart', function() {
         history.push($location.$$path);
-        console.log(history);
+//        console.log(history);
     });
 
     $rootScope.back = function () {
         var prevUrl = history.length > 1 ? history.splice(-2)[0] : "/";
-//        history.splice(history.length, 1);
-        console.log(prevUrl);
+//        console.log(prevUrl);
         $location.path(prevUrl);
     };
 

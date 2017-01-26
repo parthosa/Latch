@@ -5,7 +5,7 @@ __pycache__/
 
 # database
 *.sqlite3
-
+*.fuse*
 # C extensions
 *.so
 

@@ -48,7 +48,7 @@ class Indi_group(models.Model):
 
 	def save(self, *args, **kwargs):
 		self.name = self.user1.nick_name+'_'+self.user2.nick_name
-			super(Indi_group, self).save(*args, **kwargs)
+		super(Indi_group, self).save(*args, **kwargs)
 
 		def __unicode__(self):
 			return self.name

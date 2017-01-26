@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from . import views
 
 urlpatterns = [
-    url(r'^(?P<label>[\w-]{,50})/$', views.test_room, name='chat_room'),
+    url(r'^test_room/(?P<label>[\w-]{,50})/$', views.test_room, name='chat_room'),
     url(r'^accounts/login/social/$', views.social_login, name='social_login'),
     url(r'^accounts/login/$', views.login_user, name='login'),
     url(r'^user/logout/$', views.logout_user, name='logout'),

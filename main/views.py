@@ -96,7 +96,6 @@ def login_user(request):
 			
 		else:
 			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
-
 @csrf_exempt
 def nick_name(request):
 	if request.POST:
@@ -330,7 +329,15 @@ def test_node_api(request):
 		print request.session.session_key
 		return JsonResponse({'partho_chutiya': request.session.session_key})
 
+<<<<<<< HEAD
 def test_chat(request):
 	print request.session.session_key
 	context = {'comments': ['asda'], 'partho_chutiya': request.session.session_key}
 	return render(request, 'main/index.html', context)
+=======
+# @login_required
+# def suggest_rest
+def test(request):
+	print request.user.username
+	return JsonResponse({'done': 'yes'})
+>>>>>>> 2752ca267570880887d11194a53788f6e890b228

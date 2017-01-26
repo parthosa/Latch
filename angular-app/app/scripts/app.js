@@ -18,6 +18,9 @@ angular.module('latchApp', ['ui.router'])
 			.state('app.register', {
                 url:'register',
                 views: {
+                     'header@': {
+                        templateUrl : 'views/chat_header.html',
+                    },
                     'content@': {
                         templateUrl : 'views/register.html'
                     }
@@ -28,8 +31,25 @@ angular.module('latchApp', ['ui.router'])
 			.state('app.login', {
                 url:'login',
                 views: {
+                     'header@': {
+                        templateUrl : 'views/chat_header.html',
+                    },
                     'content@': {
                         templateUrl : 'views/login.html'
+                    }
+                }
+
+            })
+
+
+            .state('app.nick', {
+                url:'nick',
+                views: {
+                     'header@': {
+                        templateUrl : 'views/chat_header.html',
+                    },
+                    'content@': {
+                        templateUrl : 'views/nick.html'
                     }
                 }
 
@@ -38,6 +58,9 @@ angular.module('latchApp', ['ui.router'])
             .state('app.profile', {
                 url:'profile',
                 views: {
+                     'header@': {
+                        templateUrl : 'views/chat_header.html',
+                    },
                     'content@': {
                         templateUrl : 'views/profile.html'
                     }
@@ -93,6 +116,8 @@ angular.module('latchApp', ['ui.router'])
                     }
                 }
             })
+
+
 		
 			// route for the groups page
             .state('app.groups', {
@@ -114,18 +139,31 @@ angular.module('latchApp', ['ui.router'])
                 url:'message',
                 views: {
                     'header@': {
-                        templateUrl : 'views/header.html',
+                        templateUrl : 'views/chat_header.html',
                     },
                     'content@': {
-                        templateUrl : 'views/groups.html'
+                        templateUrl : 'views/chat_screen.html'
+                    },
+                    // 'footer@': {
+                    //     templateUrl : 'views/chat_footer.html',
+                    // }
+                }
+            })
+
+	       .state('app.groups_info', {
+                url:'groups_info',
+                views: {
+                    'header@': {
+                        templateUrl : 'views/chat_header.html',
+                    },
+                    'content@': {
+                        templateUrl : 'views/groups_info.html'
                     },
                     'footer@': {
                         templateUrl : 'views/footer.html',
                     }
                 }
             })
-
-		
 			// route for the test page
             .state('app.sample', {
                 url:'sample',

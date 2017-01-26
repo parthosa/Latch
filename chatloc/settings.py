@@ -24,7 +24,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['*']
 
 SITE_ID = 1
 
@@ -38,11 +38,13 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'main',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -57,6 +59,11 @@ TEMPPLATE_CONTEXT_PROCESSORS = (
     # "allauth.account.context_processors.account",
     # "allauth.socialaccount.context_processors.socialaccount",
 )
+
+CORS_ORIGIN_WHITELIST = (
+    'localhost:9917',
+	'127.0.0.1:39693'
+ )
 
 TEMPLATES = [
 {

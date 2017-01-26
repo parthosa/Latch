@@ -1,11 +1,11 @@
-<div class="container main-content center valign-wrapper ">
+<div class="container main-content center valign-wrapper " ng-controller='NickController'>
 		<div class="row valign">
 			<form class="col s10 offset-s1 m6 offset-m3">
 				<div class="row">
 					<div class="input-field col s12">
-						<input placeholder="Nick" type="text" class="validate">
+						<input placeholder="Nick" type="text" class="validate" ng-model='user.nick'>
 					</div>
-					<a class="waves-effect waves-dark btn col s12 cust-btn " id="nick-submit">SUBMIT</a>
+					<a class="waves-effect waves-dark btn col s12 cust-btn " id="nick-submit" ng-click="submit()">SUBMIT</a>
 					<a class="waves-effect waves-dark btn col s12 cust-btn " id="nick-skip">SKIP</a>
 				</div>
 			</form>

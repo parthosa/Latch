@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^user/logout/$', views.logout_user, name='logout'),
     url(r'^chat/test/$', views.test_chat, name='test_chat'),
     url(r'^accounts/register/$', views.Register, name='Register'),
+    url(r'^accounts/test/$', views.test, name='test'),
     url(r'^user/nick/$', views.nick_name, name='nick_name'),
     url(r'^user/interests/$', views.interests, name='interests'),
     url(r'^user/add_chatroom/$', views.add_to_chatroom, name='add_chatroom'),

@@ -379,6 +379,7 @@ $.ajax({
   },
   success: function (response) {
       $scope.chats = response.peers;
+      $scope.$apply();
   },
   error: function (response) {
       Materialize.toast('Could Not Fetch Chat List', 1000);
@@ -406,6 +407,7 @@ $.ajax({
   },
   success: function (response) {
       $scope.groups = response.groups;
+       $scope.$apply();
       console.log($scope.groups);
   },
   error: function (response) {
@@ -493,6 +495,8 @@ $.ajax({
         response.messages[i].nick=response.messages[i].nick_name;
       }
       $scope.messages = response.messages;
+       $scope.$apply();
+      console.log($scope.messages);
   },
   error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -540,13 +544,15 @@ socket.on('response_indi', function(data) {
         // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
         var otherMessage = false;
         for(var i=0;i<$scope.messages.length;i++){
+            if($scope.messages[i].msg_id==data.msg_id){
                 $scope.messages[i].sent=true;
                 otherMessage = true;
             }
-
         }
+
         if(otherMessage)
             $scope.messages.push(data);
+            $scope.$apply();
         // //Append message to the bottom of the list
         // $('#comments').append('<li>' + data + '</li>');
         // window.scrollBy(0, 10000000000);

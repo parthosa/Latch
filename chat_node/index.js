@@ -72,16 +72,16 @@ io.sockets.on('connection', function (socket) {
     });
     
     //Client is sending message through socket.io
-    socket.on('send_message_group', function (message) {
-        message_split=message.split(',');
-        console.log(3);
+    socket.on('send_message', function (data) {
+        // message_split=message.split(',');
+        // console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
-        values = querystring.stringify({
-            message
-            // csrftoken:message[2]// sessionid: message[1],
-            // sessionid: socket.handshake.cookie['sessionid'],
-        });
+        // values = querystring.stringify({
+        //     data
+        //     // csrftoken:message[2]// sessionid: message[1],
+        //     // sessionid: socket.handshake.cookie['sessionid'],
+        // });
         // console.log(values)
         // request({
             
@@ -100,14 +100,14 @@ io.sockets.on('connection', function (socket) {
             // path: '/main/node_api/',
             url: 'http://localhost:8001/main/node_api/',
             method: 'POST',
-            form: {'dsg': values},
+            form: data,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 // 'Content-Length': values.length,
                 // "X-CSRFToken": message[2],
-                'Cookie': 'csrftoken=' + message_split[2]
+                // 'Cookie': 'csrftoken=' + message_split[2]
             }
-        };
+        }
         // console.log(6);
         // var req = {}
         // //Send message to Django server
@@ -120,7 +120,7 @@ io.sockets.on('connection', function (socket) {
             console.log(body);
         });
 
-
+    });
 
     socket.on('send_message_indi', function (message) {
         message_split=message.split(',');
@@ -157,7 +157,7 @@ io.sockets.on('connection', function (socket) {
                 // "X-CSRFToken": message[2],
                 'Cookie': 'csrftoken=' + message_split[2]
             }
-        };
+        }
         // console.log(6);
         // var req = {}
         // //Send message to Django server

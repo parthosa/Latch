@@ -2,10 +2,9 @@
 <div class="chat-screen row" >
 	<div class="col s12">
 		<div class="message-wrapper" ng-repeat="message in messages" ng-class="{me : message.nick==user.nick,them: message.nick!=user.nick}">
-			<div class="circle-wrapper animated bounceIn" style='background: url("{{message.pic}}")'></div>
 			<div class="text-wrapper animated fadeIn" ng-class="{'not-sent' : message.sent==false}">
 				<p class="name" >{{message.nick}}</p>
-				<h3 class="message-text" >{{message.text}}</h3>
+				<p class="message-text" >{{message.message}}</p>
 				<p class="time" >{{message.time}}</p>
 			</div>
 		</div>

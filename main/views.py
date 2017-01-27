@@ -77,7 +77,7 @@ def Register(request):
 				member.save()
 				user_login = authenticate(username = contact, password = password)
 				login(request, user_login)
-				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D'})
+				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','user_session': request.session.session_key})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Your password did not match'})
 
@@ -299,8 +299,8 @@ def get_chatroom(request, group_name):
 def node_api_message_group(request):
 	try:
         #Get User from sessionid
-        post_string = request.POST['key']
-        post_item_list = post_string.split(',')
+	        post_string = request.POST['key']
+	        post_item_list = post_string.split(',')
 		session_key = post_item_list[1]
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
@@ -422,8 +422,11 @@ def test_chat(request):
 	print request.session.session_key
 	context = {'comments': ['asda'], 'partho_chutiya': request.session.session_key}
 	return render(request, 'main/index.html', context)
+
+
 # @login_required
 # def suggest_rest
 def test(request):
 	print request.user.username
 	return JsonResponse({'done': 'yes'})
+

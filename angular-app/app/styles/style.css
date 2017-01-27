@@ -324,17 +324,27 @@ div[ui-view="footer"]{
   opacity: 0.5 !important;
 }
 
-h3.message-text {
-    margin: 10px 0px;
-    font-size: 1.2em;
-    font-weight: 300;
+nav .nav-wrapper form, nav .nav-wrapper form .input-field{
+  height: 100%;
 }
 
-p {
+#search {
+  height: 56px;
+    margin-bottom: 0;
+}
+
+.chat-screen p {
     margin: 0;
     font-size: 0.6em;
     /* margin-top: 10px; */
 }
+
+p.message-text  {
+    margin: 10px 0px;
+    font-size: 1.1em;
+    font-weight: 300;
+}
+
 p.name{
     text-align: left;
 }

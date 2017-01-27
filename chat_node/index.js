@@ -40,7 +40,7 @@
 
 
 var http = require('http');
-// var request = require('request')
+var request = require('request');
 var server = http.createServer().listen(4000);
 var io = require('socket.io').listen(server);
 var cookie_reader = require('cookie');
@@ -73,42 +73,65 @@ io.sockets.on('connection', function (socket) {
     
     //Client is sending message through socket.io
     socket.on('send_message', function (message) {
-        message=message.split(',');
+        message_split=message.split(',');
+        console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
         values = querystring.stringify({
-            comment: message[0],
+            message
             // csrftoken:message[2]// sessionid: message[1],
             // sessionid: socket.handshake.cookie['sessionid'],
         });
-        console.log(values)
+        // console.log(values)
+        // request({
+            
+        //     method:'POST',
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //         'Cookie': 'csrftoken=' + message[2]
+        //     },
+        // },function(res){
+        //     console.log('worked');
+        // });
+        // request.post('http://localhost:8001/main/node_api/',{name:1});
         var options = {
             // host: 'localhost',
             // port: 8001,
             // path: '/main/node_api/',
-            // url: 'http://localhost:8001/main/node_api',
-            // method: 'POST',
+            url: 'http://localhost:8001/main/node_api/',
+            method: 'POST',
+            form: {'dsg': values},
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': values.length,
+                // 'Content-Length': values.length,
                 // "X-CSRFToken": message[2],
-                'Cookie': 'csrftoken=' + message[2]
+                'Cookie': 'csrftoken=' + message_split[2]
             }
         };
-        console.log(6);
-        var req = {}
-        //Send message to Django server
-        request(options, function(res){
-            // res.setEncoding('utf8');
-            console.log(4);
-            //Print out error message
-            // res.on('data', function(message){
-            //     if(message != 'Everything worked :)'){
-            //         console.log('Message: ' + message);
-            //     }
-            // });
+        // console.log(6);
+        // var req = {}
+        // //Send message to Django server
+        request(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                // Print out the response body
+                console.log(body)
+                socket.emit('response', body)
+            }
+            console.log(body);
         });
-        request.post('http://localhost:8001/main/node_api/', values);
+        // var req=http.request(options, function(res){
+        //     // res.setEncoding('utf8');
+        //     console.log(4);
+        //     //Print out error message
+        //     // res.on('data', function(message){
+        //     //     if(message != 'Everything worked :)'){
+        //     //         console.log('Message: ' + message);
+        //     //     }
+        //     // });
+        // });
+        // req.write('dsghgjh');
+        // req.end();
+        // request.post('http://localhost:8001/main/node_api/', {'comment': message[0]});
         // while(req=={}){
         //     console.log(7);
         //         req.write(values);
@@ -116,5 +139,7 @@ io.sockets.on('connection', function (socket) {
         // req.end();
     });
 });
+
+
 
 

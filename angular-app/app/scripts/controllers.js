@@ -1,27 +1,35 @@
 'use strict';
 
 var globalVar;
-var baseUrl = 'http://localhost:8000';
+var baseUrl = 'http://localhost:8001';
 angular.module('latchApp')
-	.controller('MainController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-		$rootScope.isActive = function (arg) {
-			if ($state.current.url == arg) {
-				console.log($state.current.url);
-				return true;
-			} else
-				return false;
-		}
-		
-		// $rootScope.title = '';
-		
-     //    $rootScope.title = '';
 
-        $rootScope.back = function() {
-            if ($state.current.url == 'register' || 'login')
-                $location.path('/');
-            if ($state.current.url == 'nick')
-                $location.path('/');
+    .controller('MainController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
+
+        $rootScope.isActive = function(arg) {
+            if ($state.current.url == arg) {
+//                console.log($state);
+                return true;
+            } else
+                return false;
         }
+        
+        
+
+        $rootScope.search = {
+          visible: false,
+          query: '',
+          toggle: function() {
+            $rootScope.search.visible = true;
+            setTimeout(function() {
+            $('#search')[0].focus();
+            },300);
+          },
+          close: function () {
+            $rootScope.search.visible = false;
+            $rootScope.search.query = '';
+          }
+        };
 
     }])
 
@@ -33,9 +41,9 @@ angular.module('latchApp')
 .controller('RegisterController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
 
     $rootScope.title = 'Register';
-    $rootScope.back = function() {
-        $state.go('app');
-    }
+//    $rootScope.back = function() {
+//        $state.go('app');
+//    }
 
     $scope.user = {};
     $scope.user.name = 'partho';
@@ -52,8 +60,10 @@ angular.module('latchApp')
             data: $scope.user,
             type: 'jsonp',
             success: function(response) {
-                if (response.status == 1)
+                if (response.status == 1){
                     $state.go('app.nick');
+                    window.localStorage.setItem('user_session',response.user_session);
+                }
 
                 Materialize.toast(response.message, 1000)
 
@@ -67,10 +77,7 @@ angular.module('latchApp')
 
 .controller('LoginController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
     $rootScope.title = 'Login';
-    $rootScope.back = function() {
-        $state.go('app');
 
-    }
     $scope.user = {};
     $scope.user.contact = 'hell.partho@gmail.com';
     $scope.user.password = 'tech';
@@ -82,8 +89,10 @@ angular.module('latchApp')
             url: baseUrl + '/main/accounts/login/',
             data: $scope.user,
             success: function(response) {
-                if (response.status == 1)
+                if (response.status == 1){
                     $state.go('app.chats');
+                    window.localStorage.setItem('user_session',response.user_session);
+                }
                 Materialize.toast(response.message, 1000)
 
             },
@@ -203,26 +212,46 @@ angular.module('latchApp')
         time: '15:30pm'
 
     }];
+  
 
     $scope.redirect = function(el) {
-        chatData.chatId = el.chat.id
+        chatData.chatId = el.chat.id;
+        chatData.chatUrl = '/users';
         $location.url('/message');
         $rootScope.title = el.chat.nick;
+        $rootScope.chatPic = el.chat.pic;
         //            console.log($rootScope.title);
     }
 
 }])
 
-.controller('GroupController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
-    $scope.groups = [
-        {
-            nick:'Food',
-            id:'2324',
-
-        }
-    ]
-
+.controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function($rootScope, $scope, $state, $location, chatData) {
+    $scope.groups = [{
+        nick: 'Food',
+        id: '234',
+        pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
+        members: '3'
+    }, {
+        nick: 'Car',
+        id: '341',
+        pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
+        members: '7'
+    }, {
+        nick: 'Chutiye',
+        id: '123',
+        pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
+        members: '8'
+    }];
+  
+    $scope.redirect = function(el) {
+        chatData.chatId = el.group.id;
+        chatData.chatUrl = '/groups';
+        $location.url('/message');
+        $rootScope.title = el.group.nick;
+        $rootScope.chatPic = el.group.pic;
+        //            console.log($rootScope.title);
+    }
 }])
 
 .controller('GroupInfoController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
@@ -232,17 +261,13 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
     $rootScope.title = 'Profile';
-    $rootScope.back = function() {
-        $state.go('app.chats');
-    }
+
 }])
 
 .controller('SettingsController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
     $rootScope.title = 'Settings';
-    $rootScope.back = function() {
-        $state.go('app.chats');
-    }
+
 }])
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function($rootScope, $scope, $state, chatData, $location) {
@@ -251,11 +276,6 @@ angular.module('latchApp')
         nick: 'partho',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
     }
-
-    $rootScope.back = function() {
-        $state.go('app.chats');
-    }
-
 
     // sending chat id to recieve messages
 
@@ -313,7 +333,7 @@ angular.module('latchApp')
         $scope.messages.push(newMessage);
         var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
         $('.chat-screen').scrollTop(scrollTop)
-        console.log(scrollTop)
+//        console.log(scrollTop)
         $scope.newMessageText = '';
 
 
@@ -322,7 +342,7 @@ angular.module('latchApp')
 
         $.ajax({
             method: 'POST',
-            url: baseUrl + '/main/user/message',
+            url: baseUrl +chatUrl+ '/main/user/message',
             data: newMessage,
             success: function(response) {
                 // var respMessage={

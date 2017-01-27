@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from . import views
 
 urlpatterns = [
-    url(r'^(?P<label>[\w-]{,50})/$', views.test_room, name='chat_room'),
+    url(r'^test_room/(?P<label>[\w-]{,50})/$', views.test_room, name='chat_room'),
     url(r'^accounts/login/social/$', views.social_login, name='social_login'),
     url(r'^accounts/login/$', views.login_user, name='login'),
     url(r'^user/logout/$', views.logout_user, name='logout'),
@@ -17,5 +17,5 @@ urlpatterns = [
     url(r'^user/anonymous/$', views.go_anonymous, name='anonymous'),
     url(r'^room/(?P<room_name>[\w-]{,50})/$', views.get_chatroom, name='get_chatroom'),
     # url(r'^room/(?P<group_name>[\w-]{,50})/message_send/$', views.node_api_message, name='node_api_message'),
-    url(r'^node_api/$', views.test_node_api, name='node_api_message'),
+    url(r'^node_api/$', views.test_node_api, name='node_api_message')
 ]

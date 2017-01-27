@@ -192,4 +192,21 @@ angular.module('latchApp', ['ui.router'])
           });
       }
   };
+})
+
+.run(function ($rootScope, $location) {
+
+    var history = [];
+
+    $rootScope.$on('$locationChangeStart', function() {
+        history.push($location.$$path);
+//        console.log(history);
+    });
+
+    $rootScope.back = function () {
+        var prevUrl = history.length > 1 ? history.splice(-2)[0] : "/";
+//        console.log(prevUrl);
+        $location.path(prevUrl);
+    };
+
 });

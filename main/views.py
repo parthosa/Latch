@@ -77,7 +77,7 @@ def Register(request):
 				member.save()
 				user_login = authenticate(username = contact, password = password)
 				login(request, user_login)
-				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D'})
+				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','user_session': request.session.session_key})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Your password did not match'})
 
@@ -299,14 +299,17 @@ def get_chatroom(request, group_name):
 def node_api_message(request):
 	try:
         #Get User from sessionid
-		session_key = request.POST['session_key']
+	        post_string = request.POST['key']
+	        post_item_list = post_string.split(',')
+		session_key = post_item_list[1]
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		user = User.objects.get(pk=uid)
         #Create message
+
 		user_p = UserProfile.objects.get(user = user)
-		group = Group.objects.get(name = group_name)
-		message = Message.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now)
+		group = Group.objects.get(name = post_item_list[3])
+		message = Message.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now)
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -378,21 +381,25 @@ def get_indi_chat(request):
 @csrf_exempt
 def test_node_api(request):
 	print 1
-	if request.POST:
-		print request.POST
-		c = request.POST['comment']
-		print c
-		return JsonResponse({'message': c})
-	else:
-		print request.session.session_key
-		return JsonResponse({'partho_chutiya': request.session.session_key})
+	# if request.POST:
+	print request.POST
+	# c = request.POST['comment']
+	# print c
+	return JsonResponse({'message': 'c'})
+	# else:
+	# 	print 2
+	# 	print request.session.session_key
+	# 	return JsonResponse({'partho_chutiya': request.session.session_key})
 
 def test_chat(request):
 	print request.session.session_key
 	context = {'comments': ['asda'], 'partho_chutiya': request.session.session_key}
 	return render(request, 'main/index.html', context)
+
+
 # @login_required
 # def suggest_rest
 def test(request):
 	print request.user.username
 	return JsonResponse({'done': 'yes'})
+

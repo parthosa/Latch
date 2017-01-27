@@ -345,6 +345,7 @@ $rootScope.search = {
  })
 
 
+
     $scope.redirect = function (el) {
       console.log(chatData);
     chatData.chatId = el.locModal.nick;
@@ -360,22 +361,7 @@ $rootScope.search = {
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.chats = [{
-    nick: 'Partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-    location: 'Pilani'
-
-}, {
-    nick: 'amritanshu',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-    location: 'Pilani'
-
-}, {
-    nick: 'Partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-    location: 'Pilani'
-
-}];
+  $scope.chats ;
 
 $.ajax({
     method: 'POST',
@@ -403,20 +389,7 @@ $scope.redirect = function (el) {
 }])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.groups = [{
-    group_name:'chut',
-    pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
-    members: '3'
-}, {
-    group_name:'chut',
-    pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
-    members: '7'
-}, {
-    group_name:'chut',
-    pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
-    members: '8'
-}];
-
+  $scope.groups ;
 $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_groups/',
@@ -425,6 +398,7 @@ $.ajax({
   },
   success: function (response) {
       $scope.groups = response.groups;
+      console.log($scope.groups);
   },
   error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
@@ -489,7 +463,7 @@ $scope.redirect = function (el) {
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages = [];
+  $scope.messages =[];
   $rootScope.user = {
     nick: 'partho',
     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
@@ -497,14 +471,17 @@ $scope.redirect = function (el) {
 
 var user_session = window.localStorage.getItem('user_session');
 
+
 $.ajax({
     method: 'POST',
-    url: baseUrl+'/main/user/get_chat/',
+    url: baseUrl+'/main/user/get/indi_chat/',
     data: {
       'nick': chatData.chatId,
+      'session_key':user_session
+
   },
   success: function (response) {
-      $scope.messages = response.messages
+      $scope.messages = response.messages;
   },
   error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -534,6 +511,7 @@ $scope.send = function () {
       user_session: user_session
   }
 
+  console.log($scope.messages);
   $scope.messages.push(newMessage);
   var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
   $('.chat-screen').scrollTop(scrollTop)
@@ -550,7 +528,7 @@ $scope.send = function () {
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages = [];
+  $scope.messages;
   $rootScope.user = {
     nick: 'partho',
     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'

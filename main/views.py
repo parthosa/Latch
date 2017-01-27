@@ -103,7 +103,10 @@ def nick_name(request):
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
 		if not nick in [x.nick_name for x in UserProfile.objects.all()]:	
 			user_p = UserProfile.objects.get(user = user)
 			user_p.nick_name = nick
@@ -119,7 +122,10 @@ def profile_pic(request):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	if 'getfromfb' in request.POST:
 		fbdp = request.POST['fbdp']
@@ -142,11 +148,14 @@ def interests(request):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = request.user)
 	if request.POST:
 		for interest in request.POST:
-			interest_object = Interest.objects.get(name = interest)
+			interest_object = Interest.objects.get(name = request.POST['interest'])
 			user_p.interests.add(interest_object)
 			user_p.save()
 
@@ -166,7 +175,10 @@ def get_location(request):
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
 		lat = request.POST['lat']
 		longitude = request.POST['longitude']
 		user_p = UserProfile.objects.get(user = user)
@@ -184,7 +196,10 @@ def add_to_chatroom(request):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	lat = user_p.lat #test case
 	longitude = user_p.longitude #test case
@@ -218,7 +233,10 @@ def send_nearby(request):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	locality = user_p.locality
 	nearby_users = UserProfile.objects.filter(locality = locality)
@@ -238,7 +256,10 @@ def get_members_chatroom(request, room_name):
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = room_name)
 		if user_p in groups.members.all():
@@ -255,7 +276,10 @@ def go_anonymous(request):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	if user_p.anonymous == True:
 		response = {'status': 0, 'message': 'You are already anonymous'}
@@ -284,7 +308,10 @@ def get_chatroom(request, group_name):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	messages = reversed(Message.objects.filter(group = group_name).order_by('-timestamp'))
 	user_group = User_group(user = user_p, group = group_name)
@@ -299,18 +326,21 @@ def get_chatroom(request, group_name):
 def node_api_message_group(request):
 	try:
         #Get User from sessionid
-	        post_string = request.POST['key']
-	        post_item_list = post_string.split(',')
-		session_key = post_item_list[1]
+	        # post_string = request.POST['key']
+	        # post_item_list = post_string.split(',')
+		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
         #Create message
 
 		user_p = UserProfile.objects.get(user = user)
-		group = Group.objects.get(name = post_item_list[3])
-		message_create = Message.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now, msg_id = post_item_list[5])
- 		message = Message.objects.get(msg_id = post_item_list[5])
+		group = Group.objects.get(name = request.POST['group_name'])
+		message_create = Message.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now, msg_id = request.POST['msg_id'])
+ 		message = Message.objects.get(msg_id = post_item_list['msg_id'])
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -325,18 +355,26 @@ def node_api_message_group(request):
 def node_api_message_user(request):
 	try:
         #Get User from sessionid
-        post_string = request.POST['key']
-        post_item_list = post_string.split(',')
-		session_key = post_item_list[1]
+		# post_string = request.POST['key']
+		# post_item_list = post_string.split(',')
+		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
         #Create message
 
 		user_p = UserProfile.objects.get(user = user)
-		group = Indi_group.objects.get(name = post_item_list[3])
-		message_create = Indi_msg.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now, msg_id = post_item_list[5])
- 		message = Indi_msg.objects.get(msg_id = post_item_list[5])
+		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
+		try:
+			group = Indi_group.objects.get(user1 = user_p, user2 = user_c)
+		except ObjectDoesNotExist:
+			group = Indi_group.objects.get(user2 = user_p, user1 = user_c)
+
+		message_create = Indi_msg.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now, msg_id = request.POST['msg_id'])
+ 		message = Indi_msg.objects.get(msg_id = request.POST['msg_id'])
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -355,7 +393,10 @@ def user_groups(request):
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
 		groups = user_p.groups.all()
 		group_list = []
@@ -370,13 +411,23 @@ def user_users(request):
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
-		user = User.objects.get(pk=uid)
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
 		i_group1 = Indi_group.objects.filter(user1 = user_p)
+		print i_group1
 		i_group2 = Indi_group.objects.filter(user2 = user_p)
-		i_group = i_group1 + i_group2
+
+		# i_group = i_group1 + i_group2
 		user_list = []
-		for user in i_group:
+		for user in i_group1:
+			distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
+			json_data = json.loads(urlopen(distance_url))
+			distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
+			user_list.append({'nick': user.nick_name, 'pic': user.dp_url, 'distance': distance})
+		for user in i_group2:
 			distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
 			json_data = json.loads(urlopen(distance_url))
 			distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
@@ -389,7 +440,10 @@ def get_indi_chat(request):
 	session_key = request.POST['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
-	user = User.objects.get(pk=uid)
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	user_t = UserProfile.objects.get(nick_name = request.POST['nick_name'])
 	try:

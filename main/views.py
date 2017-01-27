@@ -296,7 +296,7 @@ def get_chatroom(request, group_name):
 	return JsonResponse(response)
 
 @csrf_exempt
-def node_api_message(request):
+def node_api_message_group(request):
 	try:
         #Get User from sessionid
         post_string = request.POST['key']
@@ -309,12 +309,39 @@ def node_api_message(request):
 
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = post_item_list[3])
-		message = Message.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now)
+		message_create = Message.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now, msg_id = post_item_list[5])
+ 		message = Message.objects.get(msg_id = post_item_list[5])
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
-		r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
+		# r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		# r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
+        
+		return HttpResponse("Everything worked :)")
+	except Exception, e:
+		return HttpResponseServerError(str(e))
+
+@csrf_exempt
+def node_api_message_user(request):
+	try:
+        #Get User from sessionid
+        post_string = request.POST['key']
+        post_item_list = post_string.split(',')
+		session_key = post_item_list[1]
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
+        #Create message
+
+		user_p = UserProfile.objects.get(user = user)
+		group = Indi_group.objects.get(name = post_item_list[3])
+		message_create = Indi_msg.objects.create(message = post_item_list[0], user = user, group = group, timestamp = datetime.now, msg_id = post_item_list[5])
+ 		message = Indi_msg.objects.get(msg_id = post_item_list[5])
+ 		group.message.add(message)
+		group.save()
+        #Once comment has been created post it to the chat channel
+		# r = redis.StrictRedis(host='localhost', port=6379, db=0)
+		# r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:

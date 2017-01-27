@@ -172,89 +172,67 @@ $rootScope.search = {
 
 .controller('LocationController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
+    var data=[];
+
+
+
   $scope.sendLoc;
-  $scope.locModal = {
-    lat:0,
-    lng:0,
-    nick:'Suvigya',
-    pic:'https://avatars3.githubusercontent.com/u/10223953',
-    distance: 7
-  };
+  $scope.locModal;
 
-
-      function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {
-            lat: 20.8912676,
-            lng: 73.7361989
-        },
-        zoom: 5,
-        zoomControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {
+        lat: 20.8912676,
+        lng: 73.7361989
+      },
+      zoom: 5,
+      zoomControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
     });
 
+    $rootScope.getCurrLoc = function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
 
-        $rootScope.getCurrLoc = function () {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-              var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            var marker = new google.maps.Marker({
-                position: pos
-            });
-            map.setCenter(pos);
-            marker.setMap(map);
-            map.setZoom(13);
+          var marker = new google.maps.Marker({
+            position: pos
+          });
+          map.setCenter(pos);
+          marker.setMap(map);
+          map.setZoom(13);
         }, function () {
           Materialize.toast('Please enable loaction services', 3000);
-      });
-        } else {
-            Materialize.toast('Please enable loaction services', 3000);
-        }
+        });
+      } else {
+        Materialize.toast('Please enable loaction services', 3000);
+      }
     }
 
     var markers = [];
-//    = locations.map(function (location, i) {
-//      var marker = new google.maps.Marker({
-//        position: location,
-//        label: labels[i % labels.length]
-//      });
-//      marker.setMap(map);
-//      google.maps.event.addListener(marker, "click", function (event) {
-//        console.log(this.position.lat());
-//        console.log(this.position.lng());
-//      });
-//      return marker;
-//    });
 
-    // Create marker
-    //        function genMarker(location) {
-    //          var marker = new new google.maps.Marker({
-    //                position: location,
-    //                label: lo
-    //            });
-    //        }
-
-    function CustomMarker(latlng, map, imageSrc) {
+    $rootScope.CustomMarker = function (latlng, map, imageSrc, nick, distance) {
+      this.nick = nick;
+      this.distance = distance;
       this.latlng_ = latlng;
       this.imageSrc = imageSrc;
       this.setMap(map);
       markers.push(this);
-  }
+    }
 
-  CustomMarker.prototype = new google.maps.OverlayView();
+    $rootScope.CustomMarker.prototype = new google.maps.OverlayView();
 
-  CustomMarker.prototype.draw = function () {
+    $rootScope.CustomMarker.prototype.draw = function () {
       // Check if the div has been created.
       var div = this.div_;
       if (!div) {
         // Create a overlay text DIV
         div = this.div_ = document.createElement('div');
-        // Create the DIV representing our CustomMarker
+        // Create the DIV representing our $rootScope.CustomMarker
         div.className = "customMarker"
 
         var me=this;
@@ -263,141 +241,109 @@ $rootScope.search = {
         div.appendChild(img);
         google.maps.event.addDomListener(div, "click", function (event) {
           google.maps.event.trigger(me, "click");
-
           console.log(me.latlng_.lat(), me.latlng_.lng());
           $('.modal').modal();
+          $scope.locModal = {
+            lat:me.latlng_.lat(),
+    lng:me.latlng_.lng(),
+    nick:me.nick,
+    pic:me.imageSrc,
+    distance: me.distance
+          }
+          console.log($scope.locModal);
+          $scope.$apply();
           $('.modal').modal('open');
         });
 
         // Then add the overlay to the DOM
         var panes = this.getPanes();
         panes.overlayImage.appendChild(div);
-    }
+      }
 
       // Position the overlay 
       var point = this.getProjection().fromLatLngToDivPixel(this.latlng_);
       if (point) {
         div.style.left = point.x + 'px';
         div.style.top = point.y + 'px';
-    }
-};
+      }
+    };
 
-CustomMarker.prototype.remove = function () {
+    $rootScope.CustomMarker.prototype.remove = function () {
       // Check if the overlay was on the map and needs to be removed.
       if (this.div_) {
         this.div_.parentNode.removeChild(this.div_);
         this.div_ = null;
-
       }
     };
 
-    CustomMarker.prototype.getPosition = function () {
+    $rootScope.CustomMarker.prototype.getPosition = function () {
       return this.latlng_;
     };
 
-    var data = [{
-      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-      pos: [28.365, 75.57],
-      distance: 5,
-      nick: 'bug'
-    },{
-      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-      pos: [28.37, 75.58],
-      distance: 5,
-      nick: 'bug'
-    },{
-      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-      pos: [28.36, 75.58],
-      distance: 5,
-      nick: 'bug'
-    },{
-      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-      pos: [28.39, 75.58],
-      distance: 5,
-      nick: 'bug'
-    }]
+    // var data = [{
+    //   profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+    //   pos: [28.365, 75.57],
+    //   distance: 5,
+    //   nick: 'bug'
+    // },{
+    //   profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+    //   pos: [28.37, 75.58],
+    //   distance: 5,
+    //   nick: 'bug'
+    // },{
+    //   profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+    //   pos: [28.36, 75.58],
+    //   distance: 5,
+    //   nick: 'bug'
+    // },{
+    //   profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+    //   pos: [28.39, 75.58],
+    //   distance: 5,
+    //   nick: 'bug'
+    // }]
 
-    for (var i = 0; i < data.length; i++) {
-      new CustomMarker(new google.maps.LatLng(data[i].pos[0], data[i].pos[1]), map, data[i].profileImage)
-    }
-};
-
-CustomMarker.prototype.getPosition = function () {
-  return this.latlng_;
-};
-
-var data = [{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.365, 75.57],
-  kmsAway: 5,
-  nick: 'bug'
-},{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.37, 75.58],
-  kmsAway: 5,
-  nick: 'bug'
-},{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.36, 75.58],
-  kmsAway: 5,
-  nick: 'bug'
-},{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.39, 75.58],
-  kmsAway: 5,
-  nick: 'bug'
-}]
-
-for (var i = 0; i < data.length; i++) {
-  new CustomMarker(new google.maps.LatLng(data[i].pos[0], data[i].pos[1]), map, data[i].profileImage)
-}
-
+   
     // Add a marker clusterer to manage the markers.
     var markerCluster = new MarkerClusterer(map, markers, {
       imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-  });
+    });
 
     $rootScope.getCurrLoc();
     
 
+  }
+
+  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 
-var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-//  var locations = [{lat:28.36, lng: 75.58}];
-//  var locations = [{
-//        lat: 28.38,
-//        lng: 75.57
-//      }, {
-//        lat: 28.37,
-//        lng: 75.58
-//      }, {
-//        lat: 28.36,
-//        lng: 75.58
-//      }, {
-//        lat: 28.39,
-//        lng: 75.58
-//  }];
+  initMap();
 
-var sampleLocData = [
-{
-  position: new google.maps.LatLng(28.365, 75.57),
-  pic: 'https://avatars3.githubusercontent.com/u/10223953',
-}
-]
 
-initMap();
-
-function sendLoc(lat,long){
-    $.ajax({
-        method:'POST',
-        url:baseUrl+'/main/user/location',
-        data:data,
-        function(response){
+  $.ajax({
+    method:'POST',
+    url:baseUrl+'/main/user/get_nearby/',
+    data:{
+        'session_key':window.localStorage.getItem('user_session')
+    },
+    success:function(response){
+        if(response.status==1){
+            data=response.nearby_users;
+            for (var i = 0; i < data.length; i++) {
+                console.log(data[i],$rootScope.CustomMarker);
+              new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, data[i].pic, data[i].nick, data[i].distance)
+            }
 
         }
 
-    })
-}
+        else
+            Materialize.toast('Cannot Fetch Nearby Users',1000)
+    },
+    error:function(){
+            Materialize.toast('Cannot Fetch Nearby Users',1000)
+
+    }
+ })
+
 
     $scope.redirect = function (el) {
       console.log(chatData);
@@ -412,9 +358,6 @@ function sendLoc(lat,long){
     
 }])
 
-.controller('HeaderSmallController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-  // $scope.title = 'Hello';
-}])
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
   $scope.chats = [{
@@ -458,7 +401,6 @@ $scope.redirect = function (el) {
 }
 
 }])
-
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
   $scope.groups = [{
@@ -557,7 +499,7 @@ var user_session = window.localStorage.getItem('user_session');
 
 $.ajax({
     method: 'POST',
-    url: 'http://localhost:8000/main/user/get_chat/',
+    url: baseUrl+'/main/user/get_chat/',
     data: {
       'nick': chatData.chatId,
   },
@@ -618,7 +560,7 @@ var user_session = window.localStorage.getItem('user_session');
 
 $.ajax({
     method: 'POST',
-    url: 'http://localhost:8000/main/user/get_group/chat/',
+    url: baseUrl+'/main/user/get_group/chat/',
     data: {
       'group_name': chatData.chatId,
   },

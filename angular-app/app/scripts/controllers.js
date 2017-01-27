@@ -173,18 +173,19 @@ angular.module('latchApp')
       }
     }
 
-    var markers = locations.map(function (location, i) {
-      var marker = new google.maps.Marker({
-        position: location,
-        label: labels[i % labels.length]
-      });
-      marker.setMap(map);
-      google.maps.event.addListener(marker, "click", function (event) {
-        console.log(this.position.lat());
-        console.log(this.position.lng());
-      });
-      return marker;
-    });
+    var markers = [];
+//    = locations.map(function (location, i) {
+//      var marker = new google.maps.Marker({
+//        position: location,
+//        label: labels[i % labels.length]
+//      });
+//      marker.setMap(map);
+//      google.maps.event.addListener(marker, "click", function (event) {
+//        console.log(this.position.lat());
+//        console.log(this.position.lng());
+//      });
+//      return marker;
+//    });
 
     // Create marker
     //        function genMarker(location) {
@@ -197,9 +198,8 @@ angular.module('latchApp')
     function CustomMarker(latlng, map, imageSrc) {
       this.latlng_ = latlng;
       this.imageSrc = imageSrc;
-      // Once the LatLng and text are set, add the overlay to the map.  This will
-      // trigger a call to panes_changed which should in turn call draw.
       this.setMap(map);
+      markers.push(this);
     }
 
     CustomMarker.prototype = new google.maps.OverlayView();
@@ -213,12 +213,13 @@ angular.module('latchApp')
         // Create the DIV representing our CustomMarker
         div.className = "customMarker"
 
-
+        var me=this;
         var img = document.createElement("img");
         img.src = this.imageSrc;
         div.appendChild(img);
         google.maps.event.addDomListener(div, "click", function (event) {
           google.maps.event.trigger(me, "click");
+          console.log(me.latlng_.lat(), me.latlng_.lng());
         });
 
         // Then add the overlay to the DOM
@@ -249,6 +250,23 @@ angular.module('latchApp')
     var data = [{
       profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
       pos: [28.365, 75.57],
+      kmsAway: 5,
+      nick: 'bug'
+    },{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.37, 75.58],
+      kmsAway: 5,
+      nick: 'bug'
+    },{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.36, 75.58],
+      kmsAway: 5,
+      nick: 'bug'
+    },{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.39, 75.58],
+      kmsAway: 5,
+      nick: 'bug'
     }]
 
     for (var i = 0; i < data.length; i++) {
@@ -265,7 +283,7 @@ angular.module('latchApp')
   }
 
   var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      var locations = [{lat:28.36, lng: 75.58}];
+//  var locations = [{lat:28.36, lng: 75.58}];
 //  var locations = [{
 //        lat: 28.38,
 //        lng: 75.57

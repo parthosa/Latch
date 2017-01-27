@@ -155,7 +155,7 @@ def interests(request):
 	user_p = UserProfile.objects.get(user = request.user)
 	if request.POST:
 		for interest in request.POST:
-			interest_object = Interest.objects.get(name = interest)
+			interest_object = Interest.objects.get(name = request.POST['interest'])
 			user_p.interests.add(interest_object)
 			user_p.save()
 

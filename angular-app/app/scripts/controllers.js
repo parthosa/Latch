@@ -181,74 +181,52 @@ $rootScope.search = {
     distance: 7
   };
 
-
-      function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {
-            lat: 20.8912676,
-            lng: 73.7361989
-        },
-        zoom: 5,
-        zoomControl: false,
-        streetViewControl: false,
-        fullscreenControl: false
+  function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {
+        lat: 20.8912676,
+        lng: 73.7361989
+      },
+      zoom: 5,
+      zoomControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
     });
 
+    $rootScope.getCurrLoc = function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
 
-        $rootScope.getCurrLoc = function () {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-              var pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-
-            var marker = new google.maps.Marker({
-                position: pos
-            });
-            map.setCenter(pos);
-            marker.setMap(map);
-            map.setZoom(13);
+          var marker = new google.maps.Marker({
+            position: pos
+          });
+          map.setCenter(pos);
+          marker.setMap(map);
+          map.setZoom(13);
         }, function () {
           Materialize.toast('Please enable loaction services', 3000);
-      });
-        } else {
-            Materialize.toast('Please enable loaction services', 3000);
-        }
+        });
+      } else {
+        Materialize.toast('Please enable loaction services', 3000);
+      }
     }
 
     var markers = [];
-//    = locations.map(function (location, i) {
-//      var marker = new google.maps.Marker({
-//        position: location,
-//        label: labels[i % labels.length]
-//      });
-//      marker.setMap(map);
-//      google.maps.event.addListener(marker, "click", function (event) {
-//        console.log(this.position.lat());
-//        console.log(this.position.lng());
-//      });
-//      return marker;
-//    });
-
-    // Create marker
-    //        function genMarker(location) {
-    //          var marker = new new google.maps.Marker({
-    //                position: location,
-    //                label: lo
-    //            });
-    //        }
 
     function CustomMarker(latlng, map, imageSrc) {
       this.latlng_ = latlng;
       this.imageSrc = imageSrc;
       this.setMap(map);
       markers.push(this);
-  }
+    }
 
-  CustomMarker.prototype = new google.maps.OverlayView();
+    CustomMarker.prototype = new google.maps.OverlayView();
 
-  CustomMarker.prototype.draw = function () {
+    CustomMarker.prototype.draw = function () {
       // Check if the div has been created.
       var div = this.div_;
       if (!div) {
@@ -263,7 +241,6 @@ $rootScope.search = {
         div.appendChild(img);
         google.maps.event.addDomListener(div, "click", function (event) {
           google.maps.event.trigger(me, "click");
-
           console.log(me.latlng_.lat(), me.latlng_.lng());
           $('.modal').modal();
           $('.modal').modal('open');
@@ -272,22 +249,21 @@ $rootScope.search = {
         // Then add the overlay to the DOM
         var panes = this.getPanes();
         panes.overlayImage.appendChild(div);
-    }
+      }
 
       // Position the overlay 
       var point = this.getProjection().fromLatLngToDivPixel(this.latlng_);
       if (point) {
         div.style.left = point.x + 'px';
         div.style.top = point.y + 'px';
-    }
-};
+      }
+    };
 
-CustomMarker.prototype.remove = function () {
+    CustomMarker.prototype.remove = function () {
       // Check if the overlay was on the map and needs to be removed.
       if (this.div_) {
         this.div_.parentNode.removeChild(this.div_);
         this.div_ = null;
-
       }
     };
 
@@ -320,84 +296,27 @@ CustomMarker.prototype.remove = function () {
     for (var i = 0; i < data.length; i++) {
       new CustomMarker(new google.maps.LatLng(data[i].pos[0], data[i].pos[1]), map, data[i].profileImage)
     }
-};
-
-CustomMarker.prototype.getPosition = function () {
-  return this.latlng_;
-};
-
-var data = [{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.365, 75.57],
-  kmsAway: 5,
-  nick: 'bug'
-},{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.37, 75.58],
-  kmsAway: 5,
-  nick: 'bug'
-},{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.36, 75.58],
-  kmsAway: 5,
-  nick: 'bug'
-},{
-  profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
-  pos: [28.39, 75.58],
-  kmsAway: 5,
-  nick: 'bug'
-}]
-
-for (var i = 0; i < data.length; i++) {
-  new CustomMarker(new google.maps.LatLng(data[i].pos[0], data[i].pos[1]), map, data[i].profileImage)
-}
 
     // Add a marker clusterer to manage the markers.
     var markerCluster = new MarkerClusterer(map, markers, {
       imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-  });
+    });
 
     $rootScope.getCurrLoc();
     
 
-}
+  }
 
-var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-//  var locations = [{lat:28.36, lng: 75.58}];
-//  var locations = [{
-//        lat: 28.38,
-//        lng: 75.57
-//      }, {
-//        lat: 28.37,
-//        lng: 75.58
-//      }, {
-//        lat: 28.36,
-//        lng: 75.58
-//      }, {
-//        lat: 28.39,
-//        lng: 75.58
-//  }];
+  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-var sampleLocData = [
-{
-  position: new google.maps.LatLng(28.365, 75.57),
-  pic: 'https://avatars3.githubusercontent.com/u/10223953',
-}
-]
+  var sampleLocData = [
+    {
+      position: new google.maps.LatLng(28.365, 75.57),
+      pic: 'https://avatars3.githubusercontent.com/u/10223953',
+    }
+  ]
 
-initMap();
-
-function sendLoc(lat,long){
-    $.ajax({
-        method:'POST',
-        url:baseUrl+'/main/user/location',
-        data:data,
-        function(response){
-
-        }
-
-    })
-}
+  initMap();
 
     $scope.redirect = function (el) {
       console.log(chatData);
@@ -412,52 +331,6 @@ function sendLoc(lat,long){
     
 }])
 
-.controller('HeaderSmallController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-  // $scope.title = 'Hello';
-}])
-
-.controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.chats = [{
-    nick: 'Partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-    location: 'Pilani'
-
-}, {
-    nick: 'amritanshu',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-    location: 'Pilani'
-
-}, {
-    nick: 'Partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-    location: 'Pilani'
-
-}];
-
-$.ajax({
-    method: 'POST',
-    url: baseUrl + '/main/user/get_chat_list/',
-    data: {
-      session_key: window.localStorage.getItem('user_session')
-  },
-  success: function (response) {
-      $scope.chats = response.peers;
-  },
-  error: function (response) {
-      Materialize.toast('Could Not Fetch Chat List', 1000);
-  }
-})
-
-$scope.redirect = function (el) {
-    chatData.chatId = el.chat.nick;
-    chatData.chatUrl = '/users';
-    $state.go('app.message');
-    $rootScope.title = el.chat.nick;
-    $rootScope.chatPic = el.chat.pic;
-    //            console.log($rootScope.title);
-}
-
-}])
 
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {

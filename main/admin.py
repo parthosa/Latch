@@ -4,5 +4,8 @@ admin.site.register(UserProfile)
 admin.site.register(Interest)
 admin.site.register(Group)
 admin.site.register(Message)
+admin.site.register(Indi_group)
+admin.site.register(Indi_msg)
+admin.site.register(Group_user)
 
 # Register your models here.

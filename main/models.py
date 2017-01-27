@@ -32,6 +32,8 @@ class Group(models.Model):
 	interest = models.ForeignKey('Interest', null = True, related_name = 'group_interest')
 	members = models.ManyToManyField('UserProfile', related_name = 'members' ,null = True)
 	name = models.SlugField(max_length = 150, null = True)
+	pic = models.ImageField(upload_to = 'dps', null = True)
+	pic_url = models.SlugField(max_length = 500, null = True)
 
 	def save(self, *args, **kwargs):
 		self.name = self.locality + '_' + self.interest.name
@@ -50,8 +52,8 @@ class Indi_group(models.Model):
 		self.name = self.user1.nick_name+'_'+self.user2.nick_name
 		super(Indi_group, self).save(*args, **kwargs)
 
-		def __unicode__(self):
-			return self.name
+	def __unicode__(self):
+		return self.name
 
 class Indi_msg(models.Model):
 	group = models.ForeignKey('Indi_group', related_name = 'message_indi_group')

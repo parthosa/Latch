@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
     
     //Client is sending message through socket.io
     socket.on('send_message', function (data) {
-        // message_split=message.split(',');
+        // message_split=data.split(',');
         // console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
@@ -115,7 +115,7 @@ io.sockets.on('connection', function (socket) {
             if (!error && response.statusCode == 200) {
                 // Print out the response body
                 console.log(body)
-                socket.emit('response', message_split[5])
+                // socket.emit('response', message_split[5])
             }
             console.log(body);
         });
@@ -123,7 +123,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('send_message_indi', function (message) {
-        message_split=message.split(',');
+        message_split=data.split(',');
         console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);

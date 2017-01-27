@@ -53,7 +53,12 @@
         var msg = entry_el.attr('value');
         if(msg){
           console.log(msg);
-           socket.emit('send_message', msg+','+sessionid+','+csrftoken);
+          data ={
+            message:msg,
+            user_sesion:sessionid,
+            csrftoken:csrftoken
+          }
+           socket.emit('send_message',data);
            //, function(data){
                 // console.log(data);
            // });

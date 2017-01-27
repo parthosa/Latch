@@ -3,6 +3,8 @@
 var globalVar;
 var baseUrl = 'http://localhost:8001';
 var socket = io.connect('localhost', {port: 4000});
+var map;
+
 angular.module('latchApp')
 
     .controller('MainController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
@@ -15,7 +17,7 @@ angular.module('latchApp')
                 return false;
         }
         
-        
+        $(".button-collapse").sideNav();
 
         $rootScope.search = {
           visible: false,
@@ -128,9 +130,11 @@ angular.module('latchApp')
 }])
 
 .controller('LocationController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+  
+    $scope.sendLoc;
 
     function initMap() {
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
             center: {
                 lat: 20.8912676,
                 lng: 73.7361989
@@ -164,11 +168,24 @@ angular.module('latchApp')
         }
 
         var markers = locations.map(function(location, i) {
-            return new google.maps.Marker({
+            var marker = new google.maps.Marker({
                 position: location,
                 label: labels[i % labels.length]
             });
+          marker.setMap(map);
+          google.maps.event.addListener(marker, "click", function (event) {
+              $scope.sendLoc = this.position;
+            return marker;
+      });
         });
+      
+        // Create marker
+        function genMarker(location) {
+          var marker = new new google.maps.Marker({
+                position: location,
+                label: lo
+            });
+        }
 
         // Add a marker clusterer to manage the markers.
         var markerCluster = new MarkerClusterer(map, markers, {
@@ -180,7 +197,15 @@ angular.module('latchApp')
     }
 
     var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var locations = [{lat: 20.38, lng: 75.57 }, {lat: 21.38, lng: 75.57 }, {lat: 22.38, lng: 75.57 }, {lat: 23.38, lng: 75.57 }, {lat: 24.38, lng: 75.57 }, {lat: 25.38, lng: 75.57 }, {lat: 26.38, lng: 75.57 }, {lat: 19.38, lng: 75.57 }, {lat: 18.38, lng: 75.57 }, {lat: 17.38, lng: 75.57 }, {lat: 16.38, lng: 75.57 }, {lat: 15.38, lng: 75.57 }, {lat: 27.38, lng: 75.57 }, {lat: 28.38, lng: 75.57 }, {lat: 29.38, lng: 75.57 }, {lat: 14.38, lng: 75.57 }, {lat: 30.38, lng: 75.57 }, {lat: 31.38, lng: 75.57 }, {lat: 13.38, lng: 75.57 }, {lat: 12.38, lng: 75.57 }, {lat: 11.38, lng: 75.57 }, {lat: 31.38, lng: 75.57 }, {lat: 10.38, lng: 75.57 }];
+//    var locations = [{lat:28.36, lng: 75.58}];
+    var locations = [{lat: 28.38, lng: 75.57 }, {lat: 28.37, lng: 75.58 }, {lat: 28.36, lng: 75.58 }, {lat: 28.39, lng: 75.58 }];
+  
+  var sampleLocData = [
+    {
+      position: new google.maps.LatLng(28.365, 75.57),
+      pic: 'https://avatars3.githubusercontent.com/u/10223953',
+    }
+  ]
     
   initMap();
     
@@ -304,13 +329,11 @@ angular.module('latchApp')
     })
     $scope.messages = [{
         nick: 'partho',
-        pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
         message: 'hello world',
         time: '15:30pm',
         msg_id: 'p314'
     }, {
         nick: 'pragati',
-        pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
         message: 'bol world',
         time: '18:30pm',
         msg_id: 'u232'
@@ -332,7 +355,6 @@ angular.module('latchApp')
             message: $scope.newMessageText,
             chat_id: '',
             nick: $rootScope.user.nick,
-            pic: $rootScope.user.pic,
             time: time,
             sent: false,
             msg_id: uuid.v4(),

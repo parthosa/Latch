@@ -25,7 +25,7 @@ def social_login(request):
 			user = User.objects.get(username = fbid)
 			user_login = authenticate(username = fbid, password = fbid)
 			login(request, user_login)
-			response = {'status': 1, 'message': 'Login Successful'}
+			response = {'status': 1, 'message': 'Login Successful', 'session_key': request.session.session_key}
 			return JsonResponse(response)
 		except:
 			user = User.objects.create_user(username = fbid, password = fbid)
@@ -37,7 +37,7 @@ def social_login(request):
 			member.save()
 			user_login = authenticate(username = fbid, password = fbid)
 			login(request, user_login)
-			return JsonResponse({'status': 2, 'message': 'You will be redirected to where we can know you better! :D'})
+			return JsonResponse({'status': 2, 'message': 'You will be redirected to where we can know you better! :D', 'session_key': request.session.session_key})
 
 @csrf_exempt
 def Register(request):
@@ -67,7 +67,7 @@ def Register(request):
 					member.name = name
 					member.user = user
 					member.save()
-					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D'})
+					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key})
 			else:
 				user = User.objects.create_user(username = contact, password = password)
 				user.save()
@@ -77,7 +77,7 @@ def Register(request):
 				member.save()
 				user_login = authenticate(username = contact, password = password)
 				login(request, user_login)
-				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','user_session': request.session.session_key})
+				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Your password did not match'})
 
@@ -90,9 +90,10 @@ def login_user(request):
 		user = authenticate(username = contact, password = password)
 
 		if user:
+			user_p = UserProfile.objects.get(user = user)
 			login(request,user)
 			print request.session.session_key
-			return JsonResponse({'status':1, 'message': 'Successfully logged in', 'user_session': request.session.session_key})
+			return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url})
 			
 		else:
 			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
@@ -100,6 +101,7 @@ def login_user(request):
 def nick_name(request):
 	if request.POST:
 		nick = request.POST['nick']
+		print nick
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
@@ -107,13 +109,16 @@ def nick_name(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+
+		print [x.nick_name for x in UserProfile.objects.all()]
 		if nick in [x.nick_name for x in UserProfile.objects.all()]:	
+			print 1
+			response = {'status': 0, 'message': 'This nick name is already registered. Kindly come up with something else.'}
+		else:
 			user_p = UserProfile.objects.get(user = user)
 			user_p.nick_name = nick
 			user_p.save()
 			response = {'status': 1, 'message': 'Nick name was successfully saved'}
-		else:
-			response = {'status': 0, 'message': 'This nick name is already registered. Kindly come up with something else.'}
 
 		return JsonResponse(response)
 
@@ -145,17 +150,19 @@ def logout_user(request):
 
 @csrf_exempt
 def interests(request):
-	session_key = request.POST['session_key']
-	session = Session.objects.get(session_key = session_key)
-	uid = session.get_decoded().get('_auth_user_id')
-	try:
-		user = User.objects.get(pk=uid)
-	except ObjectDoesNotExist:
-		response = {'status':0, 'message':'Kindly login first'}
-	user_p = UserProfile.objects.get(user = request.user)
 	if request.POST:
-		for interest in request.POST:
-			interest_object = Interest.objects.get(name = request.POST['interest'])
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		interest_list = request.POST['interest'].split(',')
+		for interest in interest_list[:-1]:
+			print interest
+			interest_object = Interest.objects.get(name = interest)
 			user_p.interests.add(interest_object)
 			user_p.save()
 
@@ -185,7 +192,7 @@ def get_location(request):
 		user_p.lat = lat
 		user_p.longitude = longitude
 		location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
-		json_data = json.loads(urlopen(location_url))
+		json_data = json.load(urlopen(location_url))
 		locality = json_data['resourceSets'][0]['resources'][0]['address']['locality']
 		user_p.locality = locality
 		user_p.save()
@@ -204,7 +211,7 @@ def add_to_chatroom(request):
 	lat = user_p.lat #test case
 	longitude = user_p.longitude #test case
 	location_url = '''http://dev.virtualearth.net/REST/v1/Locations/%s,%s?key=Ai8hP_n0kTIQevn9nbLOFcKSqVHEicYiCfB81mPR_iWgDwjIdAIa7JOBktWjjmC3''' % (lat, longitude)
-	json_data = json.loads(urlopen(location_url))
+	json_data = json.load(urlopen(location_url))
 	locality = json_data['resourceSets'][0]['resources'][0]['address']['locality']
 
 	groups = []
@@ -215,18 +222,20 @@ def add_to_chatroom(request):
 			user_p.groups.add(user_group)
 			user_group.save()
 			user_p.save()
-			Group_user.objects.create(user = user_p, group = user_group, time_joined = datetime.now)
+			Group_user.objects.create(user = user_p, group = user_group)
 			# groups.append(user_group.name)
 		except ObjectDoesNotExist:
 			user_group = Group.objects.create(locality = locality, interest = interest)
-			user_group.members.add(user_p)
-			user_p.groups.add(user_group)
-			user_group.save()
+			user_group_g = Group.objects.get(locality = locality, interest = interest)
+			user_group_g.members.add(user_p)
+			user_p.groups.add(user_group_g)
+			user_group_g.save()
 			user_p.save()
-			Group_user.objects.create(user = user_p, group = user_group, time_joined = datetime.now)
+			Group_user.objects.create(user = user_p, group = user_group_g)
 			# groups.append(user_group.name)
 
-	response = {'status': 1, 'message': 'You have been added to the following groups', 'groups': groups}
+	response = {'status': 1, 'message': 'You have been added to the following groups'}
+	return JsonResponse(response)
 
 @csrf_exempt
 def send_nearby(request):
@@ -242,11 +251,11 @@ def send_nearby(request):
 	nearby_users = UserProfile.objects.filter(locality = locality)
 	nearby_list = []
 	for user in nearby_users:
-		distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
-		json_data = json.loads(urlopen(distance_url))
-		b_distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
-		nearby_list.append({'nick': user.nick_name, 'distance': 1.60934*b_distance})
-	nearby_users = sorted(nearby_list, itemgetter('distance'))
+		distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
+		json_data = json.load(urlopen(distance_url))
+		b_distance = json_data['rows'][0]['elements'][0]['distance']['text']
+		nearby_list.append({'nick': user.nick_name, 'distance': b_distance, 'lat': user.lat, 'longitude': user.longitude, 'pic': user.dp_url})
+	nearby_users = nearby_list#sorted(nearby_list, itemgetter('distance'))
 
 	return JsonResponse({'status': 1, 'nearby_users': nearby_users})
 
@@ -270,6 +279,27 @@ def get_members_chatroom(request, room_name):
 			response = {'status': 0, 'message': 'You are not allowed to view members of this group'}
 
 		return JsonResponse(response)
+
+@csrf_exempt
+def start_chat_indi(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
+		try:
+			gr = Indi_group.objects.get(user1 = user_p, user2 = user_c)
+		except ObjectDoesNotExist:
+			try:
+				gr = Indi_group.objects.get(user2 = user_p, user1 = user_c)
+			except ObjectDoesNotExist:
+				Indi_group.objects.create(user1 = user_p, user2 = user_c)
+		return JsonResponse({'status': 1, 'message': 'Done'})
 
 @csrf_exempt
 def go_anonymous(request):
@@ -367,14 +397,20 @@ def node_api_message_user(request):
         #Create message
 
 		user_p = UserProfile.objects.get(user = user)
-		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
+		user_c = UserProfile.objects.get(nick_name = request.POST['nick_name'])
 		try:
 			group = Indi_group.objects.get(user1 = user_p, user2 = user_c)
 		except ObjectDoesNotExist:
 			group = Indi_group.objects.get(user2 = user_p, user1 = user_c)
 
-		message_create = Indi_msg.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now, msg_id = request.POST['msg_id'])
+		print 1
+		try:
+			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'])
+		except Exception, e:
+			print e
+		print 2
  		message = Indi_msg.objects.get(msg_id = request.POST['msg_id'])
+ 		print message.message
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -383,7 +419,7 @@ def node_api_message_user(request):
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:
-		return HttpResponseServerError(str(e))
+		return e
 
 # zomato api key - 74c47b6322c6a40d4bef924bf238548c
 
@@ -401,7 +437,7 @@ def user_groups(request):
 		groups = user_p.groups.all()
 		group_list = []
 		for group in groups:
-			group_list.append({'group_name': group.name})
+			group_list.append({'group_name': group.name, 'pic': group.pic_url, 'members': group.members.all().count()})
 
 		return JsonResponse({'groups': group_list})
 
@@ -422,16 +458,30 @@ def user_users(request):
 
 		# i_group = i_group1 + i_group2
 		user_list = []
-		for user in i_group1:
-			distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
-			json_data = json.loads(urlopen(distance_url))
-			distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
-			user_list.append({'nick': user.nick_name, 'pic': user.dp_url, 'distance': distance})
-		for user in i_group2:
-			distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
-			json_data = json.loads(urlopen(distance_url))
-			distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
-			user_list.append({'nick': user.nick_name, 'pic': user.dp_url, 'distance': distance})
+		for group in i_group1:
+			try:
+				print group.user2.lat
+				print group.user2.longitude
+				print user_p.lat
+				print user_p.longitude
+				distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, group.user2.lat, group.user2.longitude)
+				json_data = json.load(urlopen(distance_url))
+				print json_data
+				distance = json_data['rows'][0]['elements'][0]['distance']['text']
+				print distance
+				user_list.append({'nick': group.user2.nick_name, 'pic': group.user2.dp_url, 'distance': distance})
+			except:
+				pass
+		for group in i_group2:
+			try:
+				distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, group.user1.lat, group.user1.longitude)
+				json_data = json.load(urlopen(distance_url))
+				distance = json_data['rows'][0]['elements'][0]['distance']['text']
+				print distance
+				user_list.append({'nick': group.user1.nick_name, 'pic': group.user1.dp_url, 'distance': distance})
+			except:
+				pass
+		print user_list
 
 		return JsonResponse({'peers': user_list})
 
@@ -445,13 +495,17 @@ def get_indi_chat(request):
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
-	user_t = UserProfile.objects.get(nick_name = request.POST['nick_name'])
+	user_t = UserProfile.objects.get(nick_name = request.POST['nick'])
 	try:
 		indi_chat = Indi_group.objects.get(user1 = user_p, user2 = user_t)
 	except ObjectDoesNotExist:
-		indi_chat = Indi_group.objects.get(user2 = user_p, user1 = user_t)
+		try:
+			indi_chat = Indi_group.objects.get(user2 = user_p, user1 = user_t)
+		except ObjectDoesNotExist:
+			Indi_group.objects.create(user1 = user_p, user2 = user_t)
+			indi_chat = Indi_group.objects.get(user1 = user_p, user2 = user_t)
 
-	messages = indi_chat.objects.message.all()
+	messages = indi_chat.message.all()
 	msg_list = []
 	for message in messages:
 		msg_list.append({'message': message.message, 'nick_name': message.user.nick_name, 'time': message.timestamp})

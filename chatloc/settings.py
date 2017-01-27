@@ -61,10 +61,16 @@ TEMPPLATE_CONTEXT_PROCESSORS = (
 )
 
 CORS_ORIGIN_WHITELIST = (
+<<<<<<< HEAD
+    'localhost:3018',
+    'localhost:3000',
+=======
     'localhost:3235',
+>>>>>>> d52ef0294bc78fd98d4b119d4a38e1a8813c37dc
 	'127.0.0.1:39693',
     'localhost:4000',
-    '172.17.45.101:3214'
+    'localhost:3223',
+    'localhost:3094'
  )
 
 TEMPLATES = [

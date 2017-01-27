@@ -64,6 +64,7 @@ sub.subscribe('chat');
 //     io.set('log level', 1);
 // });
 
+
 io.sockets.on('connection', function (socket) {
     
     //Grab message from Redis and send to client
@@ -72,7 +73,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     //Client is sending message through socket.io
-    socket.on('send_message', function (data) {
+    socket.on('send_message_group', function (data) {
         // message_split=data.split(',');
         // console.log(3);
         // console.log(sessionid);
@@ -98,7 +99,7 @@ io.sockets.on('connection', function (socket) {
             // host: 'localhost',
             // port: 8001,
             // path: '/main/node_api/',
-            url: 'http://localhost:8001/main/node_api/',
+            url: 'http://localhost:8001/main/user/chat/indi/',
             method: 'POST',
             form: data,
             headers: {
@@ -115,23 +116,25 @@ io.sockets.on('connection', function (socket) {
             if (!error && response.statusCode == 200) {
                 // Print out the response body
                 console.log(body)
-                // socket.emit('response', message_split[5])
+                socket.send('response_group', data)
             }
             console.log(body);
         });
 
     });
 
-    socket.on('send_message_indi', function (message) {
-        message_split=data.split(',');
+io.sockets.on('connection', function (socket) {
+    console.log(35);
+    socket.on('send_message_indi', function (data) {
+        // message_split=data.split(',');
         console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
-        values = querystring.stringify({
-            message
-            // csrftoken:message[2]// sessionid: message[1],
-            // sessionid: socket.handshake.cookie['sessionid'],
-        });
+        // values = querystring.stringify({
+        //     message
+        //     // csrftoken:message[2]// sessionid: message[1],
+        //     // sessionid: socket.handshake.cookie['sessionid'],
+        // });
         // console.log(values)
         // request({
             
@@ -148,14 +151,14 @@ io.sockets.on('connection', function (socket) {
             // host: 'localhost',
             // port: 8001,
             // path: '/main/node_api/',
-            url: 'http://localhost:8001/main/node_api/',
+            url: 'http://localhost:8001/main/user/chat/indi/',
             method: 'POST',
-            form: {'dsg': values},
+            form: data,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 // 'Content-Length': values.length,
                 // "X-CSRFToken": message[2],
-                'Cookie': 'csrftoken=' + message_split[2]
+                // 'Cookie': 'csrftoken=' + message_split[2]
             }
         }
         // console.log(6);
@@ -165,11 +168,11 @@ io.sockets.on('connection', function (socket) {
             if (!error && response.statusCode == 200) {
                 // Print out the response body
                 console.log(body)
-                socket.emit('response', message_split[5])
+                socket.emit('response_indi', data)
             }
             console.log(body);
         });
-
+});
 
         // var req=http.request(options, function(res){
         //     // res.setEncoding('utf8');

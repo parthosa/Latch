@@ -296,8 +296,7 @@ def get_chatroom(request, group_name):
 	return JsonResponse(response)
 
 @csrf_exempt
-def node_api_message(request ,group_name):
-	print 1
+def node_api_message(request):
 	try:
         #Get User from sessionid
 		session_key = request.POST['session_key']
@@ -307,7 +306,7 @@ def node_api_message(request ,group_name):
         #Create message
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = group_name)
-		message = Message.objects.create(message = request.POST['message'], user = request.user, group = group, timestamp = datetime.now)
+		message = Message.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now)
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -319,9 +318,68 @@ def node_api_message(request ,group_name):
 		return HttpResponseServerError(str(e))
 
 # zomato api key - 74c47b6322c6a40d4bef924bf238548c
+
+@csrf_exempt
+def user_groups(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
+		user_p = UserProfile.objects.get(user = user)
+		groups = user_p.groups.all()
+		group_list = []
+		for group in groups:
+			group_list.append({'group_name': group.name})
+
+		return JsonResponse({'groups': group_list})
+
+@csrf_exempt
+def user_users(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		user = User.objects.get(pk=uid)
+		user_p = UserProfile.objects.get(user = user)
+		i_group1 = Indi_group.objects.filter(user1 = user_p)
+		i_group2 = Indi_group.objects.filter(user2 = user_p)
+		i_group = i_group1 + i_group2
+		user_list = []
+		for user in i_group:
+			distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&estinations%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
+			json_data = json.loads(urlopen(distance_url))
+			distance = json_data['rows'][0]['elements'][0]['distance']['text'][:-3]
+			user_list.append({'nick': user.nick_name, 'pic': user.dp_url, 'distance': distance})
+
+		return JsonResponse({'peers': user_list})
+
+@csrf_exempt
+def get_indi_chat(request):
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	user = User.objects.get(pk=uid)
+	user_p = UserProfile.objects.get(user = user)
+	user_t = UserProfile.objects.get(nick_name = request.POST['nick_name'])
+	try:
+		indi_chat = Indi_group.objects.get(user1 = user_p, user2 = user_t)
+	except ObjectDoesNotExist:
+		indi_chat = Indi_group.objects.get(user2 = user_p, user1 = user_t)
+
+	messages = indi_chat.objects.message.all()
+	msg_list = []
+	for message in messages:
+		msg_list.append({'message': message.message, 'nick_name': message.user.nick_name, 'time': message.timestamp})
+
+	response = {'messages': msg_list}
+	return JsonResponse(response)
+
 @csrf_exempt
 def test_node_api(request):
+	print 1
 	if request.POST:
+		print request.POST
 		c = request.POST['comment']
 		print c
 		return JsonResponse({'message': c})

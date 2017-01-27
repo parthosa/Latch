@@ -44,7 +44,7 @@ class Indi_group(models.Model):
 	user1 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user1')
 	user2 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user2')
 	name = models.CharField(max_length = 50, null = True)
-	message = models.ManyToManyField('Message', related_name = 'indi_msgs')
+	message = models.ManyToManyField('Indi_msg', related_name = 'indi_msgs')
 
 	def save(self, *args, **kwargs):
 		self.name = self.user1.nick_name+'_'+self.user2.nick_name

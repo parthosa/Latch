@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "description": "chat bot framework",
   "dependencies": {
+    "cookie": "~0.1.0",
     "express": "4.10.2",
     "options": "0.0.6",
+    "querystring": "~0.2.0",
     "redis": "^2.6.5",
     "socket.io": "^0.9.17",
     "utils": "^0.3.1"

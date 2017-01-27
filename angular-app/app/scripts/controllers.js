@@ -215,6 +215,14 @@ angular.module('latchApp')
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
+    $scope.groups = [
+        {
+            nick:'Food',
+            id:'2324',
+
+        }
+    ]
+
 }])
 
 .controller('GroupInfoController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
@@ -298,10 +306,10 @@ angular.module('latchApp')
             pic: $rootScope.user.pic,
             time: time,
             sent: false,
-            msg_id: 'iu99'
+            msg_id: uuid.v4()
         }
 
-
+        console.log(newMessage);
         $scope.messages.push(newMessage);
         var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
         $('.chat-screen').scrollTop(scrollTop)

@@ -58,6 +58,7 @@ class Indi_msg(models.Model):
 	message = models.TextField()
 	user = models.ForeignKey('UserProfile', related_name = 'user_indi_msg')
 	timestamp = models.DateTimeField(default = datetime.now)
+	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):
 		return self.user.nick_name + self.message
@@ -67,6 +68,7 @@ class Message(models.Model):
 	message = models.TextField()
 	user = models.ForeignKey('UserProfile', related_name = 'user_message')
 	timestamp = models.DateTimeField(default = datetime.now)
+	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):
 		return self.user.nick_name + self.message

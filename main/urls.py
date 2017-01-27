@@ -17,7 +17,13 @@ urlpatterns = [
     url(r'^user/interests/$', views.interests, name='interests'),
     url(r'^room/(?P<room_name>[\w-]{,50})/get_members/$', views.get_members_chatroom, name='get_members_chatroom'),
     url(r'^user/anonymous/$', views.go_anonymous, name='anonymous'),
+<<<<<<< HEAD
+    url(r'^room/get/(?P<room_name>[\w-]{,50})/$', views.get_chatroom, name='get_chatroom'),
+    url(r'^room/message_send/$', views.node_api_message_group, name='node_api_message'),
+    url(r'^node_api/$', views.test_node_api, name='node_api_message'),
+=======
     url(r'^room/(?P<room_name>[\w-]{,50})/$', views.get_chatroom, name='get_chatroom'),
     # url(r'^room/(?P<group_name>[\w-]{,50})/message_send/$', views.node_api_message, name='node_api_message'),
     url(r'^node_api/$', views.test_node_api, name='node_api_message')
+>>>>>>> bb21b3c02f2a24b866d4ecc6eb7d4a4ac1588d5d
 ]

@@ -97,6 +97,25 @@ p.chat-message {
 }
 
 
+/*interests page */
+.input-field p {
+    width: 100%;
+    display: flex;
+    margin-top: 14px;
+    margin-bottom: 14px !important;
+    /* justify-content: flex-start; */
+}
+
+.interests .input-field label {
+    left: 0;
+    top: 0;
+    font-size: 1.2em;
+    color: #444;
+}
+
+.interests .input-field {
+    padding: 0 16px;
+}
 
 /*profile page*/
 .full-width{

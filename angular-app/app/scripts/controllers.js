@@ -1,7 +1,7 @@
 'use strict';
 
 var globalVar;
-var baseUrl = 'http://localhost:8001';
+var baseUrl = 'localhost:8001';
 var socket = io.connect('localhost', {port: 4000});
 angular.module('latchApp')
 
@@ -449,7 +449,34 @@ angular.module('latchApp')
 
 }])
 
+.controller('InterestsController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
+    $rootScope.title='Interests';
 
+    $scope.submit = function(){
+     
+        var data = {};
+        var checkBox=$('#interests-form input:checked');
+        for(var i=0;i<checkBox.length;i++){
+                data[checkBox[i].value]=checkBox[i].value;
+        }
+        
+        $.ajax({
+            method:'POST',
+            url:baseUrl + '/main/user/interests/',
+            data:data,
+            success:function(response){
+                if(response.status==1)
+                    $state.go('app.chats');
+                else
+                    Materialize.toast('Try Again',1000);
+            },
+            error:function(response){
+                    Materialize.toast('Try Again',1000);
+            }
+        })
+    }
+
+}])
 .controller('SidebarController', ['$rootScope', '$scope', '$state', function($rootScope, $scope, $state) {
 
 }])

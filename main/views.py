@@ -325,8 +325,8 @@ def node_api_message_group(request):
 def node_api_message_user(request):
 	try:
         #Get User from sessionid
-        post_string = request.POST['key']
-        post_item_list = post_string.split(',')
+		post_string = request.POST['key']
+		post_item_list = post_string.split(',')
 		session_key = post_item_list[1]
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')

@@ -489,6 +489,9 @@ $.ajax({
 
   },
   success: function (response) {
+      for(var i=0;i<response.messages.length;i++){
+        response.messages[i].nick=response.messages[i].nick_name;
+      }
       $scope.messages = response.messages;
   },
   error: function (response) {
@@ -536,7 +539,7 @@ socket.on('response_indi', function(data) {
         //Escape HTML characters
         // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
         var otherMessage = false;
-        for(var i=0;i<$scope.message.length;.i++){
+        for(var i=0;i<$scope.message.length;i++){
             if($scope.messages[i].msg_id==data.msg_id){
                 $scope.messages[i].sent=true;
                 otherMessage = true;

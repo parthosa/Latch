@@ -169,8 +169,17 @@ $rootScope.search = {
 
 }])
 
-    .controller('LocationController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
+.controller('LocationController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+
+  $scope.sendLoc;
+  $scope.locModal = {
+    lat:0,
+    lng:0,
+    nick:'Suvigya',
+    pic:'https://avatars3.githubusercontent.com/u/10223953',
+    distance: 7
+  };
 
 
       function initMap() {
@@ -254,8 +263,11 @@ $rootScope.search = {
         div.appendChild(img);
         google.maps.event.addDomListener(div, "click", function (event) {
           google.maps.event.trigger(me, "click");
-          sendLoc(me.latlng_.lat(), me.latlng_.lng());
-      });
+
+          console.log(me.latlng_.lat(), me.latlng_.lng());
+          $('.modal').modal();
+          $('.modal').modal('open');
+        });
 
         // Then add the overlay to the DOM
         var panes = this.getPanes();
@@ -275,6 +287,38 @@ CustomMarker.prototype.remove = function () {
       if (this.div_) {
         this.div_.parentNode.removeChild(this.div_);
         this.div_ = null;
+
+      }
+    };
+
+    CustomMarker.prototype.getPosition = function () {
+      return this.latlng_;
+    };
+
+    var data = [{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.365, 75.57],
+      distance: 5,
+      nick: 'bug'
+    },{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.37, 75.58],
+      distance: 5,
+      nick: 'bug'
+    },{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.36, 75.58],
+      distance: 5,
+      nick: 'bug'
+    },{
+      profileImage: 'https://avatars3.githubusercontent.com/u/10223953',
+      pos: [28.39, 75.58],
+      distance: 5,
+      nick: 'bug'
+    }]
+
+    for (var i = 0; i < data.length; i++) {
+      new CustomMarker(new google.maps.LatLng(data[i].pos[0], data[i].pos[1]), map, data[i].profileImage)
     }
 };
 
@@ -314,6 +358,7 @@ for (var i = 0; i < data.length; i++) {
   });
 
     $rootScope.getCurrLoc();
+    
 
 }
 
@@ -354,6 +399,17 @@ function sendLoc(lat,long){
     })
 }
 
+    $scope.redirect = function (el) {
+      console.log(chatData);
+    chatData.chatId = el.locModal.nick;
+    chatData.chatUrl = '/users';
+      $('#modal').modal('close');
+    $state.go('app.message');
+    $rootScope.title = el.locModal.nick;
+    $rootScope.chatPic = el.locModal.pic;
+    //            console.log($rootScope.title);
+  }
+    
 }])
 
 .controller('HeaderSmallController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {

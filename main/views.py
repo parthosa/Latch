@@ -107,7 +107,7 @@ def nick_name(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
-		if not nick in [x.nick_name for x in UserProfile.objects.all()]:	
+		if nick in [x.nick_name for x in UserProfile.objects.all()]:	
 			user_p = UserProfile.objects.get(user = user)
 			user_p.nick_name = nick
 			user_p.save()

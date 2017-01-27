@@ -360,7 +360,7 @@ for (var i = 0; i < data.length; i++) {
     $rootScope.getCurrLoc();
     
 
-}
+
 
 var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 //  var locations = [{lat:28.36, lng: 75.58}];

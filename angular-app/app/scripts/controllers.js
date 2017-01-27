@@ -2,6 +2,7 @@
 
 var globalVar;
 var baseUrl = 'http://localhost:8001';
+var socket = io.connect('localhost', {port: 4000});
 angular.module('latchApp')
 
     .controller('MainController', ['$rootScope', '$scope', '$state', '$location', function($rootScope, $scope, $state, $location) {
@@ -277,6 +278,14 @@ angular.module('latchApp')
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
     }
 
+    // socket 
+    var user_session = window.localStorage.getItem('user_session');
+
+    socket.on('connect', function(){
+    console.log("connect");
+    });
+
+
     // sending chat id to recieve messages
 
     $.ajax({
@@ -296,13 +305,13 @@ angular.module('latchApp')
     $scope.messages = [{
         nick: 'partho',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-        text: 'hello world',
+        message: 'hello world',
         time: '15:30pm',
         msg_id: 'p314'
     }, {
         nick: 'pragati',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-        text: 'bol world',
+        message: 'bol world',
         time: '18:30pm',
         msg_id: 'u232'
     }];
@@ -320,13 +329,14 @@ angular.module('latchApp')
 
         var newMessage = {
             user: $rootScope.user.nick,
-            text: $scope.newMessageText,
+            message: $scope.newMessageText,
             chat_id: '',
             nick: $rootScope.user.nick,
             pic: $rootScope.user.pic,
             time: time,
             sent: false,
-            msg_id: uuid.v4()
+            msg_id: uuid.v4(),
+            user_session:user_session
         }
 
         console.log(newMessage);
@@ -337,31 +347,31 @@ angular.module('latchApp')
         $scope.newMessageText = '';
 
 
+        socket.emit('send_message', newMessage);
 
 
-
-        $.ajax({
-            method: 'POST',
-            url: baseUrl +chatUrl+ '/main/user/message',
-            data: newMessage,
-            success: function(response) {
-                // var respMessage={
-                //  text:$scope.newMessageText,
-                //  nick: $rootScope.user.nick,
-                //  pic: $rootScope.user.pic,
-                //  time: time,
-                //  msg_id:'iu99',
-                //  sent:false
-                // }
-                var respMessage = response;
-                for (var i = $scope.messages.length - 1; i >= 0; i--)
-                    if ($scope.messages[i].msg_id == respMessage.msg_id)
-                        $scope.messages[i].sent = true
-            },
-            error: function(response) {
-                Materialize.toast(response.message, 1000);
-            }
-        })
+        // $.ajax({
+        //     method: 'POST',
+        //     url: baseUrl +chatUrl+ '/main/user/message',
+        //     data: newMessage,
+        //     success: function(response) {
+        //         // var respMessage={
+        //         //  text:$scope.newMessageText,
+        //         //  nick: $rootScope.user.nick,
+        //         //  pic: $rootScope.user.pic,
+        //         //  time: time,
+        //         //  msg_id:'iu99',
+        //         //  sent:false
+        //         // }
+        //         var respMessage = response;
+        //         for (var i = $scope.messages.length - 1; i >= 0; i--)
+        //             if ($scope.messages[i].msg_id == respMessage.msg_id)
+        //                 $scope.messages[i].sent = true
+        //     },
+        //     error: function(response) {
+        //         Materialize.toast(response.message, 1000);
+        //     }
+        // })
     }
 
 }])

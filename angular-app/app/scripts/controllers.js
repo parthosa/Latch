@@ -3,9 +3,10 @@
 var globalVar;
 
 var baseUrl = 'http://172.17.45.40:8001';
-var socket = io.connect('172.17.45.40', {
-  port: 4000
-});
+var socket = io();
+// var socket = io.connect('172.17.45.40', {
+//   port: 4000
+// });
 var map;
 
 angular.module('latchApp')

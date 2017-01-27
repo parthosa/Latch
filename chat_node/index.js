@@ -65,69 +65,68 @@ sub.subscribe('chat');
 // });
 
 
-io.sockets.on('connection', function (socket) {
-    
-    //Grab message from Redis and send to client
-    sub.on('message', function(channel, message){
-        socket.send(message);
-    });
-    
-    //Client is sending message through socket.io
-    socket.on('send_message_group', function (data) {
-        // message_split=data.split(',');
-        // console.log(3);
-        // console.log(sessionid);
-        // console.log(socket.handshake.cookie['sessionid']);
-        // values = querystring.stringify({
-        //     data
-        //     // csrftoken:message[2]// sessionid: message[1],
-        //     // sessionid: socket.handshake.cookie['sessionid'],
-        // });
-        // console.log(values)
-        // request({
-            
-        //     method:'POST',
-        //     headers: {
-        //         'Content-Type': 'application/x-www-form-urlencoded',
-        //         'Cookie': 'csrftoken=' + message[2]
-        //     },
-        // },function(res){
-        //     console.log('worked');
-        // });
-        // request.post('http://localhost:8001/main/node_api/',{name:1});
-        var options = {
-            // host: 'localhost',
-            // port: 8001,
-            // path: '/main/node_api/',
-            url: 'http://localhost:8001/main/user/chat/indi/',
-            method: 'POST',
-            form: data,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                // 'Content-Length': values.length,
-                // "X-CSRFToken": message[2],
-                // 'Cookie': 'csrftoken=' + message_split[2]
-            }
-        }
-        // console.log(6);
-        // var req = {}
-        // //Send message to Django server
-        request(options, function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-                // Print out the response body
-                console.log(body)
-                socket.send('response_group', data)
-            }
-            console.log(body);
-        });
+    // io.on('connection', function (socket) {
+        
+    //     //Grab message from Redis and send to client
+    //     sub.on('message', function(channel, message){
+    //         socket.send(message);
+    //     });
+        
+    //     //Client is sending message through socket.io
+    //     socket.on('send_message_group', function (data) {
+    //         // message_split=data.split(',');
+    //         // console.log(3);
+    //         // console.log(sessionid);
+    //         // console.log(socket.handshake.cookie['sessionid']);
+    //         // values = querystring.stringify({
+    //         //     data
+    //         //     // csrftoken:message[2]// sessionid: message[1],
+    //         //     // sessionid: socket.handshake.cookie['sessionid'],
+    //         // });
+    //         // console.log(values)
+    //         // request({
+                
+    //         //     method:'POST',
+    //         //     headers: {
+    //         //         'Content-Type': 'application/x-www-form-urlencoded',
+    //         //         'Cookie': 'csrftoken=' + message[2]
+    //         //     },
+    //         // },function(res){
+    //         //     console.log('worked');
+    //         // });
+    //         // request.post('http://localhost:8001/main/node_api/',{name:1});
+    //         var options = {
+    //             // host: 'localhost',
+    //             // port: 8001,
+    //             // path: '/main/node_api/',
+    //             url: 'http://localhost:8001/main/user/chat/indi/',
+    //             method: 'POST',
+    //             form: data,
+    //             headers: {
+    //                 'Content-Type': 'application/x-www-form-urlencoded',
+    //                 // 'Content-Length': values.length,
+    //                 // "X-CSRFToken": message[2],
+    //                 // 'Cookie': 'csrftoken=' + message_split[2]
+    //             }
+    //         }
+    //         // console.log(6);
+    //         // var req = {}
+    //         // //Send message to Django server
+    //         request(options, function (error, response, body) {
+    //             if (!error && response.statusCode == 200) {
+    //                 // Print out the response body
+    //                 console.log(body)
+    //                 socket.send('response_group', data)
+    //             }
+    //             console.log(body);
+    //         });
 
-    });
+    //     });
 
 io.sockets.on('connection', function (socket) {
     console.log(35);
     socket.on('send_message_indi', function (data) {
         // message_split=data.split(',');
-        console.log(3);
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
         // values = querystring.stringify({
@@ -167,8 +166,10 @@ io.sockets.on('connection', function (socket) {
         request(options, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 // Print out the response body
+                // io.emit('send_message_indi', data)
+                console.log(3);
                 console.log(body)
-                socket.emit('response_indi', data)
+                io.sockets.emit('send_message_indi', data)
             }
             console.log(body);
         });
@@ -193,7 +194,7 @@ io.sockets.on('connection', function (socket) {
         //     }
         // req.end();
     });
-});
+// });
 
 
 

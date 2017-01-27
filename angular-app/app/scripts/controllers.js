@@ -332,6 +332,48 @@ $rootScope.search = {
 }])
 
 
+.controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+  $scope.chats = [{
+    nick: 'Partho',
+    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
+    location: 'Pilani'
+
+}, {
+    nick: 'amritanshu',
+    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
+    location: 'Pilani'
+
+}, {
+    nick: 'Partho',
+    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
+    location: 'Pilani'
+
+}];
+
+$.ajax({
+    method: 'POST',
+    url: baseUrl + '/main/user/get_chat_list/',
+    data: {
+      session_key: window.localStorage.getItem('user_session')
+  },
+  success: function (response) {
+      $scope.chats = response.peers;
+  },
+  error: function (response) {
+      Materialize.toast('Could Not Fetch Chat List', 1000);
+  }
+})
+
+$scope.redirect = function (el) {
+    chatData.chatId = el.chat.nick;
+    chatData.chatUrl = '/users';
+    $state.go('app.message');
+    $rootScope.title = el.chat.nick;
+    $rootScope.chatPic = el.chat.pic;
+    //            console.log($rootScope.title);
+}
+
+}])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
   $scope.groups = [{
@@ -430,7 +472,7 @@ var user_session = window.localStorage.getItem('user_session');
 
 $.ajax({
     method: 'POST',
-    url: 'http://localhost:8000/main/user/get_chat/',
+    url: baseUrl+'/main/user/get_chat/',
     data: {
       'nick': chatData.chatId,
   },
@@ -491,7 +533,7 @@ var user_session = window.localStorage.getItem('user_session');
 
 $.ajax({
     method: 'POST',
-    url: 'http://localhost:8000/main/user/get_group/chat/',
+    url: baseUrl+'/main/user/get_group/chat/',
     data: {
       'group_name': chatData.chatId,
   },

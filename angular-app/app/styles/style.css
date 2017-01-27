@@ -115,7 +115,6 @@ p.chat-message {
 .profile-pic-wrap{
     float: none !important;
     height: 200px;
-    background: url('../images/batman.png');
     background-size:cover;
     background-repeat: no-repeat;
     background-position: center;

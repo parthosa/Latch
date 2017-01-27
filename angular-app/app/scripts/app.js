@@ -129,19 +129,32 @@ angular.module('latchApp', ['ui.router'])
                   templateUrl: 'views/chat_header.html',
               },
               'content@': {
-                  templateUrl: 'views/chat_screen.html'
+                  templateUrl: 'views/messages.html'
               }
           }
       })
 
-      .state('app.groups_info', {
-          url: 'groups_info',
+
+      .state('app.group_info', {
+          url: 'group_info',
           views: {
               'header@': {
                   templateUrl: 'views/chat_header.html',
               },
               'content@': {
-                  templateUrl: 'views/groups_info.html'
+                  templateUrl: 'views/group_info.html'
+              }
+          }
+      })
+
+     .state('app.group_message', {
+          url: 'group_message',
+          views: {
+              'header@': {
+                  templateUrl: 'views/group_chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/group_messages.html'
               }
           }
       })

@@ -498,7 +498,7 @@ $.ajax({
 
 
 $scope.newMessageText = '';
-
+ var newMessage;
 $scope.send = function () {
     if( $scope.newMessageText!=''){
     var time = new Date().toLocaleTimeString('en-US', {
@@ -507,7 +507,7 @@ $scope.send = function () {
       minute: 'numeric'
   });
 
-    var newMessage = {
+  newMessage = {
       message: $scope.newMessageText,
       nick:window.localStorage.getItem('nick'),
       nick_name: chatData.chatId,
@@ -525,11 +525,31 @@ $scope.send = function () {
       $scope.newMessageText = '';
 
 
-      socket.emit('send_message', newMessage);
+      socket.emit('send_message_indi', newMessage);
 
 
   }
 }
+
+socket.on('response_indi', function(data) {
+        // console.log(message)
+        //Escape HTML characters
+        // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+        var otherMessage = false;
+        for(var i=0;i<$scope.message.length;.i++){
+            if($scope.messages[i].msg_id==data.msg_id){
+                $scope.messages[i].sent=true;
+                otherMessage = true;
+            }
+
+        }
+        if(otherMessage)
+            $scope.messages.push(data);
+        // //Append message to the bottom of the list
+        // $('#comments').append('<li>' + data + '</li>');
+        // window.scrollBy(0, 10000000000);
+        // entry_el.focus();
+      });
 
 }])
 

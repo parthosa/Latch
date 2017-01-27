@@ -519,12 +519,12 @@ $scope.send = function () {
       nick:window.localStorage.getItem('nick'),
       nick_name: chatData.chatId,
       time: time,
-      sent: false,
+      // sent: false,
       msg_id: uuid.v4(),
       session_key:window.localStorage.getItem('session_key')
   }
 
-  $scope.messages.push(newMessage);
+  // $scope.messages.push(newMessage);
   console.log($scope.messages);
   var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
   $('.chat-screen').scrollTop(scrollTop)
@@ -542,17 +542,19 @@ socket.on('response_indi', function(data) {
         // console.log(message)
         //Escape HTML characters
         // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-        var otherMessage = false;
-        for(var i=0;i<$scope.messages.length;i++){
-            if($scope.messages[i].msg_id==data.msg_id){
-                $scope.messages[i].sent=true;
-                otherMessage = true;
-            }
-        }
 
-        if(otherMessage)
-            $scope.messages.push(data);
-            $scope.$apply();
+        // var otherMessage = false;
+        // for(var i=0;i<$scope.messages.length;i++){
+        //     if($scope.messages[i].msg_id==data.msg_id){
+        //         $scope.messages[i].sent=true;
+        //         otherMessage = true;
+        //     }
+
+        // }
+        // if(otherMessage)
+      $scope.messages.push(data);
+       $scope.$apply();
+        
         // //Append message to the bottom of the list
         // $('#comments').append('<li>' + data + '</li>');
         // window.scrollBy(0, 10000000000);

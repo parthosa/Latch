@@ -3,7 +3,7 @@
 	<div class="col s6" ng-repeat="group in groups | filter:search.query">
 		<div class="card" ng-click="redirect(this)">
 			<div class="card-content center-align">
-				<span class="card-title">{{group.nick}}</span>
+				<span class="card-title">{{group.group_name}}</span>
 				<p>
 				<img class="responsive-img" ng-src="{{group.pic}}">
 				</p>

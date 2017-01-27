@@ -53,6 +53,18 @@ angular.module('latchApp', ['ui.router'])
           }
 
       })
+       .state('app.interests', {
+          url: 'interests',
+          views: {
+              'header@': {
+                  templateUrl: 'views/chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/interests.html'
+              }
+          }
+
+      })
 
       .state('app.profile', {
           url: 'profile',

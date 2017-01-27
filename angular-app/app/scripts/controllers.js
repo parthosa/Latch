@@ -33,7 +33,7 @@ $rootScope.sendCurrLocNoMap = function(){
     var data = {
         lat:pos.lat,
         longitude:pos.lng,
-        session_key:window.localStorage.getItem('user_session')
+        session_key:window.localStorage.getItem('session_key')
     }
     $.ajax({
         method:'POST',
@@ -126,8 +126,13 @@ $rootScope.search = {
           data: $scope.user,
           success: function (response) {
             if (response.status == 1) {
+                 window.localStorage.setItem('nick',response.nick);
+                 window.localStorage.setItem('pic',response.pic);
+                 window.localStorage.setItem('session_key',response.session_key);
               $state.go('app.chats');
-              window.localStorage.setItem('user_session', response.user_session);
+              
+              
+              
           } else
           Materialize.toast(response.message, 1000)
 
@@ -148,7 +153,7 @@ $rootScope.search = {
 
       var data = {
         nick: $scope.user.nick,
-        session_key: window.localStorage.getItem('user_session')
+        session_key: window.localStorage.getItem('session_key')
     }
         $.ajax({
           method: 'POST',
@@ -156,6 +161,8 @@ $rootScope.search = {
           data: data,
           success: function (response) {
             if (response.status == 1){
+              window.localStorage.setItem('nick',data.nick);
+        
               var curLoc=$rootScope.sendCurrLocNoMap();
               console.log(curLoc);
               $state.go('app.interests');
@@ -323,14 +330,15 @@ $rootScope.search = {
     method:'POST',
     url:baseUrl+'/main/user/get_nearby/',
     data:{
-        'session_key':window.localStorage.getItem('user_session')
+        'session_key':window.localStorage.getItem('session_key')
     },
     success:function(response){
         if(response.status==1){
             data=response.nearby_users;
             for (var i = 0; i < data.length; i++) {
                 console.log(data[i],$rootScope.CustomMarker);
-              new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, data[i].pic, data[i].nick, data[i].distance)
+                if(data[i].nick!=window.localStorage.getItem('nick'))
+                      new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, data[i].pic, data[i].nick, data[i].distance)
             }
 
         }
@@ -367,7 +375,7 @@ $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_chat_list/',
     data: {
-      session_key: window.localStorage.getItem('user_session')
+      session_key: window.localStorage.getItem('session_key')
   },
   success: function (response) {
       $scope.chats = response.peers;
@@ -389,12 +397,12 @@ $scope.redirect = function (el) {
 }])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.groups ;
+  $scope.groups =[];
 $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_groups/',
     data: {
-      session_key: window.localStorage.getItem('user_session')
+      session_key:window.localStorage.getItem('session_key')
   },
   success: function (response) {
       $scope.groups = response.groups;
@@ -464,20 +472,20 @@ $scope.redirect = function (el) {
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
   $scope.messages =[];
-  $rootScope.user = {
-    nick: 'partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
-}
+//   $rootScope.user = {
+//     nick: 'partho',
+//     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
+// }
 
-var user_session = window.localStorage.getItem('user_session');
-
+$scope.user={};
+$scope.user.nick=window.localStorage.getItem('nick');
 
 $.ajax({
     method: 'POST',
     url: baseUrl+'/main/user/get/indi_chat/',
     data: {
       'nick': chatData.chatId,
-      'session_key':user_session
+      'session_key':window.localStorage.getItem('session_key')
 
   },
   success: function (response) {
@@ -492,27 +500,25 @@ $.ajax({
 $scope.newMessageText = '';
 
 $scope.send = function () {
+    if( $scope.newMessageText!=''){
     var time = new Date().toLocaleTimeString('en-US', {
       hour: 'numeric',
       hour12: true,
       minute: 'numeric'
   });
 
-
     var newMessage = {
-      user: $rootScope.user.nick,
       message: $scope.newMessageText,
-      chat_id: '',
-      nick: $rootScope.user.nick,
-      pic: $rootScope.user.pic,
+      nick:window.localStorage.getItem('nick'),
+      nick_name: chatData.chatId,
       time: time,
       sent: false,
       msg_id: uuid.v4(),
-      user_session: user_session
+      session_key:window.localStorage.getItem('session_key')
   }
 
-  console.log($scope.messages);
   $scope.messages.push(newMessage);
+  console.log($scope.messages);
   var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
   $('.chat-screen').scrollTop(scrollTop)
       //        console.log(scrollTop)
@@ -523,12 +529,13 @@ $scope.send = function () {
 
 
   }
+}
 
 }])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages;
+  $scope.messages = [];
   $rootScope.user = {
     nick: 'partho',
     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
@@ -597,7 +604,7 @@ $scope.send = function () {
         for(var i=0;i<checkBox.length;i++){
             data.interest+=checkBox[i].value+',';
         }
-        data['session_key']=window.localStorage.getItem('user_session')
+        data['session_key']=window.localStorage.getItem('session_key')
         $.ajax({
             method:'POST',
             url:baseUrl + '/main/user/interests/',
@@ -621,7 +628,7 @@ $scope.send = function () {
             method:'POST',
             url:baseUrl+'/main/user/add_chatroom/',
             data:{
-                'session_key':window.localStorage.getItem('user_session')
+                'session_key':window.localStorage.getItem('session_key')
             },
             success:function(response){
              if(response.status==1)

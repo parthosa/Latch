@@ -108,13 +108,17 @@ angular.module('latchApp')
 
     $scope.user = {};
     $scope.user.nick = 'parthosa';
+    var data = {
+        nick:$scope.user.nick,
+        session_key:window.localStorage.getItem('user_session')
+    }
 
     $scope.submit = function() {
 
         $.ajax({
             method: 'POST',
             url: baseUrl + '/main/user/nick/',
-            data: $scope.user,
+            data: data,
             success: function(response) {
                 if (response.status == 1)
                     $state.go('app.chats');
@@ -193,30 +197,37 @@ angular.module('latchApp')
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function($rootScope, $scope, $state, $location, chatData) {
     $scope.chats = [{
         nick: 'Partho',
-        id: '234',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-        last_message: 'hii',
-        time: '15:30pm'
+        location:'Pilani'
 
     }, {
         nick: 'amritanshu',
-        id: '341',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-        last_message: 'bol chut',
-        time: '05:30pm'
+       location:'Pilani'
 
     }, {
         nick: 'Partho',
-        id: '123',
         pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-        last_message: 'hii',
-        time: '15:30pm'
+        location:'Pilani'
 
     }];
   
+    $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/get_chat_list',
+        data:{
+            session_key:window.localStorage.getItem('user_session')
+        },
+        success:function(response){
+            $scope.chats = response.peers;
+        },
+        error:function(response){
+             Materialize.toast('Could Not Fetch Chat List', 1000);
+        }
+    })
 
     $scope.redirect = function(el) {
-        chatData.chatId = el.chat.id;
+        chatData.chatId = el.chat.nick;
         chatData.chatUrl = '/users';
         $location.url('/message');
         $rootScope.title = el.chat.nick;
@@ -244,9 +255,23 @@ angular.module('latchApp')
         pic: 'https://s-media-cache-ak0.pinimg.com/564x/28/83/d5/2883d56f655c6f2f262465069957d804.jpg',
         members: '8'
     }];
+
+    $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/get_groups',
+        data:{
+            session_key:window.localStorage.getItem('user_session')
+        },
+        success:function(response){
+            $scope.groups = response.groups;
+        },
+        error:function(response){
+             Materialize.toast('Could Not Fetch Groups List', 1000);
+        }
+    })
   
     $scope.redirect = function(el) {
-        chatData.chatId = el.group.id;
+        chatData.chatId = el.group.nick;
         chatData.chatUrl = '/groups';
         $location.url('/message');
         $rootScope.title = el.group.nick;

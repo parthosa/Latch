@@ -6,6 +6,8 @@ var baseUrl = 'http://172.17.45.40:8001';
 var socket = io.connect('172.17.45.40', {
   port: 4000
 });
+//console.log(io);
+//var socket = io();
 var map;
 
 angular.module('latchApp')
@@ -538,7 +540,7 @@ $scope.send = function () {
   }
 }
 
-socket.on('response_indi', function(data) {
+socket.on('send_message_indi', function(data) {
         // console.log(message)
         //Escape HTML characters
         // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");

@@ -6,7 +6,7 @@ var baseUrl = 'http://172.17.45.180:8001';
 var socket = io.connect('172.17.45.180', {
   port: 4000
 });
-var API_KEY = 'AIzaSyD1vavahTgsUfM8rCzLseEPCj5mzs9F6o0';
+var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 //console.log(io);
 //var socket = io();
 var map;
@@ -38,7 +38,7 @@ $rootScope.sendCurrLocNoMap = function(){
             method:'POST',
             url:baseUrl+'/main/user/location/',
             data:data,
-            success:function(resp){
+            success:function(response){
                 if(response.status == 1)
                     return response.location;
                 else
@@ -203,9 +203,6 @@ $rootScope.search = {
     });
 
     $rootScope.getCurrLoc = function () {
-
-
-       
           var pos =  $rootScope.sendCurrLocNoMap();
           var marker = new google.maps.Marker({
             position: pos
@@ -213,8 +210,6 @@ $rootScope.search = {
           map.setCenter(pos);
           marker.setMap(map);
           map.setZoom(13);
-        
-      
     }
 
     var markers = [];

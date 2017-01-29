@@ -2,8 +2,8 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.101:8001';
-var socket = io.connect('172.17.45.101', {
+var baseUrl = 'http://52.11.141.223/:8001';
+var socket = io.connect('52.11.141.223', {
   port: 4000
 });
 var API_KEY = 'AIzaSyD1vavahTgsUfM8rCzLseEPCj5mzs9F6o0';
@@ -25,33 +25,32 @@ angular.module('latchApp')
 
 
 $rootScope.sendCurrLocNoMap = function(){
-   $.ajax({
-    url:'https://www.googleapis.com/geolocation/v1/geolocate?key='+API_KEY,
-    method:'POST',
-    success:function(response){
-       var data = {
-        lat:response.location.lat,
-        longitude:response.location.lng,
+   var pos;
+   if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function (position) {
+       pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+   
+    var data = {
+        lat:pos.lat,
+        longitude:pos.lng,
         session_key:window.localStorage.getItem('session_key')
-       }
-        $.ajax({
-            method:'POST',
-            url:baseUrl+'/main/user/location/',
-            data:data,
-            success:function(resp){
-                if(response.status == 1)
-                    return response.location;
-                else
-                    Materialize.toast('Please Enable Location Services')
-            }
-        });
     }
-   });
-  
-   
-   
-    
-
+    $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/location/',
+        data:data,
+        success:function(response){
+            if(response.status == 1)
+                return pos;
+            else
+                Materialize.toast('Please Enable Location Services')
+        }
+    })
+     });
+}
 };
 
 $(".button-collapse").sideNav();
@@ -86,10 +85,7 @@ $rootScope.search = {
   //    }
 
   $scope.user = {};
-  // $scope.user.name = 'partho';
-  // $scope.user.contact = 'hell.partho@gmail.com';
-  // $scope.user.password = 'tech';
-  // $scope.user.confirm_password = 'tech';
+
 
   $scope.submit = function () {
     // $location.path('/chats');
@@ -119,8 +115,7 @@ $rootScope.search = {
       $rootScope.title = 'Login';
 
       $scope.user = {};
-      // $scope.user.contact = 'hell.partho@gmail.com';
-      // $scope.user.password = 'tech';
+
 
       $scope.submit = function () {
 
@@ -151,7 +146,7 @@ $rootScope.search = {
       $rootScope.title = 'Nick';
 
       $scope.user = {};
-      $scope.user.nick = 'parthosa';
+      // $scope.user.nick = 'parthosa';
 
     $scope.submit = function () {
 
@@ -202,19 +197,26 @@ $rootScope.search = {
       fullscreenControl: false
     });
 
-    $rootScope.getCurrLoc = function () {
+      $rootScope.getCurrLoc = function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          var pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
 
-
-       
-          var pos =  $rootScope.sendCurrLocNoMap();
           var marker = new google.maps.Marker({
             position: pos
           });
           map.setCenter(pos);
           marker.setMap(map);
           map.setZoom(13);
-        
-      
+        }, function () {
+          Materialize.toast('Please enable loaction services', 3000);
+        });
+      } else {
+        Materialize.toast('Please enable loaction services', 3000);
+      }
     }
 
     var markers = [];
@@ -425,21 +427,6 @@ $scope.redirect = function (el) {
 .controller('GroupInfoController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
-  $scope.members = [
-  {
-      nick: 'partho',
-      pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-      distance: 3400
-  }, {
-      nick: 'amritanshu',
-      pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-      distance: 3220
-  }, {
-      nick: 'suvigya',
-      pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-      distance: 3811
-  }
-  ]
 
   // $.ajax({
   //     method: 'POST',
@@ -471,10 +458,7 @@ $scope.redirect = function (el) {
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
   $scope.messages =[];
-//   $rootScope.user = {
-//     nick: 'partho',
-//     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
-// }
+
 
 $scope.user={};
 $scope.user.nick=window.localStorage.getItem('nick');
@@ -563,10 +547,7 @@ socket.on('send_message_indi', function(data) {
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
   $scope.messages = [];
-  $rootScope.user = {
-    nick: 'partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
-}
+
 
 var session_key = window.localStorage.getItem('session_key');
 

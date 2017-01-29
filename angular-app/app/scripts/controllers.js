@@ -2,8 +2,8 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.101:8001';
-var socket = io.connect('172.17.45.101', {
+var baseUrl = 'http://172.17.45.180:8001';
+var socket = io.connect('172.17.45.180', {
   port: 4000
 });
 var API_KEY = 'AIzaSyD1vavahTgsUfM8rCzLseEPCj5mzs9F6o0';

@@ -2,10 +2,11 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.40:8001';
-var socket = io.connect('172.17.45.40', {
+var baseUrl = 'http://172.17.45.101:8001';
+var socket = io.connect('172.17.45.101', {
   port: 4000
 });
+var API_KEY = 'AIzaSyD1vavahTgsUfM8rCzLseEPCj5mzs9F6o0';
 //console.log(io);
 //var socket = io();
 var map;
@@ -24,32 +25,33 @@ angular.module('latchApp')
 
 
 $rootScope.sendCurrLocNoMap = function(){
-   var pos;
-   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function (position) {
-       pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-        };
-   
-    var data = {
-        lat:pos.lat,
-        longitude:pos.lng,
+   $.ajax({
+    url:'https://www.googleapis.com/geolocation/v1/geolocate?key='+API_KEY,
+    method:'POST',
+    success:function(response){
+       var data = {
+        lat:response.location.lat,
+        longitude:response.location.lng,
         session_key:window.localStorage.getItem('session_key')
+       }
+        $.ajax({
+            method:'POST',
+            url:baseUrl+'/main/user/location/',
+            data:data,
+            success:function(resp){
+                if(response.status == 1)
+                    return response.location;
+                else
+                    Materialize.toast('Please Enable Location Services')
+            }
+        });
     }
-    $.ajax({
-        method:'POST',
-        url:baseUrl+'/main/user/location/',
-        data:data,
-        success:function(response){
-            if(response.status == 1)
-                return pos;
-            else
-                Materialize.toast('Please Enable Location Services')
-        }
-    })
-     });
-}
+   });
+  
+   
+   
+    
+
 };
 
 $(".button-collapse").sideNav();
@@ -84,10 +86,10 @@ $rootScope.search = {
   //    }
 
   $scope.user = {};
-  $scope.user.name = 'partho';
-  $scope.user.contact = 'hell.partho@gmail.com';
-  $scope.user.password = 'tech';
-  $scope.user.confirm_password = 'tech';
+  // $scope.user.name = 'partho';
+  // $scope.user.contact = 'hell.partho@gmail.com';
+  // $scope.user.password = 'tech';
+  // $scope.user.confirm_password = 'tech';
 
   $scope.submit = function () {
     // $location.path('/chats');
@@ -100,7 +102,7 @@ $rootScope.search = {
       success: function (response) {
         if (response.status == 1) {
           $state.go('app.nick');
-          window.localStorage.setItem('user_session', response.user_session);
+          window.localStorage.setItem('session_key', response.session_key);
       }
 
       Materialize.toast(response.message, 1000)
@@ -117,8 +119,8 @@ $rootScope.search = {
       $rootScope.title = 'Login';
 
       $scope.user = {};
-      $scope.user.contact = 'hell.partho@gmail.com';
-      $scope.user.password = 'tech';
+      // $scope.user.contact = 'hell.partho@gmail.com';
+      // $scope.user.password = 'tech';
 
       $scope.submit = function () {
 
@@ -201,25 +203,18 @@ $rootScope.search = {
     });
 
     $rootScope.getCurrLoc = function () {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (position) {
-          var pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
 
+
+       
+          var pos =  $rootScope.sendCurrLocNoMap();
           var marker = new google.maps.Marker({
             position: pos
           });
           map.setCenter(pos);
           marker.setMap(map);
           map.setZoom(13);
-        }, function () {
-          Materialize.toast('Please enable loaction services', 3000);
-        });
-      } else {
-        Materialize.toast('Please enable loaction services', 3000);
-      }
+        
+      
     }
 
     var markers = [];
@@ -573,7 +568,7 @@ socket.on('send_message_indi', function(data) {
     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
 }
 
-var user_session = window.localStorage.getItem('user_session');
+var session_key = window.localStorage.getItem('session_key');
 
 $.ajax({
     method: 'POST',
@@ -608,7 +603,7 @@ $scope.send = function () {
       time: time,
       sent: false,
       msg_id: uuid.v4(),
-      user_session: user_session
+      session_key: session_key
   }
 
   $scope.messages.push(newMessage);

@@ -6,7 +6,7 @@ var baseUrl = 'http://52.11.141.223/:8001';
 var socket = io.connect('52.11.141.223', {
   port: 4000
 });
-var API_KEY = 'AIzaSyD1vavahTgsUfM8rCzLseEPCj5mzs9F6o0';
+var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 //console.log(io);
 //var socket = io();
 var map;
@@ -37,6 +37,7 @@ $rootScope.sendCurrLocNoMap = function(){
         lat:pos.lat,
         longitude:pos.lng,
         session_key:window.localStorage.getItem('session_key')
+
     }
     $.ajax({
         method:'POST',

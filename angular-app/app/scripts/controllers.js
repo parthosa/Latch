@@ -416,10 +416,10 @@ angular.module('latchApp')
   })
 
   $scope.redirect = function (el) {
-    chatData.chatId = el.group.nick;
+    chatData.chatId = el.group.group_name;
     chatData.chatUrl = '/groups';
     $state.go('app.group_message');
-    $rootScope.title = el.group.nick;
+    $rootScope.title = el.group.group_name;
     $rootScope.chatPic = el.group.pic;
     //            console.log($rootScope.title);
   }
@@ -519,11 +519,11 @@ angular.module('latchApp')
 
     }
   }
-}
+
 
 socket.on('send_message_indi', function(data) {
       
-        if(chatData.chatId==data.nick_name){
+        if(chatData.chatId==data.nick){
               $scope.messages.push(data);
                $scope.$apply();
         }
@@ -594,7 +594,7 @@ socket.on('send_message_indi', function(data) {
 
     }
   }
-}
+
 
 socket.on('send_message_group', function(data) {
       

@@ -194,8 +194,78 @@ io.sockets.on('connection', function (socket) {
         //     }
         // req.end();
     });
-// });
 
+io.sockets.on('connection', function (socket) {
+    console.log(35);
+    socket.on('send_message_group', function (data) {
+        // message_split=data.split(',');
+        // console.log(sessionid);
+        // console.log(socket.handshake.cookie['sessionid']);
+        // values = querystring.stringify({
+        //     message
+        //     // csrftoken:message[2]// sessionid: message[1],
+        //     // sessionid: socket.handshake.cookie['sessionid'],
+        // });
+        // console.log(values)
+        // request({
+            
+        //     method:'POST',
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //         'Cookie': 'csrftoken=' + message[2]
+        //     },
+        // },function(res){
+        //     console.log('worked');
+        // });
+        // request.post('http://localhost:8001/main/node_api/',{name:1});
+        var options = {
+            // host: 'localhost',
+            // port: 8001,
+            // path: '/main/node_api/',
+            url: 'http://localhost:8001/main/room/message_send/',
+            method: 'POST',
+            form: data,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                // 'Content-Length': values.length,
+                // "X-CSRFToken": message[2],
+                // 'Cookie': 'csrftoken=' + message_split[2]
+            }
+        }
+        // console.log(6);
+        // var req = {}
+        // //Send message to Django server
+        request(options, function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                // Print out the response body
+                // io.emit('send_message_indi', data)
+                console.log(3);
+                console.log(body)
+                io.sockets.emit('send_message_group', data)
+            }
+            console.log(body);
+        });
+});
+
+        // var req=http.request(options, function(res){
+        //     // res.setEncoding('utf8');
+        //     console.log(4);
+        //     //Print out error message
+        //     // res.on('data', function(message){
+        //     //     if(message != 'Everything worked :)'){
+        //     //         console.log('Message: ' + message);
+        //     //     }
+        //     // });
+        // });
+        // req.write('dsghgjh');
+        // req.end();
+        // request.post('http://localhost:8001/main/node_api/', {'comment': message[0]});
+        // while(req=={}){
+        //     console.log(7);
+        //         req.write(values);
+        //     }
+        // req.end();
+    });
 
 
 

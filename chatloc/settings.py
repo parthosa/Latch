@@ -60,6 +60,16 @@ TEMPPLATE_CONTEXT_PROCESSORS = (
     # "allauth.socialaccount.context_processors.socialaccount",
 )
 
+# CORS_ORIGIN_WHITELIST = (
+#     'localhost:3018',
+#     'localhost:3000',
+#     'localhost:3235',
+# 	'127.0.0.1:39693',
+#     'localhost:4000',
+#     'localhost:3223',
+#     'localhost:3094'
+#  )
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [

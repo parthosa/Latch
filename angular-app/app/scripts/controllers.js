@@ -549,19 +549,27 @@ socket.on('send_message_indi', function(data) {
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages = [];
+$scope.messages =[];
 
 
-var session_key = window.localStorage.getItem('session_key');
+$scope.user={};
+$scope.user.nick=window.localStorage.getItem('nick');
 
 $.ajax({
     method: 'POST',
-    url: baseUrl+'/main/user/get_group/chat/',
+    url: baseUrl+'/main/user/get/indi_chat/',
     data: {
-      'group_name': chatData.chatId,
+      'nick': chatData.chatId,
+      'session_key':window.localStorage.getItem('session_key')
+
   },
   success: function (response) {
-      $scope.messages = response.messages
+      for(var i=0;i<response.messages.length;i++){
+        response.messages[i].nick=response.messages[i].nick_name;
+      }
+      $scope.messages = response.messages;
+       $scope.$apply();
+      console.log($scope.messages);
   },
   error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -570,37 +578,64 @@ $.ajax({
 
 
 $scope.newMessageText = '';
-
+ var newMessage;
 $scope.send = function () {
+    if( $scope.newMessageText!=''){
     var time = new Date().toLocaleTimeString('en-US', {
       hour: 'numeric',
       hour12: true,
       minute: 'numeric'
   });
 
-
-    var newMessage = {
-      user: $rootScope.user.nick,
+  newMessage = {
       message: $scope.newMessageText,
-      chat_id: '',
-      nick: $rootScope.user.nick,
+      nick:window.localStorage.getItem('nick'),
+      nick_name: chatData.chatId,
       time: time,
-      sent: false,
+      // sent: false,
       msg_id: uuid.v4(),
-      session_key: session_key
+      session_key:window.localStorage.getItem('session_key')
   }
 
-  $scope.messages.push(newMessage);
+  // $scope.messages.push(newMessage);
+  console.log($scope.messages);
   var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
   $('.chat-screen').scrollTop(scrollTop)
       //        console.log(scrollTop)
       $scope.newMessageText = '';
 
 
-      socket.emit('send_message', newMessage);
+      socket.emit('send_message_indi', newMessage);
 
 
   }
+}
+
+socket.on('send_message_indi', function(data) {
+        // console.log(message)
+        //Escape HTML characters
+        // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+        // var otherMessage = false;
+        // for(var i=0;i<$scope.messages.length;i++){
+        //     if($scope.messages[i].msg_id==data.msg_id){
+        //         $scope.messages[i].sent=true;
+        //         otherMessage = true;
+        //     }
+
+        // }
+        // if(otherMessage)
+        if(chatData.chatId==data.nick_name){
+              $scope.messages.push(data);
+               $scope.$apply();
+        }
+        
+        // //Append message to the bottom of the list
+        // $('#comments').append('<li>' + data + '</li>');
+        // window.scrollBy(0, 10000000000);
+        // entry_el.focus();
+      });
+
 
 }])
 

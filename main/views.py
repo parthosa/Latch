@@ -369,8 +369,8 @@ def node_api_message_group(request):
 
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = request.POST['group_name'])
-		message_create = Message.objects.create(message = request.POST['message'], user = user, group = group, timestamp = datetime.now, msg_id = request.POST['msg_id'])
- 		message = Message.objects.get(msg_id = post_item_list['msg_id'])
+		message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, timestamp = datetime.now, msg_id = request.POST['msg_id'])
+ 		message = Message.objects.get(msg_id = request.POST['msg_id'])
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel

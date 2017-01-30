@@ -549,8 +549,7 @@ angular.module('latchApp')
   // $rootScope.title='John Doe';
   $scope.messages = [];
 
-
-  var session_key = window.localStorage.getItem('session_key');
+var session_key = window.localStorage.getItem('session_key');
 
   $.ajax({
     method: 'POST',

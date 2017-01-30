@@ -1,0 +1,60 @@
+<div class="navbar-fixed group-nav" ng-controller="MainController">
+  <nav class="nav-extended">
+    <div class="nav-wrapper">
+      <div ng-if="!search.visible">
+        <a class="brand-logo">Latch</a>
+        <a href="" data-activates="sideNavbar" class="button-collapse" ng-click=" $('.button-collapse').sideNav()"><i class="material-icons">menu</i></a>
+        <ul id="nav-mobile" class="right">
+          <li><a href="" ng-click="search.toggle()" id="search_button"><i class="material-icons">search</i></a></li>
+          <li><a ui-sref="app.sample"><i class="material-icons">notifications</i></a></li>
+        </ul>
+      </div>
+
+      <div ng-if="search.visible">
+        <form ng-init="$('#search')[0].focus();">
+          <div class="input-field">
+            <input id="search" type="search" ng-model="search.query" required>
+            <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+            <i class="material-icons" ng-click="search.close()">close</i>
+          </div>
+        </form>
+      </div>
+
+      <ul class="side-nav" id="sideNavbar">
+        <li>
+          <div class="userView">
+            <div class="background side-nav-bg right-align">
+              <img class="responsive-img " src="http://materializecss.com/images/office.jpg">
+            </div>
+            <a href="#!user"><img class="circle" src="images/batman.png"></a>
+            <a href="#!name"><span class="white-text name">Guest</span></a>
+            <a href="#!email"><span class="white-text email"></span></a>
+          </div>
+        </li>
+        <li><a ui-sref='app.profile'>Profile</a></li>
+        <li><a ui-sref='app.settings'>Settings</a></li>
+        <li><a ui-sref='app'>Logout</a></li>
+      </ul>
+      <ul class="tabs tabs-transparent">
+        <li class="tab"><a ng-class="{active: isActive('location')}" ui-sref="app.location">Location</a></li>
+        <li class="tab"><a ng-class="{active: isActive('chats')}" ui-sref="app.chats">Chats</a></li>
+        <li class="tab"><a ng-class="{active: isActive('groups')}" ui-sref="app.groups">Groups</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<script>
+  (function ($) {
+    $(function () {
+      $('.button-collapse').sideNav({
+        closeOnClick: true
+      });
+    });
+  })(jQuery);
+  $('.button-collapse').click(function () {
+    $('#sideNavbar a').click(function () {
+      $("#sidenav-overlay").click();
+    });
+  })
+</script>

@@ -534,8 +534,10 @@ socket.on('send_message_indi', function(data) {
 
         // }
         // if(otherMessage)
-      $scope.messages.push(data);
-       $scope.$apply();
+        if(chatData.chatId==data.nick_name){
+              $scope.messages.push(data);
+               $scope.$apply();
+        }
         
         // //Append message to the bottom of the list
         // $('#comments').append('<li>' + data + '</li>');

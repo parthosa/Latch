@@ -100,7 +100,7 @@ $rootScope.search = {
       success: function (response) {
         if (response.status == 1) {
           $state.go('app.nick');
-          window.localStorage.setItem('user_session', response.user_session);
+          window.localStorage.setItem('session_key', response.session_key);
       }
 
       Materialize.toast(response.message, 1000)
@@ -573,7 +573,7 @@ socket.on('send_message_indi', function(data) {
     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
 }
 
-var user_session = window.localStorage.getItem('user_session');
+var session_key = window.localStorage.getItem('session_key');
 
 $.ajax({
     method: 'POST',
@@ -608,7 +608,7 @@ $scope.send = function () {
       time: time,
       sent: false,
       msg_id: uuid.v4(),
-      user_session: user_session
+      session_key: session_key
   }
 
   $scope.messages.push(newMessage);

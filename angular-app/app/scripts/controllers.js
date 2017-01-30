@@ -458,7 +458,7 @@ angular.module('latchApp')
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages = [];
+  $scope.messages;
 
 
   $scope.user = {};
@@ -582,7 +582,7 @@ socket.on('send_message_indi', function(data) {
       }
 
       // $scope.messages.push(newMessage);
-      console.log($scope.messages);
+      console.log(newMessage);
       var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
       $('.chat-screen').scrollTop(scrollTop)
         //        console.log(scrollTop)

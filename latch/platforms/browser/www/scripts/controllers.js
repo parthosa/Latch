@@ -11,7 +11,7 @@ var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 //var socket = io();
 var map;
 
-angular.module('latchApp', ['ngCordova'])
+angular.module('latchApp')
 
 .controller('MainController', ['$rootScope', '$scope', '$state', '$location', function ($rootScope, $scope, $state, $location) {
 
@@ -177,7 +177,7 @@ angular.module('latchApp', ['ngCordova'])
 }])
 
 
-.controller('LocationController', ['$rootScope', '$scope', '$state', '$location', 'chatData', '$cordovaGeolocation', function ($rootScope, $scope, $state, $location, chatData, $cordovaGeolocation) {
+.controller('LocationController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
   var data = [];
 
@@ -215,29 +215,10 @@ angular.module('latchApp', ['ngCordova'])
           marker.setMap(map);
           map.setZoom(13);
         }, function () {
-          var posOptions = {
-            timeout: 10000,
-            enableHighAccuracy: true
-          };
-          $cordovaGeolocation
-            .getCurrentPosition(posOptions)
-            .then(function (position) {
-              pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-              };
-              var marker = new google.maps.Marker({
-                position: pos
-              });
-              map.setCenter(pos);
-              marker.setMap(map);
-              map.setZoom(13);
-            }, function (err) {
-              Materialize.toast('Please enable loaction services', 3000);
-            });
+          Materialize.toast('Please enable loaction services', 3000);
         });
       } else {
-        Materialize.toast('Please enable loaction services', 3000);
+          Materialize.toast('Please enable loaction services', 3000);
       }
     }
 

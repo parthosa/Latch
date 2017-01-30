@@ -6,6 +6,7 @@ var baseUrl = 'http://172.17.45.40:8001';
 var socket = io.connect('172.17.45.40', {
   port: 4000
 });
+var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 //console.log(io);
 //var socket = io();
 var map;
@@ -36,6 +37,7 @@ $rootScope.sendCurrLocNoMap = function(){
         lat:pos.lat,
         longitude:pos.lng,
         session_key:window.localStorage.getItem('session_key')
+
     }
     $.ajax({
         method:'POST',
@@ -84,10 +86,7 @@ $rootScope.search = {
   //    }
 
   $scope.user = {};
-  $scope.user.name = 'partho';
-  $scope.user.contact = 'hell.partho@gmail.com';
-  $scope.user.password = 'tech';
-  $scope.user.confirm_password = 'tech';
+
 
   $scope.submit = function () {
     // $location.path('/chats');
@@ -117,8 +116,7 @@ $rootScope.search = {
       $rootScope.title = 'Login';
 
       $scope.user = {};
-      $scope.user.contact = 'hell.partho@gmail.com';
-      $scope.user.password = 'tech';
+
 
       $scope.submit = function () {
 
@@ -149,7 +147,7 @@ $rootScope.search = {
       $rootScope.title = 'Nick';
 
       $scope.user = {};
-      $scope.user.nick = 'parthosa';
+      // $scope.user.nick = 'parthosa';
 
     $scope.submit = function () {
 
@@ -200,7 +198,7 @@ $rootScope.search = {
       fullscreenControl: false
     });
 
-    $rootScope.getCurrLoc = function () {
+      $rootScope.getCurrLoc = function () {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
           var pos = {
@@ -430,21 +428,6 @@ $scope.redirect = function (el) {
 .controller('GroupInfoController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
-  $scope.members = [
-  {
-      nick: 'partho',
-      pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-      distance: 3400
-  }, {
-      nick: 'amritanshu',
-      pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-      distance: 3220
-  }, {
-      nick: 'suvigya',
-      pic: 'http://www.canitinguru.com/image/data/aboutme.jpg',
-      distance: 3811
-  }
-  ]
 
   // $.ajax({
   //     method: 'POST',
@@ -476,10 +459,7 @@ $scope.redirect = function (el) {
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
   $scope.messages =[];
-//   $rootScope.user = {
-//     nick: 'partho',
-//     pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
-// }
+
 
 $scope.user={};
 $scope.user.nick=window.localStorage.getItem('nick');
@@ -568,11 +548,11 @@ socket.on('send_message_indi', function(data) {
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
   $scope.messages = [];
-  $rootScope.user = {
-    nick: 'partho',
-    pic: 'http://www.canitinguru.com/image/data/aboutme.jpg'
-}
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 05e4023d4dffc1e09e575c4b4a61089dbce25ce9
 var session_key = window.localStorage.getItem('session_key');
 
 $.ajax({

@@ -69,6 +69,7 @@ TEMPPLATE_CONTEXT_PROCESSORS = (
 #     'localhost:3223',
 #     'localhost:3094'
 #  )
+
 CORS_ORIGIN_ALLOW_ALL = True
 
 TEMPLATES = [

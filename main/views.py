@@ -343,8 +343,10 @@ def get_chatroom(request, group_name):
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
-	messages = reversed(Message.objects.filter(group = group_name).order_by('-timestamp'))
-	user_group = User_group(user = user_p, group = group_name)
+	print group_name
+	Group_ob = Group.objects.get(name = group_name)
+	messages = Message.objects.filter(group = Group_ob)
+	user_group = Group_user(user = user_p, group = Group_ob)
 	msg_list = []
 	for message in messages:
 		msg_list.append({'message': message.message, 'nick_name': message.user.nick_name, 'time': message.timestamp})
@@ -354,6 +356,8 @@ def get_chatroom(request, group_name):
 
 @csrf_exempt
 def node_api_message_group(request):
+	print 1
+	print request.POST['group_name']
 	try:
         #Get User from sessionid
 	        # post_string = request.POST['key']
@@ -366,11 +370,16 @@ def node_api_message_group(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
         #Create message
-
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = request.POST['group_name'])
-		message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, timestamp = datetime.now, msg_id = request.POST['msg_id'])
+		print group.name
+		try:
+			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'])
+ 		except Exception, e:
+ 			print e
+ 		print 2
  		message = Message.objects.get(msg_id = request.POST['msg_id'])
+ 		print message
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -379,7 +388,7 @@ def node_api_message_group(request):
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:
-		return HttpResponseServerError(str(e))
+		return e
 
 @csrf_exempt
 def node_api_message_user(request):

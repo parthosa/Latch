@@ -416,10 +416,10 @@ angular.module('latchApp')
   })
 
   $scope.redirect = function (el) {
-    chatData.chatId = el.group.nick;
+    chatData.chatId = el.group.group_name;
     chatData.chatUrl = '/groups';
     $state.go('app.group_message');
-    $rootScope.title = el.group.nick;
+    $rootScope.title = el.group.group_name;
     $rootScope.chatPic = el.group.pic;
     //            console.log($rootScope.title);
   }
@@ -458,7 +458,7 @@ angular.module('latchApp')
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages = [];
+  $scope.messages;
 
 
   $scope.user = {};
@@ -520,46 +520,40 @@ angular.module('latchApp')
     }
   }
 
-  socket.on('send_message_indi', function (data) {
-    // console.log(message)
-    //Escape HTML characters
-    // var data = message.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-    // var otherMessage = false;
-    // for(var i=0;i<$scope.messages.length;i++){
-    //     if($scope.messages[i].msg_id==data.msg_id){
-    //         $scope.messages[i].sent=true;
-    //         otherMessage = true;
-    //     }
+socket.on('send_message_indi', function(data) {
+      
+        if(chatData.chatId==data.nick){
+              $scope.messages.push(data);
+               $scope.$apply();
+        }
 
-    // }
-    // if(otherMessage)
-    $scope.messages.push(data);
-    $scope.$apply();
-
-    // //Append message to the bottom of the list
-    // $('#comments').append('<li>' + data + '</li>');
-    // window.scrollBy(0, 10000000000);
-    // entry_el.focus();
-  });
+      });
 
 }])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
-  // $rootScope.title='John Doe';
-  $scope.messages = [];
+ $scope.messages = [];
 
 
-  var session_key = window.localStorage.getItem('session_key');
+  $scope.user = {};
+  $scope.user.nick = window.localStorage.getItem('nick');
 
   $.ajax({
     method: 'POST',
-    url: baseUrl + '/main/user/get_group/chat/',
+    url: baseUrl + '/main/room/get/'+chatData.chatId+'/',
     data: {
-      'group_name': chatData.chatId,
+      'session_key': window.localStorage.getItem('session_key')
+
     },
     success: function (response) {
-      $scope.messages = response.messages
+      console.log(response)
+      for (var i = 0; i < response.messages.length; i++) {
+        response.messages[i].nick = response.messages[i].nick_name;
+      }
+      $scope.messages = response.messages;
+      $scope.$apply();
+      console.log($scope.messages);
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -568,37 +562,48 @@ angular.module('latchApp')
 
 
   $scope.newMessageText = '';
-
+  var newMessage;
   $scope.send = function () {
-    var time = new Date().toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      hour12: true,
-      minute: 'numeric'
-    });
+    if ($scope.newMessageText != '') {
+      var time = new Date().toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      });
+
+      newMessage = {
+        message: $scope.newMessageText,
+        nick: window.localStorage.getItem('nick'),
+        group_name: chatData.chatId,
+        time: time,
+        // sent: false,
+        msg_id: uuid.v4(),
+        session_key: window.localStorage.getItem('session_key')
+      }
+
+      // $scope.messages.push(newMessage);
+      console.log(newMessage);
+      var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
+      $('.chat-screen').scrollTop(scrollTop)
+        //        console.log(scrollTop)
+      $scope.newMessageText = '';
 
 
-    var newMessage = {
-      user: $rootScope.user.nick,
-      message: $scope.newMessageText,
-      chat_id: '',
-      nick: $rootScope.user.nick,
-      time: time,
-      sent: false,
-      msg_id: uuid.v4(),
-      session_key: session_key
+      socket.emit('send_message_group', newMessage);
+
+
     }
-
-    $scope.messages.push(newMessage);
-    var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
-    $('.chat-screen').scrollTop(scrollTop)
-      //        console.log(scrollTop)
-    $scope.newMessageText = '';
-
-
-    socket.emit('send_message', newMessage);
-
-
   }
+
+
+socket.on('send_message_group', function(data) {
+      
+        if(chatData.chatId==data.group_name){
+              $scope.messages.push(data);
+               $scope.$apply();
+        }
+
+      });
 
 }])
 

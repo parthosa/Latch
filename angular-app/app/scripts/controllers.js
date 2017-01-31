@@ -56,7 +56,7 @@ angular.module('latchApp')
   
   }
 
-if($rootScope.user == {})
+// if($rootScope.user == {})
    $rootScope.getProfile();
 
 

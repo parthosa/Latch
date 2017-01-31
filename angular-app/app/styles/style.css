@@ -431,3 +431,9 @@ img#img-preview {
     height: 50vh;
     width: 100%;
 }
+
+.group-list.row {
+    height: calc(100vh - 116px);
+    overflow: auto;
+    margin: 10px;
+}

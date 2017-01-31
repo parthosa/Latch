@@ -2,9 +2,9 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.40:8001'
+var baseUrl = 'http://172.17.45.101:8001'
 ;
-var socket = io.connect('172.17.45.40', {
+var socket = io.connect('172.17.45.101', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -25,7 +25,8 @@ angular.module('latchApp')
   }
 
   $rootScope.baseUrl = baseUrl;
-
+  $rootScope.chats;
+  $rootScope.groups;
   $scope.user = {};
 
   
@@ -449,7 +450,6 @@ angular.module('latchApp')
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.chats;
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_chat_list/',
@@ -457,7 +457,7 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $scope.chats = response.peers;
+      $rootScope.chats = response.peers;
       $scope.$apply();
     },
     error: function (response) {
@@ -477,7 +477,6 @@ angular.module('latchApp')
 }])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.groups = [];
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_groups/',
@@ -485,9 +484,9 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $scope.groups = response.groups;
+      $rootScope.groups = response.groups;
       $scope.$apply();
-      console.log($scope.groups);
+      // console.log($scope.groups);
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
@@ -574,11 +573,15 @@ angular.module('latchApp')
 
   $rootScope.title = 'Settings';
 
+
+
 }])
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages;
+     $scope.messages;
+  if($scope.messages==null)
+      $scope.messages = [];
 
 
   $scope.user = {};
@@ -649,6 +652,9 @@ socket.on('send_message_indi', function(data) {
                $scope.$apply();
                chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
 
+        }
+        else{
+          Materialize.toast('New Message from '+data.nick,1000);
         }
 
       });
@@ -730,6 +736,8 @@ socket.on('send_message_group', function(data) {
                $scope.$apply();
                chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
                
+        } else{
+          Materialize.toast('New Message in '+data.group_name,1000);
         }
 
       });
@@ -811,7 +819,7 @@ socket.on('send_message_group', function(data) {
           Materialize.toast(response.message,1000);
           if(response.status == 1){
             $state.go('app.nick');
-            window.localStorage('profile_pic',file);
+            window.localStorage.setItem('profile_pic',file);
           }
         },
         error:function(response){

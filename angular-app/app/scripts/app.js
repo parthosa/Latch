@@ -204,14 +204,7 @@ angular.module('latchApp', ['ui.router'])
       })
 
       // route for the test page
-      .state('app.sample', {
-          url: 'sample',
-          views: {
-              'content@': {
-                  templateUrl: 'views/sample.html'
-              }
-          }
-      })
+     
 
       ;
 

@@ -2,9 +2,9 @@
 
 var globalVar;
 
-var baseUrl = 'http://52.11.141.223:8001'
+var baseUrl = 'http://172.20.10.14:8001'
 ;
-var socket = io.connect('52.11.141.223', {
+var socket = io.connect('172.20.10.14', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -39,8 +39,9 @@ angular.module('latchApp')
         },
         success:function(response){
           if(response.status == 1){
-              $rootScope.user =response
-            $rootScope.$apply();
+              window.localStorage.setItem('pic',response.pic);
+                $rootScope.user = response;
+              // $rootScope.$apply();
           }
           else{
             Materialize.toast('Cannot load profile',1000);
@@ -54,6 +55,10 @@ angular.module('latchApp')
       })
   
   }
+
+if($rootScope.user == {})
+   $rootScope.getProfile();
+
 
   $rootScope.sendCurrLocNoMap = function () {
     var pos;
@@ -194,7 +199,7 @@ angular.module('latchApp')
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
-           $rootScope.getProfile();
+         $rootScope.getProfile();
           $state.go('app.chats');
 
 
@@ -544,7 +549,7 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
- $rootScope.getProfile();
+   $rootScope.getProfile();
 
   
 }])

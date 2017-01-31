@@ -40,7 +40,15 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'corsheaders',
     'main',
+    'push_notifications',
 )
+
+PUSH_NOTIFICATIONS_SETTINGS = {
+        "GCM_API_KEY": "[AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc]",
+        # "APNS_CERTIFICATE": "/path/to/your/certificate.pem",
+        # "WNS_PACKAGE_SECURITY_ID": "[your package security id, e.g: 'ms-app://e-3-4-6234...']",
+        # "WNS_SECRET_KEY": "[your app secret key, e.g.: 'KDiejnLKDUWodsjmewuSZkk']",
+}
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

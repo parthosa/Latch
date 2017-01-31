@@ -59,7 +59,7 @@ class Indi_msg(models.Model):
 	group = models.ForeignKey('Indi_group', related_name = 'message_indi_group')
 	message = models.TextField()
 	user = models.ForeignKey('UserProfile', related_name = 'user_indi_msg')
-	timestamp = models.DateTimeField(default = datetime.now)
+	timestamp = models.CharField(max_length = 100)
 	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):
@@ -69,7 +69,7 @@ class Message(models.Model):
 	group = models.ForeignKey('Group', related_name = 'message_group')
 	message = models.TextField()
 	user = models.ForeignKey('UserProfile', related_name = 'user_message')
-	timestamp = models.DateTimeField(default = datetime.now)
+	timestamp = models.CharField(max_length = 100)
 	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):

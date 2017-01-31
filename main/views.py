@@ -248,7 +248,7 @@ def send_nearby(request):
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	locality = user_p.locality
-	nearby_users = UserProfile.objects.filter(locality = locality)
+	nearby_users = UserProfile.objects.filter(locality = locality, anonymous = False)
 	nearby_list = []
 	for user in nearby_users:
 		distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
@@ -312,7 +312,9 @@ def go_anonymous(request):
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	if user_p.anonymous == True:
-		response = {'status': 0, 'message': 'You are already anonymous'}
+		user_p.anonymous = False
+		user_p.save()
+		response = {'status': 1, 'message': 'You are not anonymous any more'}
 		return JsonResponse(response)
 	else:
 		user_p.anonymous = True
@@ -374,7 +376,7 @@ def node_api_message_group(request):
 		group = Group.objects.get(name = request.POST['group_name'])
 		print group.name
 		try:
-			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'])
+			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
  		except Exception, e:
  			print e
  		print 2
@@ -414,7 +416,7 @@ def node_api_message_user(request):
 
 		print 1
 		try:
-			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'])
+			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
 		except Exception, e:
 			print e
 		print 2

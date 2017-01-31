@@ -53,6 +53,18 @@ angular.module('latchApp', ['ui.router'])
           }
 
       })
+      .state('app.profile_pic', {
+          url: 'profile_pic',
+          views: {
+              'header@': {
+                  templateUrl: 'views/chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/profile_pic.html'
+              }
+          }
+
+      })
        .state('app.interests', {
           url: 'interests',
           views: {
@@ -185,7 +197,7 @@ angular.module('latchApp', ['ui.router'])
        .state('app.logout', {
          url: '/',
           views: {
-              'content': {
+              'content@': {
                   templateUrl: 'views/landing.html'
               }
           }
@@ -243,13 +255,21 @@ angular.module('latchApp', ['ui.router'])
     };
 
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        // event.preventDefault();
+        // console.log(event);
+        event.defaultPrevented = true;
         var loggedIn = window.localStorage.getItem('loggedIn');
-        if  (toState.name !== 'app' && !loggedIn){
+        if  ((toState.name !== 'app' && toState.name !== 'app.register' && toState.name !== 'app.login'  && toState.name !== 'app.nick'  && toState.name !== 'app.profile_pic')   && !loggedIn){
             $state.go('app');
         }
-        if  (toState.name == 'app' && loggedIn){
-            $state.go('app.chats');
-        }
+        else{
+            event.defaultPrevented = false;
+            if  ($location.url() == '/' && loggedIn){
+                $location.url('/chats')
+            }
+        }  
+        
+       
     });
 
 });

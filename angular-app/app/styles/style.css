@@ -12,6 +12,14 @@ body {
     height: 100vh;
 }
 
+nav a.button-collapse{
+  display: block !important;
+}
+
+nav .brand-logo{
+  position: relative !important; 
+}
+
 /*header*/
 .button-back{
     float: left;

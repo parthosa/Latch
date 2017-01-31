@@ -51,7 +51,9 @@ angular.module('latchApp')
               Materialize.toast('Please Enable Location Services')
           }
         })
-      });
+      }, function () {
+          Materialize.toast('Please enable loaction services', 3000);
+        }, {timeout: 2000});
     }
   };
 
@@ -245,7 +247,7 @@ angular.module('latchApp')
           map.setZoom(13);
         }, function () {
           Materialize.toast('Please enable loaction services', 3000);
-        });
+        }, {timeout: 2000});
       } else {
           Materialize.toast('Please enable loaction services', 3000);
       }

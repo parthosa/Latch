@@ -16,9 +16,24 @@ class UserProfile(models.Model):
 	locality = models.CharField(max_length = 100, null = True)
 	dp = models.ImageField(upload_to='dps', null = True)
 	dp_url = models.SlugField(max_length = 500, null = True)
+	device_id = models.ManyToManyField('Device_ID', related_name = 'user_devices')
 
 	def __unicode__(self):
 		return self.name
+
+	def save(self, *args, **kwargs):
+		if self.dp:
+			self.dp_url = self.dp.url
+		else:
+			pass
+		super(UserProfile, self).save(*args, **kwargs)
+
+class Device_ID(models.Model):
+	device_id = models.CharField(max_length = 200)
+	user = models.ForeignKey('UserProfile', related_name = 'device_user')
+
+	def __unicode__(self):
+		return self.user.name + '_' + self.device_id
 
 class Interest(models.Model):
 	name = models.CharField(max_length = 50)
@@ -59,7 +74,7 @@ class Indi_msg(models.Model):
 	group = models.ForeignKey('Indi_group', related_name = 'message_indi_group')
 	message = models.TextField()
 	user = models.ForeignKey('UserProfile', related_name = 'user_indi_msg')
-	timestamp = models.DateTimeField(default = datetime.now)
+	timestamp = models.CharField(max_length = 100)
 	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):
@@ -69,7 +84,7 @@ class Message(models.Model):
 	group = models.ForeignKey('Group', related_name = 'message_group')
 	message = models.TextField()
 	user = models.ForeignKey('UserProfile', related_name = 'user_message')
-	timestamp = models.DateTimeField(default = datetime.now)
+	timestamp = models.CharField(max_length = 100)
 	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):

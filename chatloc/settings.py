@@ -40,7 +40,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'corsheaders',
     'main',
+    # 'push_notifications',
 )
+
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

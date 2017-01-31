@@ -15,6 +15,7 @@ from datetime import datetime
 import re
 from operator import itemgetter
 from django.contrib.sessions.models import Session
+from gcm import GCM
 
 @csrf_exempt
 def social_login(request):
@@ -125,6 +126,8 @@ def nick_name(request):
 @csrf_exempt
 def profile_pic(request):
 	session_key = request.POST['session_key']
+	print request.POST
+	print request.FILES
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -138,9 +141,11 @@ def profile_pic(request):
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
 	else:
-		user_image = request.POST['dp']
+		user_image = request.FILES.get('dpic')
 		user_p.dp = user_image
 		user_p.save()
+
+	return JsonResponse({'status': 1, 'message': 'Successfully saved your profile pic'})
 
 
 @csrf_exempt
@@ -248,7 +253,7 @@ def send_nearby(request):
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	locality = user_p.locality
-	nearby_users = UserProfile.objects.filter(locality = locality)
+	nearby_users = UserProfile.objects.filter(locality = locality, anonymous = False)
 	nearby_list = []
 	for user in nearby_users:
 		distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user.lat, user.longitude)
@@ -312,7 +317,9 @@ def go_anonymous(request):
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
 	if user_p.anonymous == True:
-		response = {'status': 0, 'message': 'You are already anonymous'}
+		user_p.anonymous = False
+		user_p.save()
+		response = {'status': 1, 'message': 'You are not anonymous any more'}
 		return JsonResponse(response)
 	else:
 		user_p.anonymous = True
@@ -374,7 +381,7 @@ def node_api_message_group(request):
 		group = Group.objects.get(name = request.POST['group_name'])
 		print group.name
 		try:
-			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'])
+			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
  		except Exception, e:
  			print e
  		print 2
@@ -414,7 +421,7 @@ def node_api_message_user(request):
 
 		print 1
 		try:
-			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'])
+			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
 		except Exception, e:
 			print e
 		print 2
@@ -543,7 +550,84 @@ def test_chat(request):
 
 # @login_required
 # def suggest_rest
-def test(request):
-	print request.user.username
-	return JsonResponse({'done': 'yes'})
+def test_img(request):
+	user = UserProfile.objects.get(nick_name = 'varun_chut_part2')
+	print user.dp.url
+	return 1
 
+def get_profile(request):
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
+	user_p = UserProfile.objects.get(user = user)
+	name = user_p.name
+	nick = user_p.nick_name
+	contact = user.username
+	pic = user_p.dp_url
+
+	return JsonResponse({'status':1, 'name': name, 'nick': nick, 'contact': contact, 'pic': pic})
+
+def get_device(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		device_id = Device_ID.objects.create(user = user_p, device_id = request.POST['device_id'])
+		user_p.device_id.add(Device_ID.objects.get(device_id = request.POST['device_id']))
+		user_p.save()
+		return JsonResponse({'status': 1, 'message': 'successfully saved'})
+
+@csrf_exempt
+def indi_msg_notification(request):
+	if request.POST:
+		if len(device_id) != 0:
+			session_key = request.POST['session_key']
+			session = Session.objects.get(session_key = session_key)
+			uid = session.get_decoded().get('_auth_user_id')
+			try:
+				user = User.objects.get(pk=uid)
+			except ObjectDoesNotExist:
+				response = {'status':0, 'message':'Kindly login first'}
+			user_p = UserProfile.objects.get(user = user)
+			message = request.POST['message']
+			user_c = UserProfile.objects.get(request.POST['nick_name'])
+			timestamp = request.POST['time']
+			gcm = GCM(AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc)
+			reg_ids = [user_c.device_id]
+			notification_msg = '''New Message from %s''' % (user_p.nick_name)
+			notification = {'title': 'New message', 'message': notification_msg}
+			response = gcm.json_request(registration_ids=reg_ids, data=notification)
+
+			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
+
+@csrf_exempt
+def group_msg_notification(request):
+	if request.POST:
+		if len(device_id) != 0:
+			session_key = request.POST['session_key']
+			session = Session.objects.get(session_key = session_key)
+			uid = session.get_decoded().get('_auth_user_id')
+			try:
+				user = User.objects.get(pk=uid)
+			except ObjectDoesNotExist:
+				response = {'status':0, 'message':'Kindly login first'}
+			user_p = UserProfile.objects.get(user = user)
+			message = request.POST['message']
+			group = Group.objects.get(name = request.POST['group_name'])
+			timestamp = request.POST['time']
+			gcm = GCM(AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc)
+			reg_ids = [x.device_id for x in UserProfile.objects.filter(group = group)]
+			notification_msg = '''New Message from %s''' % (user_p.nick_name)
+			notification = {'title': 'New message', 'message': notification_msg}
+			response = gcm.json_request(registration_ids=reg_ids, data=notification)
+
+			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})

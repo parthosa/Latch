@@ -555,6 +555,22 @@ def test_img(request):
 	print user.dp.url
 	return 1
 
+def get_profile(request):
+	session_key = request.POST['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
+	user_p = UserProfile.objects.get(user = user)
+	name = user_p.name
+	nick = user_p.nick_name
+	contact = user.username
+	pic = user_p.dp_url
+
+	return JsonResponse({'status':1, 'name': name, 'nick': nick, 'contact': contact, 'pic': pic})
+
 def get_device(request):
 	if request.POST:
 		session_key = request.POST['session_key']

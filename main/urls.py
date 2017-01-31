@@ -28,4 +28,7 @@ urlpatterns = [
     url(r'^user/chat/indi/$', views.node_api_message_user, name='node_api_message_user'),
     url(r'^test_img/$', views.test_img, name='test_img'),
     url(r'^user/get_device/$', views.get_device, name='get_device'),
+    url(r'^user/indi_notify/$', views.indi_msg_notification, name='indi_msg_notification'),
+    url(r'^usergroup_notify/$', views.group_msg_notification, name='group_msg_notification'),
+    url(r'^user/profile/$', views.get_profile, name='get_profile'),
 ]

@@ -138,9 +138,11 @@ def profile_pic(request):
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
 	else:
-		user_image = request.POST['dp']
+		user_image = request.POST['dpic']
 		user_p.dp = user_image
 		user_p.save()
+
+	return JsonResponse({'status': 1, 'message': 'Successfully saved your profile pic'})
 
 
 @csrf_exempt
@@ -545,7 +547,8 @@ def test_chat(request):
 
 # @login_required
 # def suggest_rest
-def test(request):
-	print request.user.username
-	return JsonResponse({'done': 'yes'})
+def test_img(request):
+	user = UserProfile.objects.get(nick_name = 'varun_chut_part2')
+	print user.dp.url
+	return 1
 

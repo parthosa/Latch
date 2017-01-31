@@ -2,9 +2,9 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.101:8001'
+var baseUrl = 'http://172.17.45.40:8001'
 ;
-var socket = io.connect('172.17.45.101', {
+var socket = io.connect('172.17.45.40', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -27,9 +27,10 @@ angular.module('latchApp')
   $rootScope.baseUrl = baseUrl;
   $rootScope.chats;
   $rootScope.groups;
-  $scope.user = {};
+  $rootScope.user = {};
 
   
+  $rootScope.getProfile = function(){  
       $.ajax({
         method:'POST',
         url:baseUrl+'/main/user/profile/',
@@ -38,8 +39,8 @@ angular.module('latchApp')
         },
         success:function(response){
           if(response.status == 1){
-              $scope.user =response
-            $scope.$apply();
+              $rootScope.user =response
+            $rootScope.$apply();
           }
           else{
             Materialize.toast('Cannot load profile',1000);
@@ -52,7 +53,7 @@ angular.module('latchApp')
         }
       })
   
-
+  }
 
   $rootScope.sendCurrLocNoMap = function () {
     var pos;
@@ -193,8 +194,9 @@ angular.module('latchApp')
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
+           $rootScope.getProfile();
           $state.go('app.chats');
-
+          
 
 
         } else
@@ -542,29 +544,7 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
-  $scope.user;
-  
-      $.ajax({
-        method:'POST',
-        url:baseUrl+'/main/user/profile/',
-        data:{
-          'session_key': window.localStorage.getItem('session_key')
-        },
-        success:function(response){
-          if(response.status == 1){
-              $scope.user =response
-            $scope.$apply();
-          }
-          else{
-            Materialize.toast('Cannot load profile',1000);
-
-          }
-        },
-        error:function(response){
-          Materialize.toast('Cannot load profile',1000);
-
-        }
-      })
+ $rootScope.getProfile();
 
   
 }])
@@ -763,6 +743,8 @@ socket.on('send_message_group', function(data) {
         success: function (response) {
           if (response.status == 1) {
             addToChatRoom();
+           $rootScope.getProfile();
+            
           } else
             Materialize.toast('Try Again', 1000);
         },

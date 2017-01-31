@@ -28,37 +28,11 @@ angular.module('latchApp')
   $rootScope.chats;
   $rootScope.groups;
   $rootScope.user = {};
+  $rootScope.user.pic = window.localStorage.getItem('pic');
+  $rootScope.user.nick = window.localStorage.getItem('nick');
 
   
-  $rootScope.getProfile = function(){  
-      $.ajax({
-        method:'POST',
-        url:baseUrl+'/main/user/profile/',
-        data:{
-          'session_key': window.localStorage.getItem('session_key')
-        },
-        success:function(response){
-          if(response.status == 1){
-              window.localStorage.setItem('pic',response.pic);
-                $rootScope.user = response;
-              // $rootScope.$apply();
-          }
-          else{
-            Materialize.toast('Cannot load profile',1000);
-
-          }
-        },
-        error:function(response){
-          Materialize.toast('Cannot load profile',1000);
-
-        }
-      })
-  
-  }
-
-// if($rootScope.user == {})
-   $rootScope.getProfile();
-
+ 
 
   $rootScope.sendCurrLocNoMap = function () {
     var pos;
@@ -199,7 +173,9 @@ angular.module('latchApp')
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
-         $rootScope.getProfile();
+          $rootScope.user.pic = response.pic;
+          $rootScope.user.nick = response.nick;
+         // $rootScope.getProfile();
           $state.go('app.chats');
 
 
@@ -457,6 +433,36 @@ angular.module('latchApp')
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+    if(window.localStorage.getItem('pic')==null){
+    
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        success:function(response){
+          if(response.status == 1){
+              window.localStorage.setItem('pic',response.pic);
+              window.localStorage.setItem('nick',response.nick);
+              $rootScope.user.nick=response.nick;
+              $rootScope.user.pic=response.pic;
+              $rootScope.$apply();
+          }
+          else{
+            Materialize.toast('Cannot load profile',1000);
+
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
+
+        }
+      })
+  
+  }
+
+
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_chat_list/',
@@ -549,7 +555,35 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
-   $rootScope.getProfile();
+    
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        success:function(response){
+          if(response.status == 1){
+              window.localStorage.setItem('pic',response.pic);
+              window.localStorage.setItem('nick',response.nick);
+              window.localStorage.setItem('name',response.name);
+              window.localStorage.setItem('contact',response.contact);
+              $rootScope.user.nick=response.nick;
+              $rootScope.user.pic=response.pic;
+              $rootScope.user.name=response.name;
+              $rootScope.user.contact=response.contact;
+              $rootScope.$apply();
+          }
+          else{
+            Materialize.toast('Cannot load profile',1000);
+
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
+
+        }
+      })
 
   
 }])
@@ -630,8 +664,9 @@ angular.module('latchApp')
 
 
 socket.on('send_message_indi', function(data) {
-      
-        if(chatData.chatId==data.nick_name){
+      console.log(data);
+        console.log($scope.user.nick, data.nick_name)
+        if(chatData.chatId==data.nick || $scope.user.nick == data.nick){
               $scope.messages.push(data);
                $scope.$apply();
                chatScreen.scrollTop+=$('.message-wrapper').outerHeight();

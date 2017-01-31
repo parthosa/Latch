@@ -56,6 +56,10 @@ angular.module('latchApp')
   
   }
 
+if($rootScope.user == {})
+   $rootScope.getProfile();
+
+
   $rootScope.sendCurrLocNoMap = function () {
     var pos;
     if (navigator.geolocation) {
@@ -545,7 +549,7 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
- $rootScope.getProfile();
+   $rootScope.getProfile();
 
   
 }])

@@ -2,7 +2,8 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.40:8001';
+var baseUrl = 'http://172.17.45.40:8001'
+;
 var socket = io.connect('172.17.45.40', {
   port: 4000
 });
@@ -100,6 +101,8 @@ angular.module('latchApp')
         if (response.status == 1) {
           $state.go('app.nick');
           window.localStorage.setItem('session_key', response.session_key);
+          window.localStorage.setItem('loggedIn', true);
+
         }
 
         Materialize.toast(response.message, 1000)
@@ -129,6 +132,7 @@ angular.module('latchApp')
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
+          window.localStorage.setItem('loggedIn', true);
           $state.go('app.chats');
 
 

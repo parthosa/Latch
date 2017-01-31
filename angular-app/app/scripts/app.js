@@ -182,6 +182,14 @@ angular.module('latchApp', ['ui.router'])
               }
           }
       })
+       .state('app.logout', {
+         url: '/',
+          views: {
+              'content': {
+                  templateUrl: 'views/landing.html'
+              }
+          }
+      })
 
       // route for the test page
       .state('app.sample', {
@@ -219,7 +227,7 @@ angular.module('latchApp', ['ui.router'])
   };
 })
 
-.run(function ($rootScope, $location) {
+.run(function ($rootScope, $state, $location) {
 
     var history = [];
 
@@ -233,5 +241,15 @@ angular.module('latchApp', ['ui.router'])
 //        console.log(prevUrl);
         $location.path(prevUrl);
     };
+
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        var loggedIn = window.localStorage.getItem('loggedIn');
+        if  (toState.name !== 'app' && !loggedIn){
+            $state.go('app');
+        }
+        if  (toState.name == 'app' && loggedIn){
+            $state.go('app.chats');
+        }
+    });
 
 });

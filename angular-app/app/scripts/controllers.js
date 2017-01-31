@@ -41,7 +41,7 @@ angular.module('latchApp')
           if(response.status == 1){
               window.localStorage.setItem('pic',response.pic);
                 $rootScope.user = response;
-              $rootScope.$apply();
+              // $rootScope.$apply();
           }
           else{
             Materialize.toast('Cannot load profile',1000);
@@ -195,7 +195,7 @@ angular.module('latchApp')
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
-           $rootScope.getProfile();
+         $rootScope.getProfile();
           $state.go('app.chats');
 
 

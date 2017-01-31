@@ -247,22 +247,22 @@ angular.module('latchApp', ['ui.router'])
         $location.path(prevUrl);
     };
 
-//    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-//        // event.preventDefault();
-//        // console.log(event);
-//        event.defaultPrevented = true;
-//        var loggedIn = window.localStorage.getItem('loggedIn');
-//        if  ((toState.name !== 'app' && toState.name !== 'app.register' && toState.name !== 'app.login'  && toState.name !== 'app.nick'  && toState.name !== 'app.profile_pic')   && !loggedIn){
-//            $state.go('app');
-//        }
-//        else{
-//            event.defaultPrevented = false;
-//            if  ($location.url() == '/' && loggedIn){
-//                $location.url('/chats')
-//            }
-//        }  
-//        
-//       
-//    });
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
+        // event.preventDefault();
+        // console.log(event);
+        event.defaultPrevented = true;
+        var loggedIn = window.localStorage.getItem('loggedIn');
+        if  ((toState.name !== 'app' && toState.name !== 'app.register' && toState.name !== 'app.login'  && toState.name !== 'app.nick'  && toState.name !== 'app.profile_pic')   && !loggedIn){
+            $state.go('app');
+        }
+        else{
+            event.defaultPrevented = false;
+            if  ($location.url() == '/' && loggedIn){
+                $location.url('/chats')
+            }
+        }  
+        
+       
+    });
 
 });

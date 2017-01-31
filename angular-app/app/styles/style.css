@@ -334,7 +334,7 @@ div[ui-view="footer"]{
   border-style: solid;
 }
 .message-wrapper.them .circle-wrapper, .message-wrapper.them .text-wrapper {
-  background:#ee6e73;
+  background:#57b5fc;
   float: left;
   color: #ffffff;
 }
@@ -342,7 +342,7 @@ div[ui-view="footer"]{
 
 .message-wrapper.them .text-wrapper:before {
   border-width: 0 10px 10px 0;
-  border-color: transparent #F44336 transparent transparent;
+  border-color: transparent #57b5fc transparent transparent;
   position: absolute;
   top: 0;
   left: -9px;

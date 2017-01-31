@@ -478,7 +478,27 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
+  $scope.profile;
+  
+  $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        contentType: false,
+        processData: false,
+        success:function(response){
+          if(response.status == 1){
+          console.log(response);
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
 
+        }
+      })
+  
 }])
 
 .controller('SettingsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
@@ -720,8 +740,10 @@ socket.on('send_message_group', function(data) {
         processData: false,
         success:function(response){
           Materialize.toast(response.message,1000);
-          if(response.status == 1)
+          if(response.status == 1){
             $state.go('app.nick');
+            window.localStorage('profile_pic',file);
+          }
         },
         error:function(response){
           Materialize.toast('Try Again',1000);

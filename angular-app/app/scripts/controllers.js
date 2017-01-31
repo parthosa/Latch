@@ -2,7 +2,8 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.40:8001';
+var baseUrl = 'http://172.17.45.40:8001'
+;
 var socket = io.connect('172.17.45.40', {
   port: 4000
 });
@@ -73,6 +74,33 @@ angular.module('latchApp')
     }
   };
 
+  $scope.logout = function(){
+      window.localStorage.clear();
+  }
+
+
+  $scope.anonymousTrigger = function(){
+    $.ajax({
+      method:'POST',
+      url:baseUrl + '/main/user/anonymous/',
+      data:{
+        session_key:window.localStorage.getItem('session_key')
+      },
+      success:function(response){
+        Materialize.toast(response.message,1000);
+        if(response.status==1)
+            console.log('Yo')
+           // update nicks
+      },
+      error:function(response){
+        Materialize.toast(response.message,1000);
+
+      }
+    })
+  }
+  
+  
+
 }])
 
 .controller('SampleController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
@@ -102,6 +130,8 @@ angular.module('latchApp')
         if (response.status == 1) {
           $state.go('app.nick');
           window.localStorage.setItem('session_key', response.session_key);
+          window.localStorage.setItem('loggedIn', true);
+
         }
 
         Materialize.toast(response.message, 1000)
@@ -131,6 +161,7 @@ angular.module('latchApp')
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
+          window.localStorage.setItem('loggedIn', true);
           $state.go('app.chats');
 
 
@@ -465,6 +496,7 @@ angular.module('latchApp')
 
   $scope.user = {};
   $scope.user.nick = window.localStorage.getItem('nick');
+  var chatScreen=document.getElementsByClassName('chat-screen')[0];
 
   $.ajax({
     method: 'POST',
@@ -480,7 +512,7 @@ angular.module('latchApp')
       }
       $scope.messages = response.messages;
       $scope.$apply();
-      console.log($scope.messages);
+      chatScreen.scrollTop=$('.message-wrapper').outerHeight()*response.messages.length
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -510,8 +542,8 @@ angular.module('latchApp')
 
       // $scope.messages.push(newMessage);
       console.log($scope.messages);
-      var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
-      $('.chat-screen').scrollTop(scrollTop)
+      // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
+      // $('.chat-screen').scrollTop(scrollTop)
         //        console.log(scrollTop)
       $scope.newMessageText = '';
 
@@ -525,9 +557,11 @@ angular.module('latchApp')
 
 socket.on('send_message_indi', function(data) {
       
-        if(chatData.chatId==data.nick){
+        if(chatData.chatId==data.nick_name){
               $scope.messages.push(data);
                $scope.$apply();
+               chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+
         }
 
       });
@@ -540,6 +574,8 @@ socket.on('send_message_indi', function(data) {
 
   $scope.user = {};
   $scope.user.nick = window.localStorage.getItem('nick');
+
+  var chatScreen=document.getElementsByClassName('chat-screen')[0];
 
   $.ajax({
     method: 'POST',
@@ -555,7 +591,9 @@ socket.on('send_message_indi', function(data) {
       }
       $scope.messages = response.messages;
       $scope.$apply();
-      console.log($scope.messages);
+      chatScreen.scrollTop=$('.message-wrapper').outerHeight()*response.messages.length
+
+
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -603,6 +641,8 @@ socket.on('send_message_group', function(data) {
         if(chatData.chatId==data.group_name){
               $scope.messages.push(data);
                $scope.$apply();
+               chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+               
         }
 
       });
@@ -659,5 +699,22 @@ socket.on('send_message_group', function(data) {
 
 }])
   .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+
+}])
+  .controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+
+   $scope.previewFile = function() {
+      var preview = document.querySelector('img');
+      var file    = document.querySelector('input[type=file]').files[0];
+      var reader  = new FileReader();
+
+      reader.addEventListener("load", function () {
+        preview.src = reader.result;
+      }, false);
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    }
 
 }])

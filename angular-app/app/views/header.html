@@ -27,9 +27,9 @@
             <div class="background side-nav-bg right-align">
               <img class="responsive-img " src="http://materializecss.com/images/office.jpg">
             </div>
-            <a href="#!user"><img class="circle" src="images/batman.png"></a>
-            <a href="#!name"><span class="white-text name">Guest</span></a>
-            <a href="#!email"><span class="white-text email"></span></a>
+            <a href="#!user"><img class="circle" ng-src="{{baseUrl + user.pic}}"></a>
+            <a href="#!name"><span class="white-text name">{{user.name}}</span></a>
+            <!-- <a href="#!email"><span class="white-text email">{</span></a> -->
           </div>
         </li>
         <li><a ui-sref='app.profile'>Profile</a></li>
@@ -51,7 +51,7 @@
                   <p>Go Anonymous</p>
                 <div class="switch">
                   <label>
-                    <input type="checkbox"  ng-change="anonymousTrigger()">
+                    <input type="checkbox" >
                     <span class="lever"></span>
                   </label>
                 </div>

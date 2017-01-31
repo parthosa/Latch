@@ -24,6 +24,34 @@ angular.module('latchApp')
       return false;
   }
 
+  $rootScope.baseUrl = baseUrl;
+
+  $scope.user = {};
+
+  
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        success:function(response){
+          if(response.status == 1){
+              $scope.user =response
+            $scope.$apply();
+          }
+          else{
+            Materialize.toast('Cannot load profile',1000);
+
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
+
+        }
+      })
+  
+
 
   $rootScope.sendCurrLocNoMap = function () {
     var pos;
@@ -98,6 +126,8 @@ angular.module('latchApp')
       }
     })
   }
+
+
   
   
 
@@ -238,6 +268,25 @@ angular.module('latchApp')
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
+
+
+           var data = {
+            lat: pos.lat,
+            longitude: pos.lng,
+            session_key: window.localStorage.getItem('session_key')
+
+          }
+        $.ajax({
+          method: 'POST',
+          url: baseUrl + '/main/user/location/',
+          data: data,
+          success: function (response) {
+            if (response.status != 1)
+              Materialize.toast('Please Enable Location Services')
+          }
+        })
+
+
 
           var marker = new google.maps.Marker({
             position: pos
@@ -401,7 +450,6 @@ angular.module('latchApp')
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
   $scope.chats;
-  $scope.baseUrl=baseUrl;
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_chat_list/',
@@ -456,41 +504,61 @@ angular.module('latchApp')
   }
 }])
 
-.controller('GroupInfoController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+.controller('GroupInfoController', ['$rootScope', '$scope', '$state','chatData', function ($rootScope, $scope, $state,chatData) {
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
+ 
+   $scope.group={};
+   $scope.group.pic = $rootScope.chatPic;
+   $.ajax({
+    method: 'POST',
+    url: baseUrl + '/main/room/'+chatData.chatId+'/get_members/',
+    data: {
+      'session_key': window.localStorage.getItem('session_key')
+    },
+    success: function (response) {
+      if(response.status == 1){
+        $scope.group.members = response.members;
+        $scope.$apply();
+      }
+      else
+        Materialize.toast('Could Not Fetch Group Members',1000);
+    },
+    error:function(response){
+        Materialize.toast('Could Not Fetch Group Members',1000);
 
-  // $.ajax({
-  //     method: 'POST',
-  //     url: 'http://localhost:8000/main/user/get_chat/',
-  //     data: {
-  //         'group_name': chatData.chatId,
-  //     },
-  //     success: function(response) {
-  //          $scope.members = response.members
-  //     },
-  //     error: function(response) {
-  //        Materialize.toast('Could Not Fetch Group Members',1000)
-  //     }
-  // })
+    }
+  });
+  
+
+  $scope.redirect = function (el) {
+    
+    chatData.chatId = el.member.nick;
+    $state.go('app.message');
+    $rootScope.title = el.member.nick;
+  }
+
 }])
 
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
-  $scope.profile;
+  $scope.user;
   
-  $.ajax({
+      $.ajax({
         method:'POST',
         url:baseUrl+'/main/user/profile/',
         data:{
           'session_key': window.localStorage.getItem('session_key')
         },
-        contentType: false,
-        processData: false,
         success:function(response){
           if(response.status == 1){
-          console.log(response);
+              $scope.user =response
+            $scope.$apply();
+          }
+          else{
+            Materialize.toast('Cannot load profile',1000);
+
           }
         },
         error:function(response){
@@ -498,6 +566,7 @@ angular.module('latchApp')
 
         }
       })
+
   
 }])
 

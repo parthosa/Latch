@@ -2,9 +2,9 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.40:8001'
+var baseUrl = 'http://52.11.141.223:8001'
 ;
-var socket = io.connect('172.17.45.40', {
+var socket = io.connect('52.11.141.223', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -196,7 +196,7 @@ angular.module('latchApp')
           window.localStorage.setItem('loggedIn', true);
            $rootScope.getProfile();
           $state.go('app.chats');
-          
+
 
 
         } else
@@ -610,7 +610,6 @@ angular.module('latchApp')
         session_key: window.localStorage.getItem('session_key')
       }
 
-      // $scope.messages.push(newMessage);
       console.log($scope.messages);
       // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
       // $('.chat-screen').scrollTop(scrollTop)
@@ -694,7 +693,6 @@ socket.on('send_message_indi', function(data) {
         session_key: window.localStorage.getItem('session_key')
       }
 
-      // $scope.messages.push(newMessage);
       console.log(newMessage);
       var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
       $('.chat-screen').scrollTop(scrollTop)
@@ -744,7 +742,7 @@ socket.on('send_message_group', function(data) {
           if (response.status == 1) {
             addToChatRoom();
            $rootScope.getProfile();
-            
+
           } else
             Materialize.toast('Try Again', 1000);
         },

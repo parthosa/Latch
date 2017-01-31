@@ -416,3 +416,18 @@ p.time{
     width:64px;
     height:64px;
 }
+
+
+/*profile pic*/
+
+.file-field.no-material.input-field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img#img-preview {
+  display: none;
+    height: 50vh;
+    width: 100%;
+}

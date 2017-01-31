@@ -276,10 +276,15 @@ def get_members_chatroom(request, room_name):
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = room_name)
-		if user_p in groups.members.all():
-			g_members = groups.members.all()
-			g_members_name = [x.nick_name for x in g_members]
-			response = {'status': 1, 'members': g_members_name}
+		g_members_info = []
+		if user_p in group.members.all():
+			g_members = group.members.all()
+			for user_g in g_members:
+				# distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, user_g.lat, user_g.longitude)
+				# json_data = json.load(urlopen(distance_url))
+				# distance = json_data['rows'][0]['elements'][0]['distance']['text']
+				g_members_info.append({'nick': user_g.nick_name, 'pic': user_g.dp_url}) #= [x.nick_name for x in g_members]
+			response = {'status': 1, 'members': g_members_info}
 		else:
 			response = {'status': 0, 'message': 'You are not allowed to view members of this group'}
 

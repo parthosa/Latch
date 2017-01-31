@@ -22,7 +22,7 @@ class UserProfile(models.Model):
 		return self.name
 
 	def save(self, *args, **kwargs):
-		if self.dp is not None:
+		if self.dp:
 			self.dp_url = self.dp.url
 		else:
 			pass

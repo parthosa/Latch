@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^node_api/$', views.test_node_api, name='node_api_message'),
     url(r'^user/chat/indi/$', views.node_api_message_user, name='node_api_message_user'),
     url(r'^test_img/$', views.test_img, name='test_img'),
+    url(r'^user/get_device/$', views.get_device, name='get_device'),
 ]

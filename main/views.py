@@ -15,6 +15,7 @@ from datetime import datetime
 import re
 from operator import itemgetter
 from django.contrib.sessions.models import Session
+from gcm import GCM
 
 @csrf_exempt
 def social_login(request):
@@ -125,6 +126,8 @@ def nick_name(request):
 @csrf_exempt
 def profile_pic(request):
 	session_key = request.POST['session_key']
+	print request.POST
+	print request.FILES
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -138,7 +141,7 @@ def profile_pic(request):
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
 	else:
-		user_image = request.POST['dpic']
+		user_image = request.FILES.get('dpic')
 		user_p.dp = user_image
 		user_p.save()
 
@@ -552,3 +555,63 @@ def test_img(request):
 	print user.dp.url
 	return 1
 
+def get_device(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		device_id = Device_ID.objects.create(user = user_p, device_id = request.POST['device_id'])
+		user_p.device_id.add(Device_ID.objects.get(device_id = request.POST['device_id']))
+		user_p.save()
+		return JsonResponse({'status': 1, 'message': 'successfully saved'})
+
+@csrf_exempt
+def indi_msg_notification(request):
+	if request.POST:
+		if len(device_id) != 0:
+			session_key = request.POST['session_key']
+			session = Session.objects.get(session_key = session_key)
+			uid = session.get_decoded().get('_auth_user_id')
+			try:
+				user = User.objects.get(pk=uid)
+			except ObjectDoesNotExist:
+				response = {'status':0, 'message':'Kindly login first'}
+			user_p = UserProfile.objects.get(user = user)
+			message = request.POST['message']
+			user_c = UserProfile.objects.get(request.POST['nick_name'])
+			timestamp = request.POST['time']
+			gcm = GCM(AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc)
+			reg_ids = [user_c.device_id]
+			notification_msg = '''New Message from %s''' % (user_p.nick_name)
+			notification = {'title': 'New message', 'message': notification_msg}
+			response = gcm.json_request(registration_ids=reg_ids, data=notification)
+
+			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
+
+@csrf_exempt
+def group_msg_notification(request):
+	if request.POST:
+		if len(device_id) != 0:
+			session_key = request.POST['session_key']
+			session = Session.objects.get(session_key = session_key)
+			uid = session.get_decoded().get('_auth_user_id')
+			try:
+				user = User.objects.get(pk=uid)
+			except ObjectDoesNotExist:
+				response = {'status':0, 'message':'Kindly login first'}
+			user_p = UserProfile.objects.get(user = user)
+			message = request.POST['message']
+			group = Group.objects.get(name = request.POST['group_name'])
+			timestamp = request.POST['time']
+			gcm = GCM(AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc)
+			reg_ids = [x.device_id for x in UserProfile.objects.filter(group = group)]
+			notification_msg = '''New Message from %s''' % (user_p.nick_name)
+			notification = {'title': 'New message', 'message': notification_msg}
+			response = gcm.json_request(registration_ids=reg_ids, data=notification)
+
+			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})

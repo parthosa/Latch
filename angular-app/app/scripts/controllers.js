@@ -128,7 +128,7 @@ angular.module('latchApp')
       type: 'jsonp',
       success: function (response) {
         if (response.status == 1) {
-          $state.go('app.nick');
+          $state.go('app.profile_pic');
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
 
@@ -196,8 +196,6 @@ angular.module('latchApp')
         if (response.status == 1) {
           window.localStorage.setItem('nick', data.nick);
 
-          var curLoc = $rootScope.sendCurrLocNoMap();
-          console.log(curLoc);
           $state.go('app.interests');
         }
         Materialize.toast(response.message, 1000)
@@ -373,7 +371,7 @@ angular.module('latchApp')
         for (var i = 0; i < data.length; i++) {
           console.log(data[i], $rootScope.CustomMarker);
           if (data[i].nick != window.localStorage.getItem('nick'))
-            new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, data[i].pic, data[i].nick, data[i].distance)
+            new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, baseUrl+data[i].pic, data[i].nick, data[i].distance)
         }
 
       } else
@@ -403,7 +401,7 @@ angular.module('latchApp')
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
   $scope.chats;
-
+  $scope.baseUrl=baseUrl;
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_chat_list/',
@@ -480,7 +478,27 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
+  $scope.profile;
+  
+  $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        contentType: false,
+        processData: false,
+        success:function(response){
+          if(response.status == 1){
+          console.log(response);
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
 
+        }
+      })
+  
 }])
 
 .controller('SettingsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
@@ -702,19 +720,36 @@ socket.on('send_message_group', function(data) {
 
 }])
   .controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+   $rootScope.sendCurrLocNoMap();
 
-   $scope.previewFile = function() {
-      var preview = document.querySelector('img');
-      var file    = document.querySelector('input[type=file]').files[0];
-      var reader  = new FileReader();
+  $rootScope.title = 'Upload Profile Picture';
+   //  $scope.profilePic;
 
-      reader.addEventListener("load", function () {
-        preview.src = reader.result;
-      }, false);
+   $scope.submit = function(){
+      var file  = document.querySelector('input#profile-pic-upload').files[0];
+      var session_key = window.localStorage.getItem('session_key')
+      var formData = new FormData();
+      formData.append('session_key',session_key);
+      formData.append('dpic',file);
+      console.log(formData.getAll('dpic'))
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile_pic/',
+        data:formData,
+        contentType: false,
+        processData: false,
+        success:function(response){
+          Materialize.toast(response.message,1000);
+          if(response.status == 1){
+            $state.go('app.nick');
+            window.localStorage('profile_pic',file);
+          }
+        },
+        error:function(response){
+          Materialize.toast('Try Again',1000);
 
-      if (file) {
-        reader.readAsDataURL(file);
-      }
-    }
+        }
+      })
+   }
 
 }])

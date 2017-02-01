@@ -660,7 +660,7 @@ def edit_profile(request):
 		return JsonResponse({'status': 1, 'message': 'Changes have been successfully saved'})
 
 @csrf_exempt
-def forgot_password(request):
+def change_password(request):
 	if request.POST:
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)

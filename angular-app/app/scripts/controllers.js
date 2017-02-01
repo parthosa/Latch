@@ -2,9 +2,9 @@
 
 var globalVar;
 
-var baseUrl = 'http://52.11.141.223:8001'
+var baseUrl = 'http://139.59.23.184:8001'
 ;
-var socket = io.connect('52.11.141.223', {
+var socket = io.connect('139.59.23.184', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';

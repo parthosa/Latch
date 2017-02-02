@@ -956,7 +956,7 @@ angular.module('latchApp')
                     //    formData.append('session_key', session_key);
                     //    formData.append('dpic', file);
                     //    console.log(formData.getAll('dpic'))
-                  console.log(dataURL);
+//                  console.log(dataURL);
 
                   var data = {
                     session_key: session_key,
@@ -971,7 +971,7 @@ angular.module('latchApp')
                           Materialize.toast(response.message, 1000);
                           if (response.status == 1) {
                             $state.go('app.nick');
-                            window.localStorage.setItem('pic', file);
+                            window.localStorage.setItem('pic', dataURL);
                           }
                         },
                         error: function (response) {

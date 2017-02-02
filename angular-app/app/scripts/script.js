@@ -46,14 +46,14 @@ function previewFile(canvasId) { 
     var oc = document.createElement('canvas'),
       octx = oc.getContext('2d');
 
-    oc.width = img.width * 0.5;
-    oc.height = img.height * 0.5;
-    octx.drawImage(img, 0, 0, 250, 250);
+    oc.width = 250;
+    oc.height = 250;
+    octx.drawImage(img, 0, 0, oc.width, oc.height);
 
     /// step 2
-//    octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+//    octx.drawImage(oc, 0, 0, oc.width, oc.height);
 
-    ctx.drawImage(oc, 0, 0, 250, 250,
+    ctx.drawImage(oc, 0, 0, oc.width, oc.height,
       0, 0, canvas.width, canvas.height);
     dataURL = canvas.toDataURL();
   }

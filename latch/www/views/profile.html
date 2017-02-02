@@ -1,5 +1,6 @@
 <div class="full-width profile-sec row" ng-controller='ProfileController'>
 		<div class="profile-pic-wrap col s12 l6 offset-l3">
+		<img ng-src="{{baseUrl + user.pic}}">
 			<!-- <div class="back_icon">
 			<i class="material-icons">arrow_back</i>
 		</div> -->
@@ -10,17 +11,22 @@
 						<span class="card-title">About</span>
 						<div class="info-row ">
 							<p class="info-icon"><i class="material-icons">account_box</i></p>
-							<p class="info-value">Partho Sarthi</p>
+							<p class="info-value">{{user.name}}</p>
+						</div>
+						<div class="info-row ">
+							<p class="info-icon"><i class="material-icons">local_offer</i></p>
+							<p class="info-value" >{{user.nick}}</p>
 						</div>
 						<div class="info-row ">
 							<p class="info-icon"><i class="material-icons">email</i></p>
-							<p class="info-value">hell.partho@gmail.com</p>
+							<p class="info-value">
+							{{user.contact}}</p>
 						</div>
 					</div>
 					
 				</div>
 		</div>
-		<div class="profile-tags col s12 l6 offset-l3">
+		<!-- <div class="profile-tags col s12 l6 offset-l3">
 				<div class="card">
 					<div class="card-content ">
 						<div class="chip">
@@ -33,5 +39,10 @@
 						</div>
 					</div>
 				</div>
-		</div>
+		</div> -->
+		 <div class="fixed-action-btn">
+    <a class="btn-floating btn-large" ui-sref='app.edit_profile'>
+      <i class="large material-icons">edit</i>
+    </a>
+  </div>
 	</div>

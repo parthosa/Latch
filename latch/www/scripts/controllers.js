@@ -2,8 +2,9 @@
 
 var globalVar;
 
-var baseUrl = 'http://172.17.45.40:8001';
-var socket = io.connect('172.17.45.40', {
+var baseUrl = 'http://139.59.23.184:8001'
+;
+var socket = io.connect('139.59.23.184', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -23,6 +24,15 @@ angular.module('latchApp')
       return false;
   }
 
+  $rootScope.baseUrl = baseUrl;
+  $rootScope.chats;
+  $rootScope.groups;
+  $rootScope.user = {};
+  $rootScope.user.pic = window.localStorage.getItem('pic');
+  $rootScope.user.nick = window.localStorage.getItem('nick');
+
+  
+ 
 
   $rootScope.sendCurrLocNoMap = function () {
     var pos;
@@ -50,7 +60,9 @@ angular.module('latchApp')
               Materialize.toast('Please Enable Location Services')
           }
         })
-      });
+      }, function () {
+          Materialize.toast('Please enable loaction services', 3000);
+        }, {timeout: 2000});
     }
   };
 
@@ -70,6 +82,35 @@ angular.module('latchApp')
       $rootScope.search.query = '';
     }
   };
+
+  $scope.logout = function(){
+      window.localStorage.clear();
+  }
+
+
+  $scope.anonymousTrigger = function(){
+    $.ajax({
+      method:'POST',
+      url:baseUrl + '/main/user/anonymous/',
+      data:{
+        session_key:window.localStorage.getItem('session_key')
+      },
+      success:function(response){
+        Materialize.toast(response.message,1000);
+        if(response.status==1)
+            console.log('Yo')
+           // update nicks
+      },
+      error:function(response){
+        Materialize.toast(response.message,1000);
+
+      }
+    })
+  }
+
+
+  
+  
 
 }])
 
@@ -98,8 +139,12 @@ angular.module('latchApp')
       type: 'jsonp',
       success: function (response) {
         if (response.status == 1) {
-          $state.go('app.nick');
+          $state.go('app.profile_pic');
           window.localStorage.setItem('session_key', response.session_key);
+          window.localStorage.setItem('loggedIn', true);
+          window.localStorage.setItem('name',$scope.user.name);
+          window.localStorage.setItem('contact',$scope.user.contact);
+
         }
 
         Materialize.toast(response.message, 1000)
@@ -129,6 +174,10 @@ angular.module('latchApp')
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
+          window.localStorage.setItem('loggedIn', true);
+          $rootScope.user.pic = response.pic;
+          $rootScope.user.nick = response.nick;
+         // $rootScope.getProfile();
           $state.go('app.chats');
 
 
@@ -146,6 +195,7 @@ angular.module('latchApp')
 .controller('NickController', ['$rootScope', '$scope', '$state', '$location', function ($rootScope, $scope, $state, $location) {
   $rootScope.title = 'Nick';
 
+  $rootScope.sendCurrLocNoMap();
   $scope.user = {};
   // $scope.user.nick = 'parthosa';
 
@@ -163,8 +213,6 @@ angular.module('latchApp')
         if (response.status == 1) {
           window.localStorage.setItem('nick', data.nick);
 
-          var curLoc = $rootScope.sendCurrLocNoMap();
-          console.log(curLoc);
           $state.go('app.interests');
         }
         Materialize.toast(response.message, 1000)
@@ -208,6 +256,25 @@ angular.module('latchApp')
             lng: position.coords.longitude
           };
 
+
+           var data = {
+            lat: pos.lat,
+            longitude: pos.lng,
+            session_key: window.localStorage.getItem('session_key')
+
+          }
+        $.ajax({
+          method: 'POST',
+          url: baseUrl + '/main/user/location/',
+          data: data,
+          success: function (response) {
+            if (response.status != 1)
+              Materialize.toast('Please Enable Location Services')
+          }
+        })
+
+
+
           var marker = new google.maps.Marker({
             position: pos
           });
@@ -216,7 +283,7 @@ angular.module('latchApp')
           map.setZoom(13);
         }, function () {
           Materialize.toast('Please enable loaction services', 3000);
-        });
+        }, {timeout: 2000});
       } else {
           Materialize.toast('Please enable loaction services', 3000);
       }
@@ -340,7 +407,7 @@ angular.module('latchApp')
         for (var i = 0; i < data.length; i++) {
           console.log(data[i], $rootScope.CustomMarker);
           if (data[i].nick != window.localStorage.getItem('nick'))
-            new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, data[i].pic, data[i].nick, data[i].distance)
+            new $rootScope.CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), map, baseUrl+data[i].pic, data[i].nick, data[i].distance)
         }
 
       } else
@@ -369,7 +436,39 @@ angular.module('latchApp')
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.chats;
+    if(window.localStorage.getItem('name')=="undefined"){
+    
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        success:function(response){
+          if(response.status == 1){
+              window.localStorage.setItem('pic',response.pic);
+              window.localStorage.setItem('nick',response.nick);
+              window.localStorage.setItem('name',response.name);
+              window.localStorage.setItem('contact',response.contact);
+              $rootScope.user.nick=response.nick;
+              $rootScope.user.pic=response.pic;
+              $rootScope.user.name=response.name;
+              $rootScope.user.contact=response.contact;
+              $rootScope.$apply();
+          }
+          else{
+            Materialize.toast('Cannot load profile',1000);
+
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
+
+        }
+      })
+  
+  }
+
 
   $.ajax({
     method: 'POST',
@@ -378,7 +477,7 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $scope.chats = response.peers;
+      $rootScope.chats = response.peers;
       $scope.$apply();
     },
     error: function (response) {
@@ -398,7 +497,6 @@ angular.module('latchApp')
 }])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-  $scope.groups = [];
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_groups/',
@@ -406,9 +504,9 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $scope.groups = response.groups;
+      $rootScope.groups = response.groups;
       $scope.$apply();
-      console.log($scope.groups);
+      // console.log($scope.groups);
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
@@ -425,44 +523,96 @@ angular.module('latchApp')
   }
 }])
 
-.controller('GroupInfoController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+.controller('GroupInfoController', ['$rootScope', '$scope', '$state','chatData', function ($rootScope, $scope, $state,chatData) {
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
+ 
+   $scope.group={};
+   $scope.group.pic = $rootScope.chatPic;
+   $.ajax({
+    method: 'POST',
+    url: baseUrl + '/main/room/'+chatData.chatId+'/get_members/',
+    data: {
+      'session_key': window.localStorage.getItem('session_key')
+    },
+    success: function (response) {
+      if(response.status == 1){
+        $scope.group.members = response.members;
+        $scope.$apply();
+      }
+      else
+        Materialize.toast('Could Not Fetch Group Members',1000);
+    },
+    error:function(response){
+        Materialize.toast('Could Not Fetch Group Members',1000);
 
-  // $.ajax({
-  //     method: 'POST',
-  //     url: 'http://localhost:8000/main/user/get_chat/',
-  //     data: {
-  //         'group_name': chatData.chatId,
-  //     },
-  //     success: function(response) {
-  //          $scope.members = response.members
-  //     },
-  //     error: function(response) {
-  //        Materialize.toast('Could Not Fetch Group Members',1000)
-  //     }
-  // })
+    }
+  });
+  
+
+  $scope.redirect = function (el) {
+    
+    chatData.chatId = el.member.nick;
+    $state.go('app.message');
+    $rootScope.title = el.member.nick;
+  }
+
 }])
 
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
+    
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile/',
+        data:{
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        success:function(response){
+          if(response.status == 1){
+              window.localStorage.setItem('pic',response.pic);
+              window.localStorage.setItem('nick',response.nick);
+              window.localStorage.setItem('name',response.name);
+              window.localStorage.setItem('contact',response.contact);
+              $rootScope.user.nick=response.nick;
+              $rootScope.user.pic=response.pic;
+              $rootScope.user.name=response.name;
+              $rootScope.user.contact=response.contact;
+              $rootScope.$apply();
+          }
+          else{
+            Materialize.toast('Cannot load profile',1000);
 
+          }
+        },
+        error:function(response){
+          Materialize.toast('Cannot load profile',1000);
+
+        }
+      })
+
+  
 }])
 
 .controller('SettingsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Settings';
 
+
+
 }])
 
 .controller('MessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
   // $rootScope.title='John Doe';
-  $scope.messages;
+     $scope.messages;
+  if($scope.messages==null)
+      $scope.messages = [];
 
 
   $scope.user = {};
   $scope.user.nick = window.localStorage.getItem('nick');
+  var chatScreen=document.getElementsByClassName('chat-screen')[0];
 
   $.ajax({
     method: 'POST',
@@ -478,7 +628,7 @@ angular.module('latchApp')
       }
       $scope.messages = response.messages;
       $scope.$apply();
-      console.log($scope.messages);
+      chatScreen.scrollTop=$('.message-wrapper').outerHeight()*response.messages.length
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -490,26 +640,29 @@ angular.module('latchApp')
   var newMessage;
   $scope.send = function () {
     if ($scope.newMessageText != '') {
-      var time = new Date().toLocaleTimeString('en-US', {
+      var date = new Date();
+      data =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         hour12: true,
         minute: 'numeric'
-      });
+      })
 
       newMessage = {
         message: $scope.newMessageText,
         nick: window.localStorage.getItem('nick'),
         nick_name: chatData.chatId,
-        time: time,
-        // sent: false,
+        time: date,
+        sent: false,
         msg_id: uuid.v4(),
         session_key: window.localStorage.getItem('session_key')
       }
+       $scope.messages.push(newMessage);
+       setTimeout(function(){
+         chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+       },100)
 
-      // $scope.messages.push(newMessage);
-      console.log($scope.messages);
-      var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
-      $('.chat-screen').scrollTop(scrollTop)
+      // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
+      // $('.chat-screen').scrollTop(scrollTop)
         //        console.log(scrollTop)
       $scope.newMessageText = '';
 
@@ -522,10 +675,26 @@ angular.module('latchApp')
 
 
 socket.on('send_message_indi', function(data) {
-      
-        if(chatData.chatId==data.nick){
+      console.log(data);
+        console.log($scope.user.nick, data.nick_name)
+        if(chatData.chatId==data.nick ){
               $scope.messages.push(data);
-               $scope.$apply();
+              $scope.$apply();
+              chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+        }
+        else if($scope.user.nick == data.nick){
+             
+              for(var i=$scope.messages.length-1;i>0;i--){
+                if($scope.messages[i].msg_id==data.msg_id){
+                  $scope.messages[i].sent=true;
+                  $scope.$apply();
+                }
+              }
+
+        }
+        else{
+          console.log(6);
+          Materialize.toast('New Message from '+data.nick,1000);
         }
 
       });
@@ -538,6 +707,8 @@ socket.on('send_message_indi', function(data) {
 
   $scope.user = {};
   $scope.user.nick = window.localStorage.getItem('nick');
+
+  var chatScreen=document.getElementsByClassName('chat-screen')[0];
 
   $.ajax({
     method: 'POST',
@@ -553,7 +724,9 @@ socket.on('send_message_indi', function(data) {
       }
       $scope.messages = response.messages;
       $scope.$apply();
-      console.log($scope.messages);
+      chatScreen.scrollTop=$('.message-wrapper').outerHeight()*response.messages.length
+
+
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Messages', 1000)
@@ -565,26 +738,26 @@ socket.on('send_message_indi', function(data) {
   var newMessage;
   $scope.send = function () {
     if ($scope.newMessageText != '') {
-      var time = new Date().toLocaleTimeString('en-US', {
+      var date = new Date();
+      data =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         hour12: true,
         minute: 'numeric'
-      });
-
+      })
       newMessage = {
         message: $scope.newMessageText,
         nick: window.localStorage.getItem('nick'),
         group_name: chatData.chatId,
-        time: time,
-        // sent: false,
+        time: date,
+        sent: false,
         msg_id: uuid.v4(),
         session_key: window.localStorage.getItem('session_key')
       }
 
-      // $scope.messages.push(newMessage);
-      console.log(newMessage);
-      var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
-      $('.chat-screen').scrollTop(scrollTop)
+      $scope.messages.push(newMessage);
+       setTimeout(function(){
+         chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+       },100)
         //        console.log(scrollTop)
       $scope.newMessageText = '';
 
@@ -598,18 +771,37 @@ socket.on('send_message_indi', function(data) {
 
 socket.on('send_message_group', function(data) {
       
-        if(chatData.chatId==data.group_name){
+       if(chatData.chatId==data.group_name && $scope.user.nick != data.nick){
               $scope.messages.push(data);
-               $scope.$apply();
+              $scope.$apply();
+              chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+        }
+        else if($scope.user.nick == data.nick){
+             console.log(4);
+              for(var i=$scope.messages.length-1;i>0;i--){
+                if($scope.messages[i].msg_id==data.msg_id){
+                  $scope.messages[i].sent=true;
+                  $scope.$apply();
+                }
+              }
+
+        }
+        else{
+          console.log(7);
+
+          Materialize.toast('New Message in '+data.group_name,1000);
         }
 
       });
+
+  
 
 }])
 
 .controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
     $rootScope.title = 'Interests';
 
+    $rootScope.sendCurrLocNoMap();
     $scope.submit = function () {
 
       var data = {};
@@ -626,6 +818,8 @@ socket.on('send_message_group', function(data) {
         success: function (response) {
           if (response.status == 1) {
             addToChatRoom();
+           $rootScope.getProfile();
+
           } else
             Materialize.toast('Try Again', 1000);
         },
@@ -657,5 +851,117 @@ socket.on('send_message_group', function(data) {
 
 }])
   .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+
+}])
+  .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+  $rootScope.title = 'Edit Profile';
+
+    $scope.name = window.localStorage.getItem('name');
+    $scope.contact = window.localStorage.getItem('contact');
+    $scope.nick = window.localStorage.getItem('nick');
+    console.log($scope.user)
+
+       $scope.submit = function(){
+      var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
+      var session_key = window.localStorage.getItem('session_key')
+      var formData = new FormData();
+      formData.append('session_key',session_key);
+      formData.append('name',$scope.name);
+      formData.append('contact',$scope.contact);
+      formData.append('nick',$scope.nick);
+      formData.append('pic',file);
+      console.log(formData.getAll('pic'))
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/edit_profile/',
+        data:formData,
+        contentType: false,
+        processData: false,
+        success:function(response){
+          Materialize.toast(response.message,1000);
+          if(response.status == 1){
+             window.localStorage.setItem('pic',response.pic);
+              window.localStorage.setItem('nick',response.nick);
+              window.localStorage.setItem('name',response.name);
+              window.localStorage.setItem('contact',response.contact);
+              $rootScope.user.nick=response.nick;
+              $rootScope.user.pic=response.pic;
+              $rootScope.user.name=response.name;
+              $rootScope.user.contact=response.contact;
+              $rootScope.$apply();
+            $state.go('app.chats');
+          }
+        },
+        error:function(response){
+          Materialize.toast('Try Again',1000);
+
+        }
+      })
+   }
+}])
+   .controller('PasswordController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+  $rootScope.title = 'Change Password';
+    $scope.old_password;
+    $scope.new_password;
+    $scope.new_password_confirm;
+
+    $scope.submit = function(){
+    var data = {};
+    data['old_password']=$scope.old_password;
+    data['new_password']=$scope.new_password;
+    data['new_password_confirm']=$scope.new_password_confirm;
+    data['session_key'] = window.localStorage.getItem('session_key')
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/password/change/',
+        data: data,
+        success: function (response) {
+          if (response.status == 1) {
+          Materialize.toast(response.message, 1000);
+           $state.go('app.chats')
+          } else
+            Materialize.toast(response.message, 1000);
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    }
+  }])
+
+
+  .controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+
+  $rootScope.title = 'Upload Profile Picture';
+   //  $scope.profilePic;
+
+   $rootScope.sendCurrLocNoMap();
+
+   $scope.submit = function(){
+      var file  = document.querySelector('input#profile-pic-upload').files[0];
+      var session_key = window.localStorage.getItem('session_key')
+      var formData = new FormData();
+      formData.append('session_key',session_key);
+      formData.append('dpic',file);
+      console.log(formData.getAll('dpic'))
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/profile_pic/',
+        data:formData,
+        contentType: false,
+        processData: false,
+        success:function(response){
+          Materialize.toast(response.message,1000);
+          if(response.status == 1){
+            $state.go('app.nick');
+            window.localStorage.setItem('pic',file);
+          }
+        },
+        error:function(response){
+          Materialize.toast('Try Again',1000);
+
+        }
+      })
+   }
 
 }])

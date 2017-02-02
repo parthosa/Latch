@@ -6,8 +6,9 @@
         <a href="" data-activates="sideNavbar" class="button-collapse" ng-click=" $('.button-collapse').sideNav()"><i class="material-icons">menu</i></a>
         <ul id="nav-mobile" class="right">
           <li><a href="" ng-click="search.toggle()" id="search_button"><i class="material-icons">search</i></a></li>
-          <li><a ui-sref="app.sample"><i class="material-icons">notifications</i></a></li>
+          <li id="moreOptionsTrigger" ><a ><i class="material-icons">more_vert</i></a></li>
         </ul>
+        
       </div>
 
       <div ng-if="search.visible">
@@ -26,20 +27,39 @@
             <div class="background side-nav-bg right-align">
               <img class="responsive-img " src="http://materializecss.com/images/office.jpg">
             </div>
-            <a href="#!user"><img class="circle" src="images/batman.png"></a>
-            <a href="#!name"><span class="white-text name">Guest</span></a>
-            <a href="#!email"><span class="white-text email"></span></a>
+            <a href="#!user"><img class="circle" ng-src="{{ baseUrl + user.pic }}"></a>
+            <a href="#!name"><span class="white-text name">{{user.nick}}</span></a>
+            <!-- <a href="#!email"><span class="white-text email">{</span></a> -->
           </div>
         </li>
         <li><a ui-sref='app.profile'>Profile</a></li>
         <li><a ui-sref='app.settings'>Settings</a></li>
-        <li><a ui-sref='app'>Logout</a></li>
+        <li><a ui-sref='app' ng-click='logout()'>Logout</a></li>
       </ul>
       <ul class="tabs tabs-transparent">
         <li class="tab"><a ng-class="{active: isActive('location')}" ui-sref="app.location">Location</a></li>
         <li class="tab"><a ng-class="{active: isActive('chats')}" ui-sref="app.chats">Chats</a></li>
         <li class="tab"><a ng-class="{active: isActive('groups')}" ui-sref="app.groups">Groups</a></li>
       </ul>
+    </div>
+    <div id="moreOptions">
+      <div class="row">
+        <div class="col s12 m6">
+          <div class="card ">
+            <div class="card-content">
+              <form class="anonymous">
+                  <p>Go Anonymous</p>
+                <div class="switch">
+                  <label>
+                    <input type="checkbox" >
+                    <span class="lever"></span>
+                  </label>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 </div>

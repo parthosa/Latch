@@ -195,6 +195,7 @@ angular.module('latchApp')
 .controller('NickController', ['$rootScope', '$scope', '$state', '$location', function ($rootScope, $scope, $state, $location) {
   $rootScope.title = 'Nick';
 
+  $rootScope.sendCurrLocNoMap();
   $scope.user = {};
   // $scope.user.nick = 'parthosa';
 
@@ -639,17 +640,18 @@ angular.module('latchApp')
   var newMessage;
   $scope.send = function () {
     if ($scope.newMessageText != '') {
-      var time = new Date().toLocaleTimeString('en-US', {
+      var date = new Date();
+      date =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         hour12: true,
         minute: 'numeric'
-      });
+      })
 
       newMessage = {
         message: $scope.newMessageText,
         nick: window.localStorage.getItem('nick'),
         nick_name: chatData.chatId,
-        time: time,
+        time: date,
         sent: false,
         msg_id: uuid.v4(),
         session_key: window.localStorage.getItem('session_key')
@@ -736,17 +738,17 @@ socket.on('send_message_indi', function(data) {
   var newMessage;
   $scope.send = function () {
     if ($scope.newMessageText != '') {
-      var time = new Date().toLocaleTimeString('en-US', {
+      var date = new Date();
+      date =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         hour12: true,
         minute: 'numeric'
-      });
-
+      })
       newMessage = {
         message: $scope.newMessageText,
         nick: window.localStorage.getItem('nick'),
         group_name: chatData.chatId,
-        time: time,
+        time: date,
         sent: false,
         msg_id: uuid.v4(),
         session_key: window.localStorage.getItem('session_key')
@@ -799,6 +801,7 @@ socket.on('send_message_group', function(data) {
 .controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
     $rootScope.title = 'Interests';
 
+    $rootScope.sendCurrLocNoMap();
     $scope.submit = function () {
 
       var data = {};
@@ -931,6 +934,8 @@ socket.on('send_message_group', function(data) {
 
   $rootScope.title = 'Upload Profile Picture';
    //  $scope.profilePic;
+
+   $rootScope.sendCurrLocNoMap();
 
    $scope.submit = function(){
       var file  = document.querySelector('input#profile-pic-upload').files[0];

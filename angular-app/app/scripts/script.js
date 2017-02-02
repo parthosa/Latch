@@ -43,5 +43,6 @@ function previewFile() {
 
 
 function custScroll(ele,size){
+	console.log(5);
 	document.querySelector(ele).scrollTop+=size;
 }

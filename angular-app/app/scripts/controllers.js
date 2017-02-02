@@ -655,9 +655,10 @@ angular.module('latchApp')
         session_key: window.localStorage.getItem('session_key')
       }
        $scope.messages.push(newMessage);
-     console.log(chatScreen.scrollTop);
-       chatScreen.scrollTop+=50;
-     console.log(chatScreen.scrollTop);
+     // console.log(chatScreen.scrollTop);
+     //   chatScreen.scrollTop+=50;
+     // console.log(chatScreen.scrollTop);
+     custScroll('.chat-screen',$('.message-wrapper').outerHeight());
 
       // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
       // $('.chat-screen').scrollTop(scrollTop)

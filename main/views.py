@@ -68,6 +68,8 @@ def Register(request):
 					member.name = name
 					member.user = user
 					member.save()
+					user_login = authenticate(username = contact, password = password)
+					login(request, user_login)
 					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key})
 			else:
 				user = User.objects.create_user(username = contact, password = password)

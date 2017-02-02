@@ -655,10 +655,9 @@ angular.module('latchApp')
         session_key: window.localStorage.getItem('session_key')
       }
        $scope.messages.push(newMessage);
-     // console.log(chatScreen.scrollTop);
-     //   chatScreen.scrollTop+=50;
-     // console.log(chatScreen.scrollTop);
-     custScroll('.chat-screen',$('.message-wrapper').outerHeight());
+       setTimeout(function(){
+         chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+       },100)
 
       // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
       // $('.chat-screen').scrollTop(scrollTop)
@@ -677,7 +676,7 @@ socket.on('send_message_indi', function(data) {
       console.log(data);
         console.log($scope.user.nick, data.nick_name)
         if(chatData.chatId==data.nick ){
-              $scope.messages.push(newMessage);
+              $scope.messages.push(data);
               $scope.$apply();
               chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
         }
@@ -692,6 +691,7 @@ socket.on('send_message_indi', function(data) {
 
         }
         else{
+          console.log(6);
           Materialize.toast('New Message from '+data.nick,1000);
         }
 
@@ -747,14 +747,15 @@ socket.on('send_message_indi', function(data) {
         nick: window.localStorage.getItem('nick'),
         group_name: chatData.chatId,
         time: time,
-        // sent: false,
+        sent: false,
         msg_id: uuid.v4(),
         session_key: window.localStorage.getItem('session_key')
       }
 
-      console.log(newMessage);
-      var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
-      $('.chat-screen').scrollTop(scrollTop)
+      $scope.messages.push(newMessage);
+       setTimeout(function(){
+         chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+       },100)
         //        console.log(scrollTop)
       $scope.newMessageText = '';
 
@@ -768,16 +769,30 @@ socket.on('send_message_indi', function(data) {
 
 socket.on('send_message_group', function(data) {
       
-        if(chatData.chatId==data.group_name){
+       if(chatData.chatId==data.group_name && $scope.user.nick != data.nick){
               $scope.messages.push(data);
-               $scope.$apply();
-               chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
-               
-        } else{
+              $scope.$apply();
+              chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+        }
+        else if($scope.user.nick == data.nick){
+             console.log(4);
+              for(var i=$scope.messages.length-1;i>0;i--){
+                if($scope.messages[i].msg_id==data.msg_id){
+                  $scope.messages[i].sent=true;
+                  $scope.$apply();
+                }
+              }
+
+        }
+        else{
+          console.log(7);
+
           Materialize.toast('New Message in '+data.group_name,1000);
         }
 
       });
+
+  
 
 }])
 
@@ -871,7 +886,7 @@ socket.on('send_message_group', function(data) {
               $rootScope.user.name=response.name;
               $rootScope.user.contact=response.contact;
               $rootScope.$apply();
-            $state.go('app.nick');
+            $state.go('app.chats');
           }
         },
         error:function(response){

@@ -652,7 +652,7 @@ def edit_profile(request):
 		user_p.nick_name = request.POST['nick']
 		user_p.contact = request.POST['contact']
 		try:
-			user_p.dp = request.FILE['dp']
+			user_p.dp = request.FILE['pic']
 		except:
 			pass
 		user_p.save()
@@ -673,6 +673,7 @@ def change_password(request):
 		if user_auth:
 			if request.POST['new_password'] == request.POST['new_password_confirm']:
 				user.set_password(request.POST['new_password'])
+				user.save()
 				response = {'status': 1, 'message': 'Your password has been successfully changed'}
 			else:
 				response = {'status': 0, 'message': 'your passwords did not match'}

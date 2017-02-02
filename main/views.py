@@ -636,3 +636,47 @@ def group_msg_notification(request):
 			response = gcm.json_request(registration_ids=reg_ids, data=notification)
 
 			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
+
+@csrf_exempt
+def edit_profile(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		user_p.name = request.POST['name']
+		user_p.nick_name = request.POST['nick']
+		user_p.contact = request.POST['contact']
+		try:
+			user_p.dp = request.FILE['dp']
+		except:
+			pass
+		user_p.save()
+
+		return JsonResponse({'status': 1, 'message': 'Changes have been successfully saved'})
+
+@csrf_exempt
+def change_password(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_auth = authenticate(username = user.username, password = request.POST['old_password'])
+		if user_auth:
+			if request.POST['new_password'] == request.POST['new_password_confirm']:
+				user.set_password(request.POST['new_password'])
+				response = {'status': 1, 'message': 'Your password has been successfully changed'}
+			else:
+				response = {'status': 0, 'message': 'your passwords did not match'}
+		else:
+			response = {'status': 0, 'message' : 'You are entering the wrong old password'}
+
+		return JsonResponse(response)

@@ -31,4 +31,6 @@ urlpatterns = [
     url(r'^user/indi_notify/$', views.indi_msg_notification, name='indi_msg_notification'),
     url(r'^user/group_notify/$', views.group_msg_notification, name='group_msg_notification'),
     url(r'^user/profile/$', views.get_profile, name='get_profile'),
+    url(r'^user/edit_profile/$', views.edit_profile, name='edit_profile'),
+    url(r'^user/password/change/$', views.change_password, name='change_password'),
 ]

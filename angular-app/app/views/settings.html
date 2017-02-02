@@ -1,11 +1,24 @@
 <div ng-controller="SettingsController" class="row">
+ <div class="col s12 m6 settings">
+          <div class="card ">
+            <div class="card-content ">
+               <a ui-sref="app.edit_profile" style="text-decoration: none;color: inherit;">Edit Profile</a>
+             </div>
+         </div>
+          <div class="card ">
+            <div class="card-content ">
+               <a ui-sref="app.change_password" style="text-decoration: none;color: inherit;">Change Password</a>
+             </div>
+         </div>
+ </div>
+</div>
 <!--
   <ul class="collection">
     <a ui-sref="app.nick" class="collection-item">Nick</a>
     <a ui-sref="app.nick" class="collection-item">Email</a>
   </ul>
 -->
-  <form class="col s10 offset-s1 m6 offset-m3" >
+  <!-- <form class="col s10 offset-s1 m6 offset-m3" >
 				<div class="row">
 					<div class="no-material input-field col s12">
 						<input placeholder="Name" type="text" class="validate" ng-model="user.name">
@@ -21,5 +34,5 @@
 					</div>
 						<a class="waves-effect waves-dark btn col s12 cust-btn " id="sign-up" ng-click="updateProfile()">Save</a>
 				</div>
-			</form> 
+			</form>  -->
 </div>

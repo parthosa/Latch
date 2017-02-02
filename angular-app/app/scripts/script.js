@@ -40,3 +40,8 @@ function previewFile() {
         reader.readAsDataURL(file);
       }
 }
+
+
+function custScroll(ele,size){
+	document.querySelector(ele).scrollTop+=size;
+}

@@ -194,6 +194,31 @@ angular.module('latchApp', ['ui.router'])
               }
           }
       })
+
+      .state('app.edit_profile', {
+          url: 'edit_profile',
+          views: {
+              'header@': {
+                  templateUrl: 'views/chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/edit_profile.html'
+              }
+          }
+      })
+
+      .state('app.change_password', {
+          url: 'change_password',
+          views: {
+              'header@': {
+                  templateUrl: 'views/chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/change_password.html'
+              }
+          }
+      })
+
        .state('app.logout', {
          url: '/',
           views: {

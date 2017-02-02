@@ -142,6 +142,8 @@ angular.module('latchApp')
           $state.go('app.profile_pic');
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
+          window.localStorage.setItem('name',$scope.user.name);
+          window.localStorage.setItem('contact',$scope.user.contact);
 
         }
 
@@ -433,7 +435,7 @@ angular.module('latchApp')
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
-    if(window.localStorage.getItem('pic')==null){
+    if(window.localStorage.getItem('name')=="undefined"){
     
       $.ajax({
         method:'POST',
@@ -445,8 +447,12 @@ angular.module('latchApp')
           if(response.status == 1){
               window.localStorage.setItem('pic',response.pic);
               window.localStorage.setItem('nick',response.nick);
+              window.localStorage.setItem('name',response.name);
+              window.localStorage.setItem('contact',response.contact);
               $rootScope.user.nick=response.nick;
               $rootScope.user.pic=response.pic;
+              $rootScope.user.name=response.name;
+              $rootScope.user.contact=response.contact;
               $rootScope.$apply();
           }
           else{
@@ -644,12 +650,15 @@ angular.module('latchApp')
         nick: window.localStorage.getItem('nick'),
         nick_name: chatData.chatId,
         time: time,
-        // sent: false,
+        sent: false,
         msg_id: uuid.v4(),
         session_key: window.localStorage.getItem('session_key')
       }
+       $scope.messages.push(newMessage);
+     console.log(chatScreen.scrollTop);
+       chatScreen.scrollTop+=50;
+     console.log(chatScreen.scrollTop);
 
-      console.log($scope.messages);
       // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
       // $('.chat-screen').scrollTop(scrollTop)
         //        console.log(scrollTop)
@@ -666,10 +675,19 @@ angular.module('latchApp')
 socket.on('send_message_indi', function(data) {
       console.log(data);
         console.log($scope.user.nick, data.nick_name)
-        if(chatData.chatId==data.nick || $scope.user.nick == data.nick){
-              $scope.messages.push(data);
-               $scope.$apply();
-               chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+        if(chatData.chatId==data.nick ){
+              $scope.messages.push(newMessage);
+              $scope.$apply();
+              chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+        }
+        else if($scope.user.nick == data.nick){
+             
+              for(var i=$scope.messages.length-1;i>0;i--){
+                if($scope.messages[i].msg_id==data.msg_id){
+                  $scope.messages[i].sent=true;
+                  $scope.$apply();
+                }
+              }
 
         }
         else{
@@ -816,8 +834,84 @@ socket.on('send_message_group', function(data) {
   .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
 }])
+  .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+  $rootScope.title = 'Edit Profile';
+
+    $scope.name = window.localStorage.getItem('name');
+    $scope.contact = window.localStorage.getItem('contact');
+    $scope.nick = window.localStorage.getItem('nick');
+    console.log($scope.user)
+
+       $scope.submit = function(){
+      var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
+      var session_key = window.localStorage.getItem('session_key')
+      var formData = new FormData();
+      formData.append('session_key',session_key);
+      formData.append('name',$scope.name);
+      formData.append('contact',$scope.contact);
+      formData.append('nick',$scope.nick);
+      formData.append('pic',file);
+      console.log(formData.getAll('pic'))
+      $.ajax({
+        method:'POST',
+        url:baseUrl+'/main/user/edit_profile/',
+        data:formData,
+        contentType: false,
+        processData: false,
+        success:function(response){
+          Materialize.toast(response.message,1000);
+          if(response.status == 1){
+             window.localStorage.setItem('pic',response.pic);
+              window.localStorage.setItem('nick',response.nick);
+              window.localStorage.setItem('name',response.name);
+              window.localStorage.setItem('contact',response.contact);
+              $rootScope.user.nick=response.nick;
+              $rootScope.user.pic=response.pic;
+              $rootScope.user.name=response.name;
+              $rootScope.user.contact=response.contact;
+              $rootScope.$apply();
+            $state.go('app.nick');
+          }
+        },
+        error:function(response){
+          Materialize.toast('Try Again',1000);
+
+        }
+      })
+   }
+}])
+   .controller('PasswordController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+  $rootScope.title = 'Change Password';
+    $scope.old_password;
+    $scope.new_password;
+    $scope.new_password_confirm;
+
+    $scope.submit = function(){
+    var data = {};
+    data['old_password']=$scope.old_password;
+    data['new_password']=$scope.new_password;
+    data['new_password_confirm']=$scope.new_password_confirm;
+    data['session_key'] = window.localStorage.getItem('session_key')
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/password/change/',
+        data: data,
+        success: function (response) {
+          if (response.status == 1) {
+          Materialize.toast(response.message, 1000);
+           $state.go('app.chats')
+          } else
+            Materialize.toast(response.message, 1000);
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    }
+  }])
+
+
   .controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-   $rootScope.sendCurrLocNoMap();
 
   $rootScope.title = 'Upload Profile Picture';
    //  $scope.profilePic;
@@ -839,7 +933,7 @@ socket.on('send_message_group', function(data) {
           Materialize.toast(response.message,1000);
           if(response.status == 1){
             $state.go('app.nick');
-            window.localStorage.setItem('profile_pic',file);
+            window.localStorage.setItem('pic',file);
           }
         },
         error:function(response){

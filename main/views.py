@@ -512,7 +512,7 @@ def user_users(request):
 		user_list = []
 		for group in i_group1:
 			try:
-				print group.user2.lat``
+				print group.user2.lat
 				print group.user2.longitude
 				print user_p.lat
 				print user_p.longitude

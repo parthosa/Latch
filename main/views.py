@@ -150,7 +150,7 @@ def profile_pic(request):
 	else:
 		user_image = request.FILES.get('dpic')
 		img = Image.open(user_image)
-		img_final = img.resize(200/img.size[1]*img.size[0], 200)
+		img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
 		user_p.dp = img_final
 		user_p.save()
 
@@ -687,7 +687,7 @@ def edit_profile(request):
 		try:
 			user_image = request.FILES.get('pic')
 			img = Image.open(user_image)
-			img_final = img.resize(200/img.size[1]*img.size[0], 200)
+			img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
 			user_p.dp = img_final
 		except:
 			pass

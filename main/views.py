@@ -148,10 +148,8 @@ def profile_pic(request):
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
 	else:
-		user_image = request.FILES.get('dpic')
-		img = Image.open(user_image)
-		img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
-		user_p.dp = img_final
+		user_image = request.POST['dpic']
+		user_p.dp_url = user_image
 		user_p.save()
 
 	return JsonResponse({'status': 1, 'message': 'Successfully saved your profile pic'})
@@ -514,7 +512,7 @@ def user_users(request):
 		user_list = []
 		for group in i_group1:
 			try:
-				print group.user2.lat
+				print group.user2.lat``
 				print group.user2.longitude
 				print user_p.lat
 				print user_p.longitude
@@ -685,10 +683,10 @@ def edit_profile(request):
 		user_p.nick_name = request.POST['nick']
 		user_p.contact = request.POST['contact']
 		try:
-			user_image = request.FILES.get('pic')
-			img = Image.open(user_image)
-			img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
-			user_p.dp = img_final
+			user_image = request.POST['pic']
+			# img = Image.open(user_image)
+			# img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
+			user_p.dp_url = user_image
 		except:
 			pass
 		user_p.save()

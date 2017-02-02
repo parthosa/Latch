@@ -14,19 +14,18 @@ class UserProfile(models.Model):
 	lat = models.CharField(max_length = 30, null = True)
 	longitude = models.CharField(max_length = 30, null = True)
 	locality = models.CharField(max_length = 100, null = True)
-	dp = models.ImageField(upload_to='dps', null = True)
-	dp_url = models.SlugField(max_length = 500, null = True)
+	dp_url = models.TextField(null = True)
 	device_id = models.ManyToManyField('Device_ID', related_name = 'user_devices')
 
 	def __unicode__(self):
 		return self.name
 
-	def save(self, *args, **kwargs):
-		if self.dp:
-			self.dp_url = self.dp.url
-		else:
-			pass
-		super(UserProfile, self).save(*args, **kwargs)
+	# def save(self, *args, **kwargs):
+	# 	if self.dp:
+	# 		self.dp_url = self.dp.url
+	# 	else:
+	# 		pass
+	# 	super(UserProfile, self).save(*args, **kwargs)
 
 class Device_ID(models.Model):
 	device_id = models.CharField(max_length = 200)

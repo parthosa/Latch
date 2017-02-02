@@ -16,6 +16,7 @@ import re
 from operator import itemgetter
 from django.contrib.sessions.models import Session
 from gcm import GCM
+from PIL import Image
 
 @csrf_exempt
 def social_login(request):
@@ -130,8 +131,6 @@ def nick_name(request):
 @csrf_exempt
 def profile_pic(request):
 	session_key = request.POST['session_key']
-	print request.POST
-	print request.FILES
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -147,8 +146,8 @@ def profile_pic(request):
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
 	else:
-		user_image = request.FILES.get('dpic')
-		user_p.dp = user_image
+		user_image = request.POST['dpic']
+		user_p.dp_url = user_image
 		user_p.save()
 
 	return JsonResponse({'status': 1, 'message': 'Successfully saved your profile pic'})
@@ -682,7 +681,10 @@ def edit_profile(request):
 		user_p.nick_name = request.POST['nick']
 		user_p.contact = request.POST['contact']
 		try:
-			user_p.dp = request.FILES['pic']
+			user_image = request.POST['pic']
+			# img = Image.open(user_image)
+			# img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
+			user_p.dp_url = user_image
 		except:
 			pass
 		user_p.save()

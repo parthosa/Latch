@@ -652,7 +652,7 @@ def edit_profile(request):
 		user_p.nick_name = request.POST['nick']
 		user_p.contact = request.POST['contact']
 		try:
-			user_p.dp = request.FILE['pic']
+			user_p.dp = request.FILES['pic']
 		except:
 			pass
 		user_p.save()

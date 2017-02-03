@@ -12,6 +12,17 @@ body {
     height: 100vh;
 }
 
+nav a.button-collapse{
+  display: block !important;
+}
+
+@media screen and (min-width: 1000px)
+{
+  nav .brand-logo{
+    position: relative !important; 
+  }
+}
+
 /*header*/
 .button-back{
     float: left;
@@ -44,6 +55,31 @@ height: 74px;
 .chat-nav .nav-wrapper{
     width:100%;
 }
+
+
+#moreOptions {
+  display: none;
+  position: absolute;
+  right: 0;
+  top:0;
+  border-radius: 5px;
+  color: black;
+}
+
+.anonymous p {
+    margin: 0;
+}
+
+.anonymous {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#moreOptions .card-content {
+    padding: 10px 10px;
+}
+
 .main-content{
     /*width: 100vw;*/
     min-height: 100vh;
@@ -138,10 +174,13 @@ p.chat-message {
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
+    display: flex;
+    justify-content: center;
 }
 
 .profile-pic-wrap img {
-    width: 100%;
+    /* width: 100%; */
+    height: 100%;
     /*max-width: 200px;*/
 }
 
@@ -309,7 +348,7 @@ div[ui-view="footer"]{
   border-style: solid;
 }
 .message-wrapper.them .circle-wrapper, .message-wrapper.them .text-wrapper {
-  background:#ee6e73;
+  background:#57b5fc;
   float: left;
   color: #ffffff;
 }
@@ -317,7 +356,7 @@ div[ui-view="footer"]{
 
 .message-wrapper.them .text-wrapper:before {
   border-width: 0 10px 10px 0;
-  border-color: transparent #F44336 transparent transparent;
+  border-color: transparent #57b5fc transparent transparent;
   position: absolute;
   top: 0;
   left: -9px;
@@ -390,4 +429,36 @@ p.time{
 .customMarker img {
     width:64px;
     height:64px;
+}
+
+
+/*profile pic*/
+
+.file-field.no-material.input-field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img#img-preview {
+  display: none;
+    height: 50vh;
+    width: 100%;
+}
+
+.group-list.row {
+    height: calc(100vh - 116px);
+    overflow: auto;
+    margin: 10px;
+}
+
+
+
+.settings .card {
+    margin: 0;
+}
+
+.settings {
+    padding: 0 !important;
+    margin: 10px 0;
 }

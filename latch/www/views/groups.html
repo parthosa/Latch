@@ -1,6 +1,6 @@
-<div class="row" ng-controller="GroupController">
-	<h4 class="center">Interest Groups</h4>
-	<div class="col s6" ng-repeat="group in groups | filter:search.query">
+<div class="row group-section" ng-controller="GroupController">
+	<div class="group-list row">
+	<div class="col s12 groups" ng-repeat="group in groups | filter:search.query">
 		<div class="card" ng-click="redirect(this)">
 			<div class="card-content center-align">
 				<span class="card-title">{{group.group_name}}</span>
@@ -11,4 +11,10 @@
 			</div>
 		</div>
 	</div>
+	</div>
+	 <div class="fixed-action-btn">
+    <a class="btn-floating btn-large" ui-sref='app.interests'>
+      <i class="large material-icons">edit</i>
+    </a>
+  </div>
 </div>

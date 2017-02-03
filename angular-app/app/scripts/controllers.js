@@ -641,7 +641,7 @@ angular.module('latchApp')
   $scope.send = function () {
     if ($scope.newMessageText != '') {
       var date = new Date();
-      data =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
+      date =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         hour12: true,
         minute: 'numeric'
@@ -739,7 +739,7 @@ socket.on('send_message_indi', function(data) {
   $scope.send = function () {
     if ($scope.newMessageText != '') {
       var date = new Date();
-      data =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
+      date =  date.toLocaleDateString() +',' +date.toLocaleTimeString('en-US', {
         hour: 'numeric',
         hour12: true,
         minute: 'numeric'

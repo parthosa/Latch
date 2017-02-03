@@ -59,7 +59,7 @@ def Register(request):
 					return JsonResponse({'status':0, 'message': 'This email is already registered.'})
 
 			elif not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact): #or type(contact) is int:
-				if not type(contact) is int and len(contact) == 10:
+				if not len(contact) == 10:
 					return JsonResponse({'status': 0, 'message': 'Kindly enter a valid phone number or email'})
 				else:
 					user = User.objects.create_user(username = contact, password = password)
@@ -68,6 +68,8 @@ def Register(request):
 					member.name = name
 					member.user = user
 					member.save()
+					user_login = authenticate(username = contact, password = password)
+					login(request, user_login)
 					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key})
 			else:
 				user = User.objects.create_user(username = contact, password = password)
@@ -110,6 +112,8 @@ def nick_name(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 
 		print [x.nick_name for x in UserProfile.objects.all()]
 		if nick in [x.nick_name for x in UserProfile.objects.all()]:	
@@ -134,6 +138,8 @@ def profile_pic(request):
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
+
 	user_p = UserProfile.objects.get(user = user)
 	if 'getfromfb' in request.POST:
 		fbdp = request.POST['fbdp']
@@ -163,6 +169,8 @@ def interests(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		user_p = UserProfile.objects.get(user = user)
 		interest_list = request.POST['interest'].split(',')
 		for interest in interest_list[:-1]:
@@ -191,6 +199,8 @@ def get_location(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		lat = request.POST['lat']
 		longitude = request.POST['longitude']
 		user_p = UserProfile.objects.get(user = user)
@@ -212,6 +222,8 @@ def add_to_chatroom(request):
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
+
 	user_p = UserProfile.objects.get(user = user)
 	lat = user_p.lat #test case
 	longitude = user_p.longitude #test case
@@ -251,6 +263,8 @@ def send_nearby(request):
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
+
 	user_p = UserProfile.objects.get(user = user)
 	locality = user_p.locality
 	nearby_users = UserProfile.objects.filter(locality = locality, anonymous = False)
@@ -274,6 +288,8 @@ def get_members_chatroom(request, room_name):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = room_name)
 		g_members_info = []
@@ -300,6 +316,8 @@ def start_chat_indi(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		user_p = UserProfile.objects.get(user = user)
 		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
 		try:
@@ -320,6 +338,8 @@ def go_anonymous(request):
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
+
 	user_p = UserProfile.objects.get(user = user)
 	if user_p.anonymous == True:
 		user_p.anonymous = False
@@ -354,6 +374,8 @@ def get_chatroom(request, group_name):
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
+
 	user_p = UserProfile.objects.get(user = user)
 	print group_name
 	Group_ob = Group.objects.get(name = group_name)
@@ -381,6 +403,8 @@ def node_api_message_group(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
         #Create message
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = request.POST['group_name'])
@@ -415,6 +439,8 @@ def node_api_message_user(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
         #Create message
 
 		user_p = UserProfile.objects.get(user = user)
@@ -454,6 +480,8 @@ def user_groups(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		user_p = UserProfile.objects.get(user = user)
 		groups = user_p.groups.all()
 		group_list = []
@@ -472,6 +500,8 @@ def user_users(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		user_p = UserProfile.objects.get(user = user)
 		i_group1 = Indi_group.objects.filter(user1 = user_p)
 		print i_group1
@@ -652,7 +682,7 @@ def edit_profile(request):
 		user_p.nick_name = request.POST['nick']
 		user_p.contact = request.POST['contact']
 		try:
-			user_p.dp = request.FILE['pic']
+			user_p.dp = request.FILES['pic']
 		except:
 			pass
 		user_p.save()
@@ -669,6 +699,8 @@ def change_password(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
 		user_auth = authenticate(username = user.username, password = request.POST['old_password'])
 		if user_auth:
 			if request.POST['new_password'] == request.POST['new_password_confirm']:

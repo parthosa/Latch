@@ -498,11 +498,18 @@ angular.module('latchApp')
     success: function (response) {
       console.log(response);
       response.peers.map(function (e, i) {
-        e.messages = [];
+        console.log(e.messages);
+        if (e.messages == undefined)
+          e.messages = [];
       })
-      db.indi_chat.bulkPut(response.peers);
-      $rootScope.chats = response.peers;
-      $scope.$apply();
+      db.indi_chat.bulkPut(response.peers).then(function() {
+        $rootScope.chats = [];
+//        console.log(1)
+        db.indi_chat.each(function (peer) {
+    $rootScope.chats.push(peer);
+    $scope.$apply();
+  })
+      });
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Chat List', 1000);
@@ -534,11 +541,19 @@ angular.module('latchApp')
     },
     success: function (response) {
       response.groups.map(function (e, i) {
-        e.messages = [];
+        console.log(e.messages);
+        if (e.messages == undefined)
+          e.messages = [];
       })
-      db.group_chat.bulkPut(response.groups);
-      $rootScope.groups = response.groups;
-      $scope.$apply();
+      db.group_chat.bulkPut(response.groups).then(function () {
+        $rootScope.groups = [];
+        db.group_chat.each(function (group) {
+          $rootScope.groups.push(group);
+          $scope.$apply();
+        })
+      });
+      //      $rootScope.groups = response.groups;
+      //      $scope.$apply();
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
@@ -662,8 +677,8 @@ angular.module('latchApp')
       for (var i = 0; i < response.messages.length; i++) {
         response.messages[i].nick = response.messages[i].nick_name;
       }
-//      console.log(response.messages);
-//      console.log(chatData.chatId.toString());
+      //      console.log(response.messages);
+      //      console.log(chatData.chatId.toString());
       db.indi_chat.where('nick').equals(chatData.chatId.toString()).modify({
         messages: response.messages
       }).then(function (snapshot) {

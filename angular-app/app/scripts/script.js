@@ -76,7 +76,7 @@ var db = new Dexie("database");
 
 db.version(1).stores({
   indi_chat: 'nick, pic, distance, messages',
-  group_chat: 'group_name, members, pic, messages'
+  group_chat: 'group_name, members, pic, messages, mem_info'
 });
 
 //db.indi_chat.put();

@@ -17,6 +17,7 @@ from operator import itemgetter
 from django.contrib.sessions.models import Session
 from gcm import GCM
 from PIL import Image
+import apiai
 
 @csrf_exempt
 def social_login(request):
@@ -573,20 +574,20 @@ def get_profile(request):
 
 	return JsonResponse({'status':1, 'name': name, 'nick': nick, 'contact': contact, 'pic': pic})
 
-def get_device(request):
-	if request.POST:
-		session_key = request.POST['session_key']
-		session = Session.objects.get(session_key = session_key)
-		uid = session.get_decoded().get('_auth_user_id')
-		try:
-			user = User.objects.get(pk=uid)
-		except ObjectDoesNotExist:
-			response = {'status':0, 'message':'Kindly login first'}
-		user_p = UserProfile.objects.get(user = user)
-		device_id = Device_ID.objects.create(user = user_p, device_id = request.POST['device_id'])
-		user_p.device_id.add(Device_ID.objects.get(device_id = request.POST['device_id']))
-		user_p.save()
-		return JsonResponse({'status': 1, 'message': 'successfully saved'})
+# def get_device(request):
+# 	if request.POST:
+# 		session_key = request.POST['session_key']
+# 		session = Session.objects.get(session_key = session_key)
+# 		uid = session.get_decoded().get('_auth_user_id')
+# 		try:
+# 			user = User.objects.get(pk=uid)
+# 		except ObjectDoesNotExist:
+# 			response = {'status':0, 'message':'Kindly login first'}
+# 		user_p = UserProfile.objects.get(user = user)
+# 		device_id = Device_ID.objects.create(user = user_p, device_id = request.POST['device_id'])
+# 		user_p.device_id.add(Device_ID.objects.get(device_id = request.POST['device_id']))
+# 		user_p.save()
+# 		return JsonResponse({'status': 1, 'message': 'successfully saved'})
 
 @csrf_exempt
 def indi_msg_notification(request):
@@ -610,6 +611,33 @@ def indi_msg_notification(request):
 			response = gcm.json_request(registration_ids=reg_ids, data=notification)
 
 			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
+
+@csrf_exempt
+def device_id(request):
+	if request.POST:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		device_id = Device_ID.objects.create(device_id = request.POST['device_id'], user = user_p)
+		user_p.device_id.add(device_id)	
+		resposnse = {'status': 1, 'message': 'device id successfully saved'}
+		return JsonResponse(response)
+	else:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		device_id = user_p.device_id.all()
+		return JsonResponse({'status': 1, 'device_id': device_id})		
 
 @csrf_exempt
 def group_msg_notification(request):

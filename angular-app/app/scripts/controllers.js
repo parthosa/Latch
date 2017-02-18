@@ -1,12 +1,10 @@
 'use strict';
 
 var globalVar;
-
-var baseUrl = 'http://139.59.23.184:8001';
-var socket = io.connect('139.59.23.184', {
+var socket = io.connect('192.168.43.116', {
   port: 4000
 });
-var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
+
 //var socket = io();
 var map;
 
@@ -58,7 +56,7 @@ angular.module('latchApp')
           }
         })
       }, function () {
-        Materialize.toast('Please enable loaction services', 3000);
+        Materialize.toast('Please enable location services', 3000);
       }, {
         timeout: 2000
       });
@@ -150,7 +148,9 @@ angular.module('latchApp')
 
   $scope.submit = function () {
     // $location.path('/chats');
-
+    try{
+    window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+    catch(err){}
     $.ajax({
       method: 'POST',
       url: baseUrl + '/main/accounts/register/',
@@ -163,13 +163,20 @@ angular.module('latchApp')
           window.localStorage.setItem('loggedIn', true);
           window.localStorage.setItem('name', $scope.user.name);
           window.localStorage.setItem('contact', $scope.user.contact);
+          pushNotification();
 
         }
-
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         Materialize.toast(response.message, 1000)
 
       },
-      error: function (response) {}
+      error: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
+      }
     })
   }
 }])
@@ -181,29 +188,40 @@ angular.module('latchApp')
 
 
   $scope.submit = function () {
-
+    try{
+    window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+    catch(err){}
     $.ajax({
       method: 'POST',
       url: baseUrl + '/main/accounts/login/',
       data: $scope.user,
       success: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         if (response.status == 1) {
+
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
           $rootScope.user.pic = response.pic;
           $rootScope.user.nick = response.nick;
+          pushNotification();
           // $rootScope.getProfile();
           $state.go('app.chats');
 
 
-
-        } else
+        } else{
           Materialize.toast(response.message, 1000)
+        }
 
       },
-      error: function (response) {}
+      error: function (response) {
+        try{
+         window.plugins.spinnerDialog.hide();}
+         catch(err){}
+      }
     })
   }
 
@@ -217,7 +235,9 @@ angular.module('latchApp')
   // $scope.user.nick = 'parthosa';
 
   $scope.submit = function () {
-
+    try{
+     window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+     catch(err){}
     var data = {
       nick: $scope.user.nick,
       session_key: window.localStorage.getItem('session_key')
@@ -227,6 +247,9 @@ angular.module('latchApp')
       url: baseUrl + '/main/user/nick/',
       data: data,
       success: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         if (response.status == 1) {
           window.localStorage.setItem('nick', data.nick);
 
@@ -235,7 +258,11 @@ angular.module('latchApp')
         Materialize.toast(response.message, 1000)
 
       },
-      error: function (response) {}
+      error: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
+      }
     })
   }
 
@@ -299,12 +326,12 @@ angular.module('latchApp')
           marker.setMap(map);
           map.setZoom(13);
         }, function () {
-          Materialize.toast('Please enable loaction services', 3000);
+          Materialize.toast('Please enable location services', 3000);
         }, {
           timeout: 2000
         });
       } else {
-        Materialize.toast('Please enable loaction services', 3000);
+        Materialize.toast('Please enable location services', 3000);
       }
     }
 
@@ -539,6 +566,9 @@ angular.module('latchApp')
 
   $scope.group = {};
   $scope.group.pic = $rootScope.chatPic;
+  try{
+   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+   catch(err){}
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/room/' + chatData.chatId + '/get_members/',
@@ -552,8 +582,14 @@ angular.module('latchApp')
         $scope.$apply();
       } else
         Materialize.toast('Could Not Fetch Group Members', 1000);
+        try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
     },
     error: function (response) {
+      try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
       Materialize.toast('Could Not Fetch Group Members', 1000);
 
     }
@@ -572,7 +608,9 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
-
+  try{
+   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+   catch(err){}
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/profile/',
@@ -594,10 +632,15 @@ angular.module('latchApp')
         Materialize.toast('Cannot load profile', 1000);
 
       }
+      try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
     },
     error: function (response) {
       Materialize.toast('Cannot load profile', 1000);
-
+      try{
+      window.plugins.spinnerDialog.hide();}
+      catch(err){}
     }
   })
 
@@ -704,8 +747,11 @@ angular.module('latchApp')
 
     } else {
       console.log(3);
+          alert('push dispatched')
+      
       Materialize.toast('New Message from ' + data.nick, 1000);
     }
+      dispatchPush(data,true);
 
 
 
@@ -797,9 +843,10 @@ angular.module('latchApp')
 
         }
         else{
-
+          alert('push dispatched')
           Materialize.toast('New Message in '+data.group_name,1000);
         }
+          dispatchPush(data,false);
 
       });
 
@@ -812,7 +859,9 @@ angular.module('latchApp')
 
               $rootScope.sendCurrLocNoMap();
               $scope.submit = function () {
-
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
                 var data = {};
                 data.interest = '';
                 var checkBox = $('#interests-form input:checked');
@@ -830,8 +879,14 @@ angular.module('latchApp')
 
                     } else
                       Materialize.toast('Try Again', 1000);
+                      try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                   },
                   error: function (response) {
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                     Materialize.toast('Try Again', 1000);
                   }
                 })
@@ -869,6 +924,9 @@ angular.module('latchApp')
               $scope.nick = window.localStorage.getItem('nick');
 
               $scope.submit = function () { 
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
                 var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
                 var session_key = window.localStorage.getItem('session_key')
                 var formData = new FormData();
@@ -902,8 +960,14 @@ angular.module('latchApp')
                       $rootScope.$apply();
                       $state.go('app.chats');
                     }
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                   },
                   error: function (response) {
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                     Materialize.toast('Try Again', 1000);
 
                   }
@@ -917,6 +981,9 @@ angular.module('latchApp')
               $scope.new_password_confirm;
 
               $scope.submit = function () {
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
                 var data = {};
                 data['old_password'] = $scope.old_password;
                 data['new_password'] = $scope.new_password;
@@ -932,8 +999,14 @@ angular.module('latchApp')
                       $state.go('app.chats')
                     } else
                       Materialize.toast(response.message, 1000);
+                      try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                   },
                   error: function (response) {
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                     Materialize.toast('Try Again', 1000);
                   }
                 })
@@ -950,6 +1023,9 @@ angular.module('latchApp')
 
 
                 $scope.submit = function () { 
+                  try{
+                     window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                     catch(err){}
                   //    var file  = dataURL;
                   var session_key = window.localStorage.getItem('session_key')
                     //    var formData = new FormData();
@@ -969,12 +1045,18 @@ angular.module('latchApp')
                         data: data,
                         success: function (response) {
                           Materialize.toast(response.message, 1000);
+                          try{
+                         window.plugins.spinnerDialog.hide();}
+                         catch(err){}
                           if (response.status == 1) {
                             $state.go('app.nick');
                             window.localStorage.setItem('pic', file);
                           }
                         },
                         error: function (response) {
+                        try{
+                         window.plugins.spinnerDialog.hide();}
+                         catch(err){}
                           Materialize.toast('Try Again', 1000);
 
                         }

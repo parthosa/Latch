@@ -259,6 +259,13 @@ angular.module('latchApp', ['ui.router'])
 
 .run(function ($rootScope, $state, $location) {
 
+
+
+  if(!window.localStorage.getItem('registrationId')){
+    pushNotification();
+  }
+
+
     var history = [];
 
     $rootScope.$on('$locationChangeStart', function() {

@@ -1,0 +1,34 @@
+<div class="messages-wrap" ng-controller="MessageController">
+<div class="chat-screen row" >
+	<div class="col s12">
+		<div class="message-wrapper" ng-repeat="message in messages" ng-class="{me : message.nick==user.nick,them: message.nick!=user.nick,'not-sent' : message.nick==user.nick && message.sent==false}">
+			<div class="text-wrapper animated fadeIn">
+				<p class="message-text" >{{message.message}}</p>
+				<p class="time" >{{message.time}}</p>
+			</div>
+		</div>
+		
+	</div>
+</div>
+
+<div class="chat-footer-wrap" >
+<div class="chat-footer">
+	 <div class="card">
+            <div class="card-content row">
+            <div class="col s2">
+          </div>
+            <div class="col s8">
+            <div class="input-field">
+            <input id="message" placeholder="Type your text" type="text" class="validate" ng-model="newMessageText">
+            </div>
+            </div>
+            <div class="col s2">
+
+            <a class="waves-effect waves-light " ng-click="send()"><i class="material-icons text-lighten-2 ">send</i></a>
+          </div>
+          </div>
+          
+    </div>
+</div>
+</div>
+</div>

@@ -1,9 +1,9 @@
 'use strict';
 
-var globalVar;
+var globalVar, blah;
 
-var baseUrl = 'http://139.59.23.184:8001';
-var socket = io.connect('139.59.23.184', {
+var baseUrl = 'http://172.17.45.40:8001';
+var socket = io.connect('172.17.45.40', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -22,7 +22,7 @@ angular.module('latchApp')
   }
 
   $rootScope.baseUrl = baseUrl;
-  $rootScope.chats;
+  $rootScope.chats = [];
   $rootScope.groups;
   $rootScope.user = {};
   $rootScope.user.pic = window.localStorage.getItem('pic');
@@ -490,8 +490,17 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $rootScope.chats = response.peers;
-      $scope.$apply();
+      console.log(response);
+      response.peers.map(function(e, i) {
+//        e.id = i;
+        e.messages = [];
+        console.log(e);
+      })
+      db.indi_chat.bulkAdd(response.peers);
+      db.indi_chat.each(function (peer) {
+        $rootScope.chats.push(peer);
+        $scope.$apply();
+      })
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Chat List', 1000);
@@ -618,6 +627,12 @@ angular.module('latchApp')
   if ($scope.messages == null)
     $scope.messages = [];
 
+  db.indi_chat.get('suvigya', function(peer) {
+  console.log(chatData.chatId);
+    console.log(peer);
+    $scope.messages = peer.messages;
+    $scope.$apply();
+  })
 
   $scope.user = {};
   $scope.user.nick = window.localStorage.getItem('nick');
@@ -635,7 +650,8 @@ angular.module('latchApp')
       for (var i = 0; i < response.messages.length; i++) {
         response.messages[i].nick = response.messages[i].nick_name;
       }
-      $scope.messages = response.messages;
+      console.log(response.messages);
+      db.indi_chat.where('nick').equals('suvigya').modify({messages: response.messages});
       $scope.$apply();
       chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
     },

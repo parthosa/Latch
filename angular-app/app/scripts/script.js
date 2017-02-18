@@ -69,3 +69,13 @@ function previewFile(canvasId) { 
      }, false);
 
 }
+
+// IndexedDB
+
+var db = new Dexie("database");
+
+db.version(1).stores({
+  indi_chat: 'nick, pic, distance, messages'
+});
+
+//db.indi_chat.put();

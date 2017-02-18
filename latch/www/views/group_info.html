@@ -1,6 +1,6 @@
 <div class="full-width group_info row" ng-controller='GroupInfoController'>
 		<div class="profile-pic-wrap col s12 l6 offset-l3" >
-		<img ng-src="{{ group.pic}}">
+		<img ng-src="{{ baseUrl+ '/' + group.pic}}">
 			<!-- <img src="images/batman.png" class="group-pic"> -->
 			<!-- <div class="back_icon">
 			<i class="material-icons">arrow_back</i>
@@ -10,7 +10,7 @@
 			<ul class="collection">
 				<li class="collection-item avatar" ng-repeat="member in group.members" ng-click="redirect(this)">
 			
-					<img ng-src="{{ member.pic}}" alt="" class="circle">
+					<img ng-src="{{ baseUrl+ '/' + member.pic}}" alt="" class="circle">
 					<span class="title">{{member.nick}}</span><br>
 					<span>{{member.distance}} </span>
 				

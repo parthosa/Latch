@@ -2,9 +2,9 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://192.168.43.116:8001';
+var baseUrl = 'http://172.17.45.40:8001';
 var globalVar;
-var socket = io.connect('192.168.43.116', {
+var socket = io.connect('172.17.45.40', {
   port: 4000
 });
 
@@ -560,11 +560,15 @@ angular.module('latchApp')
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
     console.log($rootScope.groups);
-  if ($rootScope.groups == []) {
+  $rootScope.groups = [];
+  if ($rootScope.groups.length==0) {
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);
       $scope.$apply();
-    });}
+//    console.log($rootScope.groups);
+//      console.log(1);
+    });
+  }
 
   $.ajax({
     method: 'POST',
@@ -573,20 +577,21 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      response.groups.map(function (e, i) {
+      response.groups.forEach(function (e, i) {
 //        console.log(e.messages);
         if (e.messages == undefined)
           e.messages = [];
         if (e.mem_info == undefined)
           e.mem_info = [];
       })
-      db.group_chat.bulkPut(response.groups).then(function () {
-//        $rootScope.groups = response.groups;
-        db.group_chat.each(function (group) {
-          $rootScope.groups.push(group);
+        $rootScope.groups = response.groups;
+//      db.group_chat.bulkPut(response.groups).then(function () {
+//        db.group_chat.each(function (group) {
+//          $rootScope.groups.push(group);
+      console.log($rootScope.groups);
           $scope.$apply();
-        })
-      });
+//        })
+//      });
       //      $rootScope.groups = response.groups;
       //      $scope.$apply();
     },
@@ -608,6 +613,7 @@ angular.module('latchApp')
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
+    console.log($rootScope.group);
   if ($rootScope.group==undefined)
     $rootScope.group = {members: []};
   db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
@@ -1099,21 +1105,27 @@ angular.module('latchApp')
                      catch(err){}
                   //    var file  = dataURL;
                   var session_key = window.localStorage.getItem('session_key')
-                    //    var formData = new FormData();
-                    //    formData.append('session_key', session_key);
+                        var formData = new FormData();
                     //    formData.append('dpic', file);
                     //    console.log(formData.getAll('dpic'))
+                  canvas.toBlob(function(blob){
+                  formData.append('session_key', session_key);
+                  formData.append('dpic', blob, uuid.v4() + ".png");
+                  }, "image/png");
                   console.log(dataURL);
+                  
 
-                  var data = {
-                    session_key: session_key,
-                    dpic: dataURL
-                  }
+//                  var data = {
+//                    session_key: session_key,
+//                    dpic: dataURL
+//                  }
                   if (dataURL != undefined) {
                       $.ajax({
                         method: 'POST',
                         url: baseUrl + '/main/user/profile_pic/',
-                        data: data,
+                        data: formData,
+                        contentType: false,
+                        processData: false,
                         success: function (response) {
                           Materialize.toast(response.message, 1000);
                           try{

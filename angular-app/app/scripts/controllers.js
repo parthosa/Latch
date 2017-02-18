@@ -2,8 +2,8 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://172.17.45.40:8001';
-var socket = io.connect('172.17.45.40', {
+var baseUrl = 'http://192.168.43.116:8001';
+var socket = io.connect('192.168.43.116', {
   port: 4000
 });
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
@@ -502,13 +502,13 @@ angular.module('latchApp')
         if (e.messages == undefined)
           e.messages = [];
       })
-      db.indi_chat.bulkPut(response.peers).then(function() {
+      db.indi_chat.bulkPut(response.peers).then(function () {
         $rootScope.chats = [];
-//        console.log(1)
+        //        console.log(1)
         db.indi_chat.each(function (peer) {
-    $rootScope.chats.push(peer);
-    $scope.$apply();
-  })
+          $rootScope.chats.push(peer);
+          $scope.$apply();
+        })
       });
     },
     error: function (response) {
@@ -544,6 +544,8 @@ angular.module('latchApp')
         console.log(e.messages);
         if (e.messages == undefined)
           e.messages = [];
+        if (e.mem_info == undefined)
+          e.mem_info = [];
       })
       db.group_chat.bulkPut(response.groups).then(function () {
         $rootScope.groups = [];
@@ -573,8 +575,14 @@ angular.module('latchApp')
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
-  $scope.group = {};
-  $scope.group.pic = $rootScope.chatPic;
+  if ($rootScope.group==undefined)
+    $rootScope.group = {members: []};
+  db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
+    $rootScope.group.members.push(group.mem_info);
+    $scope.$apply();
+  })
+  
+  $rootScope.group.pic = $rootScope.chatPic;
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/room/' + chatData.chatId + '/get_members/',
@@ -583,15 +591,15 @@ angular.module('latchApp')
     },
     success: function (response) {
       if (response.status == 1) {
-        console.log();
-        $scope.group.members = response.members;
-        $scope.$apply();
+          db.group_chat.where('group_name').equals(chatData.chatId.toString()).modify({mem_info: response.members}).then(function (snapshot) {
+            $rootScope.group.members = response.members;
+            $scope.$apply();
+          });
       } else
         Materialize.toast('Could Not Fetch Group Members', 1000);
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Group Members', 1000);
-
     }
   });
 
@@ -677,14 +685,11 @@ angular.module('latchApp')
       for (var i = 0; i < response.messages.length; i++) {
         response.messages[i].nick = response.messages[i].nick_name;
       }
-      //      console.log(response.messages);
-      //      console.log(chatData.chatId.toString());
       db.indi_chat.where('nick').equals(chatData.chatId.toString()).modify({
         messages: response.messages
       }).then(function (snapshot) {
         $scope.messages = response.messages;
         $scope.$apply();
-        //        console.log(1);
       });
       chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
     },

@@ -23,7 +23,7 @@ angular.module('latchApp')
 
   $rootScope.baseUrl = baseUrl;
   $rootScope.chats = [];
-  $rootScope.groups;
+  $rootScope.groups = [];
   $rootScope.user = {};
   $rootScope.user.pic = window.localStorage.getItem('pic');
   $rootScope.user.nick = window.localStorage.getItem('nick');
@@ -450,6 +450,12 @@ angular.module('latchApp')
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+  db.indi_chat.each(function (peer) {
+    $rootScope.chats.push(peer);
+    $scope.$apply();
+  })
+
+
   if (window.localStorage.getItem('name') == "undefined") {
 
     $.ajax({
@@ -491,16 +497,12 @@ angular.module('latchApp')
     },
     success: function (response) {
       console.log(response);
-      response.peers.map(function(e, i) {
-//        e.id = i;
+      response.peers.map(function (e, i) {
         e.messages = [];
-        console.log(e);
       })
-      db.indi_chat.bulkAdd(response.peers);
-      db.indi_chat.each(function (peer) {
-        $rootScope.chats.push(peer);
-        $scope.$apply();
-      })
+      db.indi_chat.bulkPut(response.peers);
+      $rootScope.chats = response.peers;
+      $scope.$apply();
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Chat List', 1000);
@@ -518,6 +520,12 @@ angular.module('latchApp')
 }])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+
+  db.group_chat.each(function (group) {
+    $rootScope.groups.push(group);
+    $scope.$apply();
+  })
+
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_groups/',
@@ -525,6 +533,10 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
+      response.groups.map(function (e, i) {
+        e.messages = [];
+      })
+      db.group_chat.bulkPut(response.groups);
       $rootScope.groups = response.groups;
       $scope.$apply();
     },
@@ -556,7 +568,7 @@ angular.module('latchApp')
     },
     success: function (response) {
       if (response.status == 1) {
-        console.log()
+        console.log();
         $scope.group.members = response.members;
         $scope.$apply();
       } else
@@ -627,8 +639,8 @@ angular.module('latchApp')
   if ($scope.messages == null)
     $scope.messages = [];
 
-  db.indi_chat.get('suvigya', function(peer) {
-  console.log(chatData.chatId);
+  db.indi_chat.get(chatData.chatId.toString(), function (peer) {
+    console.log(chatData.chatId);
     console.log(peer);
     $scope.messages = peer.messages;
     $scope.$apply();
@@ -650,9 +662,15 @@ angular.module('latchApp')
       for (var i = 0; i < response.messages.length; i++) {
         response.messages[i].nick = response.messages[i].nick_name;
       }
-      console.log(response.messages);
-      db.indi_chat.where('nick').equals('suvigya').modify({messages: response.messages});
-      $scope.$apply();
+//      console.log(response.messages);
+//      console.log(chatData.chatId.toString());
+      db.indi_chat.where('nick').equals(chatData.chatId.toString()).modify({
+        messages: response.messages
+      }).then(function (snapshot) {
+        $scope.messages = response.messages;
+        $scope.$apply();
+        //        console.log(1);
+      });
       chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
     },
     error: function (response) {
@@ -730,272 +748,282 @@ angular.module('latchApp')
 }])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
-        $scope.messages = [];
+  $scope.messages;
+  if ($scope.messages == null)
+    $scope.messages = [];
+
+  db.group_chat.get(chatData.chatId.toString(), function (group) {
+    console.log(chatData.chatId);
+    console.log(group);
+    $scope.messages = group.messages;
+    $scope.$apply();
+  })
+
+  $scope.user = {};
+  $scope.user.nick = window.localStorage.getItem('nick');
+
+  var chatScreen = document.getElementsByClassName('chat-screen')[0];
+
+  $.ajax({
+    method: 'POST',
+    url: baseUrl + '/main/room/get/' + chatData.chatId + '/',
+    data: {
+      'session_key': window.localStorage.getItem('session_key')
+
+    },
+    success: function (response) {
+      for (var i = 0; i < response.messages.length; i++) {
+        response.messages[i].nick = response.messages[i].nick_name;
+      }
+      db.group_chat.where('group_name').equals(chatData.chatId.toString()).modify({
+        messages: response.messages
+      }).then(function (snapshot) {
+        $scope.messages = response.messages;
+        $scope.$apply();
+      })
+      chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
 
 
-        $scope.user = {};
-        $scope.user.nick = window.localStorage.getItem('nick');
-
-        var chatScreen = document.getElementsByClassName('chat-screen')[0];
-
-        $.ajax({
-          method: 'POST',
-          url: baseUrl + '/main/room/get/' + chatData.chatId + '/',
-          data: {
-            'session_key': window.localStorage.getItem('session_key')
-
-          },
-          success: function (response) {
-            for (var i = 0; i < response.messages.length; i++) {
-              response.messages[i].nick = response.messages[i].nick_name;
-            }
-            $scope.messages = response.messages;
-            $scope.$apply();
-            chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
+    },
+    error: function (response) {
+      Materialize.toast('Could Not Fetch Messages', 1000)
+    }
+  })
 
 
-          },
-          error: function (response) {
-            Materialize.toast('Could Not Fetch Messages', 1000)
-          }
-        })
+  $scope.newMessageText = '';
+  var newMessage;
+  $scope.send = function () {
+    if ($scope.newMessageText != '') {
+      var date = new Date();
+      date = date.toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      })
+      newMessage = {
+        message: $scope.newMessageText,
+        nick: window.localStorage.getItem('nick'),
+        group_name: chatData.chatId,
+        time: date,
+        sent: false,
+        msg_id: uuid.v4(),
+        session_key: window.localStorage.getItem('session_key')
+      }
+
+      $scope.messages.push(newMessage);
+      setTimeout(function () {
+        chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+      }, 100)
+
+      $scope.newMessageText = '';
 
 
-        $scope.newMessageText = '';
-        var newMessage;
-        $scope.send = function () {
-          if ($scope.newMessageText != '') {
-            var date = new Date();
-            date = date.toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              hour12: true,
-              minute: 'numeric'
-            })
-            newMessage = {
-              message: $scope.newMessageText,
-              nick: window.localStorage.getItem('nick'),
-              group_name: chatData.chatId,
-              time: date,
-              sent: false,
-              msg_id: uuid.v4(),
-              session_key: window.localStorage.getItem('session_key')
-            }
-
-            $scope.messages.push(newMessage); 
-            setTimeout(function () {
-                chatScreen.scrollTop += $('.message-wrapper').outerHeight();
-              }, 100)
- 
-            $scope.newMessageText = '';
+      socket.emit('send_message_group', newMessage);
 
 
-            socket.emit('send_message_group', newMessage);
+    }
+  }
 
 
-          }
+  socket.on('send_message_group', function (data) {
+
+    if (chatData.chatId == data.group_name && $scope.user.nick != data.nick) {
+      $scope.messages.push(data);
+      $scope.$apply();
+      chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+    } else if ($scope.user.nick == data.nick) {
+      for (var i = $scope.messages.length - 1; i > 0; i--) {
+        if ($scope.messages[i].msg_id == data.msg_id) {
+          $scope.messages[i].sent = true;
+          $scope.$apply();
         }
+      }
 
+    } else {
 
-        socket.on('send_message_group', function(data) {
-      
-       if(chatData.chatId==data.group_name && $scope.user.nick != data.nick){
-              $scope.messages.push(data);
-              $scope.$apply();
-              chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
-        }
-        else if($scope.user.nick == data.nick){
-              for(var i=$scope.messages.length-1;i>0;i--){
-                if($scope.messages[i].msg_id==data.msg_id){
-                  $scope.messages[i].sent=true;
-                  $scope.$apply();
-                }
-              }
+      Materialize.toast('New Message in ' + data.group_name, 1000);
+    }
 
-        }
-        else{
-
-          Materialize.toast('New Message in '+data.group_name,1000);
-        }
-
-      });
+  });
 
 
 
               }])
 
-            .controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-              $rootScope.title = 'Interests';
+.controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+    $rootScope.title = 'Interests';
 
-              $rootScope.sendCurrLocNoMap();
-              $scope.submit = function () {
+    $rootScope.sendCurrLocNoMap();
+    $scope.submit = function () {
 
-                var data = {};
-                data.interest = '';
-                var checkBox = $('#interests-form input:checked');
-                for (var i = 0; i < checkBox.length; i++) {
-                  data.interest += checkBox[i].value + ',';
-                }
-                data['session_key'] = window.localStorage.getItem('session_key')
-                $.ajax({
-                  method: 'POST',
-                  url: baseUrl + '/main/user/interests/',
-                  data: data,
-                  success: function (response) {
-                    if (response.status == 1) {
-                      addToChatRoom(); 
+      var data = {};
+      data.interest = '';
+      var checkBox = $('#interests-form input:checked');
+      for (var i = 0; i < checkBox.length; i++) {
+        data.interest += checkBox[i].value + ',';
+      }
+      data['session_key'] = window.localStorage.getItem('session_key')
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/interests/',
+        data: data,
+        success: function (response) {
+          if (response.status == 1) {
+            addToChatRoom();
 
-                    } else
-                      Materialize.toast('Try Again', 1000);
-                  },
-                  error: function (response) {
-                    Materialize.toast('Try Again', 1000);
-                  }
-                })
-              }
+          } else
+            Materialize.toast('Try Again', 1000);
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    }
 
 
-              function addToChatRoom() {
-                $.ajax({
-                  method: 'POST',
-                  url: baseUrl + '/main/user/add_chatroom/',
-                  data: {
-                    'session_key': window.localStorage.getItem('session_key')
-                  },
-                  success: function (response) {
-                    if (response.status == 1)
-                      $state.go('app.groups');
-                    else
-                      Materialize.toast('Try Again', 1000);
-                  },
-                  error: function (response) {
-                    Materialize.toast('Try Again', 1000);
-                  }
-                })
-              }
-
-}])
-            .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+    function addToChatRoom() {
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/add_chatroom/',
+        data: {
+          'session_key': window.localStorage.getItem('session_key')
+        },
+        success: function (response) {
+          if (response.status == 1)
+            $state.go('app.groups');
+          else
+            Materialize.toast('Try Again', 1000);
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    }
 
 }])
-            .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-              $rootScope.title = 'Edit Profile';
+  .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
-              $scope.name = window.localStorage.getItem('name');
-              $scope.contact = window.localStorage.getItem('contact');
-              $scope.nick = window.localStorage.getItem('nick');
-
-              $scope.submit = function () { 
-                var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
-                var session_key = window.localStorage.getItem('session_key')
-                var formData = new FormData();
-                formData.append('session_key', session_key);
-                formData.append('name', $scope.name);
-                formData.append('contact', $scope.contact);
-                formData.append('nick', $scope.nick);
-                  formData.append('session_key', session_key);
-                var data = {
-                  session_key: session_key,
-                  name: $scope.name,
-                  contact: $scope.contact,
-                  nick: $scope.nick,
-                  pic: dataURL
-                }
-                $.ajax({
-                  method: 'POST',
-                  url: baseUrl + '/main/user/edit_profile/',
-                  data: data,
-                  success: function (response) {
-                    Materialize.toast(response.message, 1000);
-                    if (response.status == 1) {
-                      window.localStorage.setItem('pic', response.pic);
-                      window.localStorage.setItem('nick', response.nick);
-                      window.localStorage.setItem('name', response.name);
-                      window.localStorage.setItem('contact', response.contact);
-                      $rootScope.user.nick = response.nick;
-                      $rootScope.user.pic = response.pic;
-                      $rootScope.user.name = response.name;
-                      $rootScope.user.contact = response.contact;
-                      $rootScope.$apply();
-                      $state.go('app.chats');
-                    }
-                  },
-                  error: function (response) {
-                    Materialize.toast('Try Again', 1000);
-
-                  }
-                })
-              }
 }])
-            .controller('PasswordController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-              $rootScope.title = 'Change Password';
-              $scope.old_password;
-              $scope.new_password;
-              $scope.new_password_confirm;
+  .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+    $rootScope.title = 'Edit Profile';
 
-              $scope.submit = function () {
-                var data = {};
-                data['old_password'] = $scope.old_password;
-                data['new_password'] = $scope.new_password;
-                data['new_password_confirm'] = $scope.new_password_confirm;
-                data['session_key'] = window.localStorage.getItem('session_key')
-                $.ajax({
-                  method: 'POST',
-                  url: baseUrl + '/main/user/password/change/',
-                  data: data,
-                  success: function (response) {
-                    if (response.status == 1) {
-                      Materialize.toast(response.message, 1000);
-                      $state.go('app.chats')
-                    } else
-                      Materialize.toast(response.message, 1000);
-                  },
-                  error: function (response) {
-                    Materialize.toast('Try Again', 1000);
-                  }
-                })
-              }
+    $scope.name = window.localStorage.getItem('name');
+    $scope.contact = window.localStorage.getItem('contact');
+    $scope.nick = window.localStorage.getItem('nick');
+
+    $scope.submit = function () { 
+      var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
+      var session_key = window.localStorage.getItem('session_key')
+      var formData = new FormData();
+      formData.append('session_key', session_key);
+      formData.append('name', $scope.name);
+      formData.append('contact', $scope.contact);
+      formData.append('nick', $scope.nick);
+      formData.append('session_key', session_key);
+      var data = {
+        session_key: session_key,
+        name: $scope.name,
+        contact: $scope.contact,
+        nick: $scope.nick,
+        pic: dataURL
+      }
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/edit_profile/',
+        data: data,
+        success: function (response) {
+          Materialize.toast(response.message, 1000);
+          if (response.status == 1) {
+            window.localStorage.setItem('pic', response.pic);
+            window.localStorage.setItem('nick', response.nick);
+            window.localStorage.setItem('name', response.name);
+            window.localStorage.setItem('contact', response.contact);
+            $rootScope.user.nick = response.nick;
+            $rootScope.user.pic = response.pic;
+            $rootScope.user.name = response.name;
+            $rootScope.user.contact = response.contact;
+            $rootScope.$apply();
+            $state.go('app.chats');
+          }
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
+
+        }
+      })
+    }
+}])
+  .controller('PasswordController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+    $rootScope.title = 'Change Password';
+    $scope.old_password;
+    $scope.new_password;
+    $scope.new_password_confirm;
+
+    $scope.submit = function () {
+      var data = {};
+      data['old_password'] = $scope.old_password;
+      data['new_password'] = $scope.new_password;
+      data['new_password_confirm'] = $scope.new_password_confirm;
+      data['session_key'] = window.localStorage.getItem('session_key')
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/password/change/',
+        data: data,
+        success: function (response) {
+          if (response.status == 1) {
+            Materialize.toast(response.message, 1000);
+            $state.go('app.chats')
+          } else
+            Materialize.toast(response.message, 1000);
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    }
   }])
 
 
-            .controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+.controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
-                $rootScope.title = 'Upload Profile Picture';
-                //  $scope.profilePic;
+  $rootScope.title = 'Upload Profile Picture';
+  //  $scope.profilePic;
 
-                $rootScope.sendCurrLocNoMap();
+  $rootScope.sendCurrLocNoMap();
 
 
-                $scope.submit = function () { 
-                  //    var file  = dataURL;
-                  var session_key = window.localStorage.getItem('session_key')
-                    //    var formData = new FormData();
-                    //    formData.append('session_key', session_key);
-                    //    formData.append('dpic', file);
-                    //    console.log(formData.getAll('dpic'))
-//                  console.log(dataURL);
+  $scope.submit = function () { 
+    //    var file  = dataURL;
+    var session_key = window.localStorage.getItem('session_key')
+      //    var formData = new FormData();
+      //    formData.append('session_key', session_key);
+      //    formData.append('dpic', file);
+      //    console.log(formData.getAll('dpic'))
+      //                  console.log(dataURL);
 
-                  var data = {
-                    session_key: session_key,
-                    dpic: dataURL
-                  }
-                  if (dataURL != undefined) {
-                      $.ajax({
-                        method: 'POST',
-                        url: baseUrl + '/main/user/profile_pic/',
-                        data: data,
-                        success: function (response) {
-                          Materialize.toast(response.message, 1000);
-                          if (response.status == 1) {
-                            $state.go('app.nick');
-                            window.localStorage.setItem('pic', dataURL);
-                          }
-                        },
-                        error: function (response) {
-                          Materialize.toast('Try Again', 1000);
+    var data = {
+      session_key: session_key,
+      dpic: dataURL
+    }
+    if (dataURL != undefined) {
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/profile_pic/',
+        data: data,
+        success: function (response) {
+          Materialize.toast(response.message, 1000);
+          if (response.status == 1) {
+            $state.go('app.nick');
+            window.localStorage.setItem('pic', dataURL);
+          }
+        },
+        error: function (response) {
+          Materialize.toast('Try Again', 1000);
 
-                        }
-                      })
-                    } else Materialize.toast('Please upload a image', 1000);
-                  }
+        }
+      })
+    } else Materialize.toast('Please upload a image', 1000);
+  }
 
                 }])

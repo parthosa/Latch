@@ -75,7 +75,8 @@ function previewFile(canvasId) { 
 var db = new Dexie("database");
 
 db.version(1).stores({
-  indi_chat: 'nick, pic, distance, messages'
+  indi_chat: 'nick, pic, distance, messages',
+  group_chat: 'group_name, members, pic, messages'
 });
 
 //db.indi_chat.put();

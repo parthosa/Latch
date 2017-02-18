@@ -529,10 +529,12 @@ angular.module('latchApp')
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
-  db.group_chat.each(function (group) {
-    $rootScope.groups.push(group);
-    $scope.$apply();
-  })
+    console.log($rootScope.groups);
+  if ($rootScope.groups == []) {
+    db.group_chat.each(function (group) {
+      $rootScope.groups.push(group);
+      $scope.$apply();
+    });}
 
   $.ajax({
     method: 'POST',
@@ -542,14 +544,14 @@ angular.module('latchApp')
     },
     success: function (response) {
       response.groups.map(function (e, i) {
-        console.log(e.messages);
+//        console.log(e.messages);
         if (e.messages == undefined)
           e.messages = [];
         if (e.mem_info == undefined)
           e.mem_info = [];
       })
       db.group_chat.bulkPut(response.groups).then(function () {
-        $rootScope.groups = [];
+//        $rootScope.groups = response.groups;
         db.group_chat.each(function (group) {
           $rootScope.groups.push(group);
           $scope.$apply();

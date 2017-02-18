@@ -3,10 +3,11 @@
 var globalVar, blah;
 
 var baseUrl = 'http://192.168.43.116:8001';
+var globalVar;
 var socket = io.connect('192.168.43.116', {
   port: 4000
 });
-var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
+
 //var socket = io();
 var map;
 
@@ -58,7 +59,7 @@ angular.module('latchApp')
           }
         })
       }, function () {
-        Materialize.toast('Please enable loaction services', 3000);
+        Materialize.toast('Please enable location services', 3000);
       }, {
         timeout: 2000
       });
@@ -151,7 +152,9 @@ angular.module('latchApp')
 
   $scope.submit = function () {
     // $location.path('/chats');
-
+    try{
+    window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+    catch(err){}
     $.ajax({
       method: 'POST',
       url: baseUrl + '/main/accounts/register/',
@@ -164,13 +167,20 @@ angular.module('latchApp')
           window.localStorage.setItem('loggedIn', true);
           window.localStorage.setItem('name', $scope.user.name);
           window.localStorage.setItem('contact', $scope.user.contact);
+          pushNotification();
 
         }
-
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         Materialize.toast(response.message, 1000)
 
       },
-      error: function (response) {}
+      error: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
+      }
     })
   }
 }])
@@ -182,29 +192,40 @@ angular.module('latchApp')
 
 
   $scope.submit = function () {
-
+    try{
+    window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+    catch(err){}
     $.ajax({
       method: 'POST',
       url: baseUrl + '/main/accounts/login/',
       data: $scope.user,
       success: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         if (response.status == 1) {
+
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
           $rootScope.user.pic = response.pic;
           $rootScope.user.nick = response.nick;
+          pushNotification();
           // $rootScope.getProfile();
           $state.go('app.chats');
 
 
-
-        } else
+        } else{
           Materialize.toast(response.message, 1000)
+        }
 
       },
-      error: function (response) {}
+      error: function (response) {
+        try{
+         window.plugins.spinnerDialog.hide();}
+         catch(err){}
+      }
     })
   }
 
@@ -218,7 +239,9 @@ angular.module('latchApp')
   // $scope.user.nick = 'parthosa';
 
   $scope.submit = function () {
-
+    try{
+     window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+     catch(err){}
     var data = {
       nick: $scope.user.nick,
       session_key: window.localStorage.getItem('session_key')
@@ -228,6 +251,9 @@ angular.module('latchApp')
       url: baseUrl + '/main/user/nick/',
       data: data,
       success: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         if (response.status == 1) {
           window.localStorage.setItem('nick', data.nick);
 
@@ -236,7 +262,11 @@ angular.module('latchApp')
         Materialize.toast(response.message, 1000)
 
       },
-      error: function (response) {}
+      error: function (response) {
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
+      }
     })
   }
 
@@ -300,12 +330,12 @@ angular.module('latchApp')
           marker.setMap(map);
           map.setZoom(13);
         }, function () {
-          Materialize.toast('Please enable loaction services', 3000);
+          Materialize.toast('Please enable location services', 3000);
         }, {
           timeout: 2000
         });
       } else {
-        Materialize.toast('Please enable loaction services', 3000);
+        Materialize.toast('Please enable location services', 3000);
       }
     }
 
@@ -584,8 +614,10 @@ angular.module('latchApp')
     $rootScope.group.members.push(group.mem_info);
     $scope.$apply();
   })
-  
-  $rootScope.group.pic = $rootScope.chatPic;
+
+  try{
+   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+   catch(err){}
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/room/' + chatData.chatId + '/get_members/',
@@ -600,8 +632,14 @@ angular.module('latchApp')
           });
       } else
         Materialize.toast('Could Not Fetch Group Members', 1000);
+        try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
     },
     error: function (response) {
+      try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
       Materialize.toast('Could Not Fetch Group Members', 1000);
     }
   });
@@ -619,7 +657,9 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
-
+  try{
+   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+   catch(err){}
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/profile/',
@@ -641,10 +681,15 @@ angular.module('latchApp')
         Materialize.toast('Cannot load profile', 1000);
 
       }
+      try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
     },
     error: function (response) {
       Materialize.toast('Cannot load profile', 1000);
-
+      try{
+      window.plugins.spinnerDialog.hide();}
+      catch(err){}
     }
   })
 
@@ -761,8 +806,11 @@ angular.module('latchApp')
 
     } else {
       console.log(3);
+          alert('push dispatched')
+      
       Materialize.toast('New Message from ' + data.nick, 1000);
     }
+      dispatchPush(data,true);
 
 
 
@@ -862,11 +910,12 @@ angular.module('latchApp')
           $scope.$apply();
         }
       }
-
-    } else {
-
-      Materialize.toast('New Message in ' + data.group_name, 1000);
-    }
+        }
+        else{
+          alert('push dispatched')
+          Materialize.toast('New Message in '+data.group_name,1000);
+        }
+          dispatchPush(data,false);
 
   });
 
@@ -874,179 +923,216 @@ angular.module('latchApp')
 
               }])
 
-.controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-    $rootScope.title = 'Interests';
 
-    $rootScope.sendCurrLocNoMap();
-    $scope.submit = function () {
+            .controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+              $rootScope.title = 'Interests';
 
-      var data = {};
-      data.interest = '';
-      var checkBox = $('#interests-form input:checked');
-      for (var i = 0; i < checkBox.length; i++) {
-        data.interest += checkBox[i].value + ',';
-      }
-      data['session_key'] = window.localStorage.getItem('session_key')
-      $.ajax({
-        method: 'POST',
-        url: baseUrl + '/main/user/interests/',
-        data: data,
-        success: function (response) {
-          if (response.status == 1) {
-            addToChatRoom();
+              $rootScope.sendCurrLocNoMap();
+              $scope.submit = function () {
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
+                var data = {};
+                data.interest = '';
+                var checkBox = $('#interests-form input:checked');
+                for (var i = 0; i < checkBox.length; i++) {
+                  data.interest += checkBox[i].value + ',';
+                }
+                data['session_key'] = window.localStorage.getItem('session_key')
+                $.ajax({
+                  method: 'POST',
+                  url: baseUrl + '/main/user/interests/',
+                  data: data,
+                  success: function (response) {
+                    if (response.status == 1) {
+                      addToChatRoom(); 
 
-          } else
-            Materialize.toast('Try Again', 1000);
-        },
-        error: function (response) {
-          Materialize.toast('Try Again', 1000);
-        }
-      })
-    }
+                    } else
+                      Materialize.toast('Try Again', 1000);
+                      try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
+                  },
+                  error: function (response) {
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
+                    Materialize.toast('Try Again', 1000);
+                  }
+                })
+              }
 
 
-    function addToChatRoom() {
-      $.ajax({
-        method: 'POST',
-        url: baseUrl + '/main/user/add_chatroom/',
-        data: {
-          'session_key': window.localStorage.getItem('session_key')
-        },
-        success: function (response) {
-          if (response.status == 1)
-            $state.go('app.groups');
-          else
-            Materialize.toast('Try Again', 1000);
-        },
-        error: function (response) {
-          Materialize.toast('Try Again', 1000);
-        }
-      })
-    }
+              function addToChatRoom() {
+                $.ajax({
+                  method: 'POST',
+                  url: baseUrl + '/main/user/add_chatroom/',
+                  data: {
+                    'session_key': window.localStorage.getItem('session_key')
+                  },
+                  success: function (response) {
+                    if (response.status == 1)
+                      $state.go('app.groups');
+                    else
+                      Materialize.toast('Try Again', 1000);
+                  },
+                  error: function (response) {
+                    Materialize.toast('Try Again', 1000);
+                  }
+                })
+              }
 
 }])
   .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
 }])
-  .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-    $rootScope.title = 'Edit Profile';
 
-    $scope.name = window.localStorage.getItem('name');
-    $scope.contact = window.localStorage.getItem('contact');
-    $scope.nick = window.localStorage.getItem('nick');
+            .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+              $rootScope.title = 'Edit Profile';
 
-    $scope.submit = function () { 
-      var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
-      var session_key = window.localStorage.getItem('session_key')
-      var formData = new FormData();
-      formData.append('session_key', session_key);
-      formData.append('name', $scope.name);
-      formData.append('contact', $scope.contact);
-      formData.append('nick', $scope.nick);
-      formData.append('session_key', session_key);
-      var data = {
-        session_key: session_key,
-        name: $scope.name,
-        contact: $scope.contact,
-        nick: $scope.nick,
-        pic: dataURL
-      }
-      $.ajax({
-        method: 'POST',
-        url: baseUrl + '/main/user/edit_profile/',
-        data: data,
-        success: function (response) {
-          Materialize.toast(response.message, 1000);
-          if (response.status == 1) {
-            window.localStorage.setItem('pic', response.pic);
-            window.localStorage.setItem('nick', response.nick);
-            window.localStorage.setItem('name', response.name);
-            window.localStorage.setItem('contact', response.contact);
-            $rootScope.user.nick = response.nick;
-            $rootScope.user.pic = response.pic;
-            $rootScope.user.name = response.name;
-            $rootScope.user.contact = response.contact;
-            $rootScope.$apply();
-            $state.go('app.chats');
-          }
-        },
-        error: function (response) {
-          Materialize.toast('Try Again', 1000);
+              $scope.name = window.localStorage.getItem('name');
+              $scope.contact = window.localStorage.getItem('contact');
+              $scope.nick = window.localStorage.getItem('nick');
 
-        }
-      })
-    }
+              $scope.submit = function () { 
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
+                var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
+                var session_key = window.localStorage.getItem('session_key')
+                var formData = new FormData();
+                formData.append('session_key', session_key);
+                formData.append('name', $scope.name);
+                formData.append('contact', $scope.contact);
+                formData.append('nick', $scope.nick);
+                  formData.append('session_key', session_key);
+                var data = {
+                  session_key: session_key,
+                  name: $scope.name,
+                  contact: $scope.contact,
+                  nick: $scope.nick,
+                  pic: dataURL
+                }
+                $.ajax({
+                  method: 'POST',
+                  url: baseUrl + '/main/user/edit_profile/',
+                  data: data,
+                  success: function (response) {
+                    Materialize.toast(response.message, 1000);
+                    if (response.status == 1) {
+                      window.localStorage.setItem('pic', response.pic);
+                      window.localStorage.setItem('nick', response.nick);
+                      window.localStorage.setItem('name', response.name);
+                      window.localStorage.setItem('contact', response.contact);
+                      $rootScope.user.nick = response.nick;
+                      $rootScope.user.pic = response.pic;
+                      $rootScope.user.name = response.name;
+                      $rootScope.user.contact = response.contact;
+                      $rootScope.$apply();
+                      $state.go('app.chats');
+                    }
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
+                  },
+                  error: function (response) {
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
+                    Materialize.toast('Try Again', 1000);
+
+                  }
+                })
+              }
 }])
-  .controller('PasswordController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
-    $rootScope.title = 'Change Password';
-    $scope.old_password;
-    $scope.new_password;
-    $scope.new_password_confirm;
+            .controller('PasswordController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+              $rootScope.title = 'Change Password';
+              $scope.old_password;
+              $scope.new_password;
+              $scope.new_password_confirm;
 
-    $scope.submit = function () {
-      var data = {};
-      data['old_password'] = $scope.old_password;
-      data['new_password'] = $scope.new_password;
-      data['new_password_confirm'] = $scope.new_password_confirm;
-      data['session_key'] = window.localStorage.getItem('session_key')
-      $.ajax({
-        method: 'POST',
-        url: baseUrl + '/main/user/password/change/',
-        data: data,
-        success: function (response) {
-          if (response.status == 1) {
-            Materialize.toast(response.message, 1000);
-            $state.go('app.chats')
-          } else
-            Materialize.toast(response.message, 1000);
-        },
-        error: function (response) {
-          Materialize.toast('Try Again', 1000);
-        }
-      })
-    }
+              $scope.submit = function () {
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
+                var data = {};
+                data['old_password'] = $scope.old_password;
+                data['new_password'] = $scope.new_password;
+                data['new_password_confirm'] = $scope.new_password_confirm;
+                data['session_key'] = window.localStorage.getItem('session_key')
+                $.ajax({
+                  method: 'POST',
+                  url: baseUrl + '/main/user/password/change/',
+                  data: data,
+                  success: function (response) {
+                    if (response.status == 1) {
+                      Materialize.toast(response.message, 1000);
+                      $state.go('app.chats')
+                    } else
+                      Materialize.toast(response.message, 1000);
+                      try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
+                  },
+                  error: function (response) {
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
+                    Materialize.toast('Try Again', 1000);
+                  }
+                })
+              }
   }])
 
 
-.controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+            .controller('ProfilePicController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
-  $rootScope.title = 'Upload Profile Picture';
-  //  $scope.profilePic;
+                $rootScope.title = 'Upload Profile Picture';
+                //  $scope.profilePic;
 
-  $rootScope.sendCurrLocNoMap();
+                $rootScope.sendCurrLocNoMap();
 
 
-  $scope.submit = function () { 
-    //    var file  = dataURL;
-    var session_key = window.localStorage.getItem('session_key')
-      //    var formData = new FormData();
-      //    formData.append('session_key', session_key);
-      //    formData.append('dpic', file);
-      //    console.log(formData.getAll('dpic'))
-      //                  console.log(dataURL);
+                $scope.submit = function () { 
+                  try{
+                     window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                     catch(err){}
+                  //    var file  = dataURL;
+                  var session_key = window.localStorage.getItem('session_key')
+                    //    var formData = new FormData();
+                    //    formData.append('session_key', session_key);
+                    //    formData.append('dpic', file);
+                    //    console.log(formData.getAll('dpic'))
+                  console.log(dataURL);
 
-    var data = {
-      session_key: session_key,
-      dpic: dataURL
-    }
-    if (dataURL != undefined) {
-      $.ajax({
-        method: 'POST',
-        url: baseUrl + '/main/user/profile_pic/',
-        data: data,
-        success: function (response) {
-          Materialize.toast(response.message, 1000);
-          if (response.status == 1) {
-            $state.go('app.nick');
-            window.localStorage.setItem('pic', dataURL);
-          }
-        },
-        error: function (response) {
-          Materialize.toast('Try Again', 1000);
+                  var data = {
+                    session_key: session_key,
+                    dpic: dataURL
+                  }
+                  if (dataURL != undefined) {
+                      $.ajax({
+                        method: 'POST',
+                        url: baseUrl + '/main/user/profile_pic/',
+                        data: data,
+                        success: function (response) {
+                          Materialize.toast(response.message, 1000);
+                          try{
+                         window.plugins.spinnerDialog.hide();}
+                         catch(err){}
+                          if (response.status == 1) {
+                            $state.go('app.nick');
+                            window.localStorage.setItem('pic', file);
+                          }
+                        },
+                        error: function (response) {
+                        try{
+                         window.plugins.spinnerDialog.hide();}
+                         catch(err){}
+                          Materialize.toast('Try Again', 1000);
 
-        }
-      })
-    } else Materialize.toast('Please upload a image', 1000);
-  }
+                        }
+                      })
+                    } else Materialize.toast('Please upload a image', 1000);
+                  }
 
                 }])

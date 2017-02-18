@@ -12,6 +12,16 @@
         },
         "cordova-plugin-geolocation": {
             "PACKAGE_NAME": "com.dev.latch"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.dev.latch"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "230792734381",
+            "PACKAGE_NAME": "com.dev.latch"
+        },
+        "cordova-plugin-spinnerdialog": {
+            "PACKAGE_NAME": "com.dev.latch"
         }
     },
     "dependent_plugins": {

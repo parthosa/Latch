@@ -29,6 +29,7 @@
 
 <body ng-controller="MainController">
     <div ui-view="header"></div>
+    <p id="regid"></p>
     <div ui-view="content"></div>
     <!-- <div ui-view="footer"></div> -->
     
@@ -36,25 +37,19 @@
     <!--Javascript Files-->
     <script src="scripts/jquery.min.js"></script>
     <script src="scripts/materialize.js"></script>
-
-    
-
-    
+    <script src="scripts/dexie.min.js"></script>
     <script src="scripts/uuid.js"></script>
     <script src="scripts/socket.io.min.js"></script>
     <script src="scripts/angular.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.4.2/angular-ui-router.min.js"></script>
+    <script src="scripts/angular-ui-router.min.js"></script>
     <script src="scripts/angular-resource.min.js"></script>
     <script src="scripts/ng-cordova.min.js"></script>
-<!--    <script src="scripts/cordova.js"></script>-->
+    
+    <script src="cordova.js"></script>
 	
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk"></script>
 
-    
-  
 	<script src="scripts/markerclusterer.js"></script>
-
-
     
     <!-- build:js scripts/main.js -->
     <script src="scripts/script.js"></script>
@@ -62,6 +57,22 @@
     <script src="scripts/app.js"></script>
     <script src="scripts/services.js"></script>
     <script src="scripts/controllers.js"></script>
+
+    <script type="text/javascript">
+        
+
+
+
+        document.addEventListener("deviceready", function () {
+
+            if(window.localStorage.getItem('loggedIn') == true){
+                pushNotification();
+            }
+      
+});
+
+
+    </script>
 
     <!-- endbuild -->
 

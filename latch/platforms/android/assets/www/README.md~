@@ -1,20 +1,20 @@
-Latch - The Location Chat
+# **Latch - The Location Chat**
 
 
-Use a local server like xammp or python -m SimpleHTTPServer to run the files from app.zip
+## Use a local server like xammp or python -m SimpleHTTPServer to run the files from app.zip
 
-Intro
- With the advent of social media networks. It has become increasingly popular to connect with even those who live on the other side of the planet. But this has come with a great cost. We have started becoming more and more oblivious to even our immediate surroundings and the people around us. To us, this irony seemed needless at the least if not a threat to our relationships in a soceity as they exist. Combining the best of both worlds, we have devised a distinct platform, **Latch-The Location Chat**, which ties the user with other nearby people on the basis of common interests. 
+##  **Intro**
+### With the advent of social media networks. It has become increasingly popular to connect with even those who live on the other side of the planet. But this has come with a great cost. We have started becoming more and more oblivious to even our immediate surroundings and the people around us. To us, this irony seemed needless at the least if not a threat to our relationships in a soceity as they exist. Combining the best of both worlds, we have devised a distinct platform, **Latch-The Location Chat**, which ties the user with other nearby people on the basis of common interests. 
 
-2.Features
-*  A Secure Platform for live chat (We don't read your messages! :P).  
-*  Location Based Chat: Set your location and tune in to the trending topics around you.
-*  Set Interests: Never be bothered by multiple application windows to explore.
-*  SOS: Alert your friends and family with your location immediately
-*  Anonymous: Go anonymous because no one knows who you are on the web 😛
-*  Real reviews: Get **'Real'** reviews from **'Real'** people near your location 
+## **2.Features**
+* ## A Secure Platform for live chat (We don't read your messages! :P).  
+* ## Location Based Chat: Set your location and tune in to the trending topics around you.
+* ## Set Interests: Never be bothered by multiple application windows to explore.
+* ## SOS: Alert your friends and family with your location immediately
+* ## Anonymous: Go anonymous because no one knows who you are on the web 😛
+* ## Real reviews: Get **'Real'** reviews from **'Real'** people near your location 
 
- 3.
+## **3.
 
 Django works on a wsgi server which rules out the asynchronous behaviour that a chat application demands. Using Channels could be a solution but again it is not a proper socket and could result in unintentional tampering of data. Hence we used a triplet server comprising of a Django server, Node Server and a Front server based on Angular framework. We tried to explain this via a FlowChart. The Front server is basically an interface server sending the requests to the backend. It filters requests in two types:
 1. HTTP Request
@@ -35,4 +35,4 @@ Technologies/Frameworks Services used:
 6. Redis/Cache
 
 
- 
+ -->

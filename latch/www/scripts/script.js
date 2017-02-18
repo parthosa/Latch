@@ -1,3 +1,8 @@
+var baseUrl = 'http://192.168.43.116:8001';
+
+var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
+
+
 //$(document).ready(function () {
 //
 //<<<<<<< HEAD
@@ -25,6 +30,113 @@ $(document).ready(function () {
 });
 
 
+function pushNotification(){
+
+  try{
+
+
+
+      var push = PushNotification.init({
+        android: {
+            senderID: "230792734381",
+            forceShow:true
+        },
+        browser: {
+            pushServiceURL: 'http://push.api.phonegap.com/v1/push'
+        },
+        ios: {
+            alert: "true",
+            badge: "true",
+            sound: "true"
+        },
+        windows: {}
+    });
+
+    push.on('registration', function(data) {
+        // alert(data.registrationId);
+       
+        $.ajax({
+            method:"POST",
+            url:baseUrl+"/main/user/get_device/",
+            data:{
+                device_id:data.registrationId,
+                session_key:window.localStorage.getItem('session_key')
+            },
+            success:function (response) {
+                // alert('response')
+            }
+        })
+        window.localStorage.setItem('registrationId',data.registrationId);
+    });
+
+
+    push.on('notification', function(data) {
+       // console.log('notification event',data);
+        navigator.notification.alert(
+            'new message',         // message
+            null,                 // callback
+            'latch',           // title
+            'Ok'                  // buttonName
+        );
+        // alert(data.message);
+        // alert('is user: '+data.additionalData['isUser']);
+    });
+
+    push.on('error', function(e) {
+        alert(e.message);
+    });
+    
+    }
+    catch( err) {
+
+    }
+}
+
+
+
+function dispatchPush(data,isUser){
+  url=baseUrl;
+  if(isUser)
+  {
+  $.ajax({
+    method:'POST',
+    url:baseUrl+'/main/user/indi_notify/',
+    data:{
+      message:data.message,
+      nick:data.nick,
+      session_key:window.localStorage.getItem('session_key'),
+      isUser:isUser
+    },
+    success:function (response) {
+      console.log("Push Request Sent")
+    }
+  });
+}
+  else{
+   $.ajax({
+    method:'POST',
+    url:baseUrl+'/main/user/group_notify/',
+    data:{
+      message:data.message,
+      group_name:data.group_name,
+      session_key:window.localStorage.getItem('session_key'),
+      isUser:isUser
+    },
+    success:function (response) {
+      console.log("Push Request Sent")
+    }
+  });
+ }
+
+}
+
+document.addEventListener("resume", function(){
+
+
+}, false);
+
+
+
 var dataURL;
 
 
@@ -46,14 +158,14 @@ function previewFile(canvasId) { 
     var oc = document.createElement('canvas'),
       octx = oc.getContext('2d');
 
-    oc.width = img.width * 0.5;
-    oc.height = img.height * 0.5;
-    octx.drawImage(img, 0, 0, 250, 250);
+    oc.width = 250;
+    oc.height = 250;
+    octx.drawImage(img, 0, 0, oc.width, oc.height);
 
     /// step 2
-//    octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+//    octx.drawImage(oc, 0, 0, oc.width, oc.height);
 
-    ctx.drawImage(oc, 0, 0, 250, 250,
+    ctx.drawImage(oc, 0, 0, oc.width, oc.height,
       0, 0, canvas.width, canvas.height);
     dataURL = canvas.toDataURL();
   }
@@ -69,3 +181,14 @@ function previewFile(canvasId) { 
      }, false);
 
 }
+
+// IndexedDB
+
+var db = new Dexie("database");
+
+db.version(1).stores({
+  indi_chat: 'nick, pic, distance, messages',
+  group_chat: 'group_name, members, pic, messages, mem_info'
+});
+
+//db.indi_chat.put();

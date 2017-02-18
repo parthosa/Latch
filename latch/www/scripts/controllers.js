@@ -71,7 +71,6 @@ angular.module('latchApp')
   $rootScope.search = {
     visible: false,
     query: '',
-    name: '',
     toggle: function () {
       $rootScope.search.visible = true;
       setTimeout(function () {
@@ -560,7 +559,7 @@ angular.module('latchApp')
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
     console.log($rootScope.groups);
-  $rootScope.groups = [];
+//  $rootScope.groups = [];
   if ($rootScope.groups.length==0) {
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);

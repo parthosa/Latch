@@ -27,7 +27,7 @@
             <div class="background side-nav-bg right-align">
               <img class="responsive-img " src="http://materializecss.com/images/office.jpg">
             </div>
-            <a href="#!user"><img class="circle" ng-src="{{ baseUrl + user.pic }}"></a>
+            <a href="#!user"><img class="circle" ng-src="{{ user.pic }}"></a>
             <a href="#!name"><span class="white-text name">{{user.nick}}</span></a>
             <!-- <a href="#!email"><span class="white-text email">{</span></a> -->
           </div>
@@ -41,25 +41,6 @@
         <li class="tab"><a ng-class="{active: isActive('chats')}" ui-sref="app.chats">Chats</a></li>
         <li class="tab"><a ng-class="{active: isActive('groups')}" ui-sref="app.groups">Groups</a></li>
       </ul>
-    </div>
-    <div id="moreOptions">
-      <div class="row">
-        <div class="col s12 m6">
-          <div class="card ">
-            <div class="card-content">
-              <form class="anonymous">
-                  <p>Go Anonymous</p>
-                <div class="switch">
-                  <label>
-                    <input type="checkbox" >
-                    <span class="lever"></span>
-                  </label>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </nav>
 </div>

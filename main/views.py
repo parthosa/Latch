@@ -43,7 +43,6 @@ def social_login(request):
 
 @csrf_exempt
 def Register(request):
-	print request.POST
 	if request.POST:
 		name = request.POST['name']
 		contact = request.POST['contact'] # could be either phone or email id
@@ -87,7 +86,6 @@ def Register(request):
 
 @csrf_exempt
 def login_user(request):
-	# print request.POST
 	if request.method == 'POST':
 		contact = request.POST['contact']
 		password = request.POST['password']
@@ -96,7 +94,6 @@ def login_user(request):
 		if user:
 			user_p = UserProfile.objects.get(user = user)
 			login(request,user)
-			print request.session.session_key
 			return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url})
 			
 		else:
@@ -105,7 +102,6 @@ def login_user(request):
 def nick_name(request):
 	if request.POST:
 		nick = request.POST['nick']
-		print nick
 		session_key = request.POST['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
@@ -116,9 +112,7 @@ def nick_name(request):
 			return JsonResponse(response)
 
 
-		print [x.nick_name for x in UserProfile.objects.all()]
 		if nick in [x.nick_name for x in UserProfile.objects.all()]:	
-			print 1
 			response = {'status': 0, 'message': 'This nick name is already registered. Kindly come up with something else.'}
 		else:
 			user_p = UserProfile.objects.get(user = user)
@@ -173,7 +167,6 @@ def interests(request):
 		user_p = UserProfile.objects.get(user = user)
 		interest_list = request.POST['interest'].split(',')
 		for interest in interest_list[:-1]:
-			print interest
 			interest_object = Interest.objects.get(name = interest)
 			user_p.interests.add(interest_object)
 			user_p.save()
@@ -376,7 +369,6 @@ def get_chatroom(request, group_name):
 		return JsonResponse(response)
 
 	user_p = UserProfile.objects.get(user = user)
-	print group_name
 	Group_ob = Group.objects.get(name = group_name)
 	messages = Message.objects.filter(group = Group_ob)
 	user_group = Group_user(user = user_p, group = Group_ob)
@@ -389,8 +381,6 @@ def get_chatroom(request, group_name):
 
 @csrf_exempt
 def node_api_message_group(request):
-	print 1
-	print request.POST['group_name']
 	try:
         #Get User from sessionid
 	        # post_string = request.POST['key']
@@ -407,14 +397,11 @@ def node_api_message_group(request):
         #Create message
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = request.POST['group_name'])
-		print group.name
 		try:
 			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
  		except Exception, e:
- 			print e
- 		print 2
+ 			return e
  		message = Message.objects.get(msg_id = request.POST['msg_id'])
- 		print message
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -449,14 +436,11 @@ def node_api_message_user(request):
 		except ObjectDoesNotExist:
 			group = Indi_group.objects.get(user2 = user_p, user1 = user_c)
 
-		print 1
 		try:
 			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
 		except Exception, e:
-			print e
-		print 2
+			return e
  		message = Indi_msg.objects.get(msg_id = request.POST['msg_id'])
- 		print message.message
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
@@ -503,22 +487,15 @@ def user_users(request):
 
 		user_p = UserProfile.objects.get(user = user)
 		i_group1 = Indi_group.objects.filter(user1 = user_p)
-		print i_group1
 		i_group2 = Indi_group.objects.filter(user2 = user_p)
 
 		# i_group = i_group1 + i_group2
 		user_list = []
 		for group in i_group1:
 			try:
-				print group.user2.lat
-				print group.user2.longitude
-				print user_p.lat
-				print user_p.longitude
 				distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, group.user2.lat, group.user2.longitude)
 				json_data = json.load(urlopen(distance_url))
-				print json_data
 				distance = json_data['rows'][0]['elements'][0]['distance']['text']
-				print distance
 				user_list.append({'nick': group.user2.nick_name, 'pic': group.user2.dp_url, 'distance': distance})
 			except:
 				pass
@@ -527,11 +504,9 @@ def user_users(request):
 				distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, group.user1.lat, group.user1.longitude)
 				json_data = json.load(urlopen(distance_url))
 				distance = json_data['rows'][0]['elements'][0]['distance']['text']
-				print distance
 				user_list.append({'nick': group.user1.nick_name, 'pic': group.user1.dp_url, 'distance': distance})
 			except:
 				pass
-		print user_list
 
 		return JsonResponse({'peers': user_list})
 
@@ -565,19 +540,13 @@ def get_indi_chat(request):
 
 @csrf_exempt
 def test_node_api(request):
-	print 1
 	# if request.POST:
-	print request.POST
 	# c = request.POST['comment']
-	# print c
 	return JsonResponse({'message': 'c'})
 	# else:
-	# 	print 2
-	# 	print request.session.session_key
 	# 	return JsonResponse({'partho_chutiya': request.session.session_key})
 
 def test_chat(request):
-	print request.session.session_key
 	context = {'comments': ['asda'], 'partho_chutiya': request.session.session_key}
 	return render(request, 'main/index.html', context)
 
@@ -586,7 +555,6 @@ def test_chat(request):
 # def suggest_rest
 def test_img(request):
 	user = UserProfile.objects.get(nick_name = 'varun_chut_part2')
-	print user.dp.url
 	return 1
 
 def get_profile(request):

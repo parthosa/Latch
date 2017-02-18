@@ -70,6 +70,7 @@ angular.module('latchApp')
   $rootScope.search = {
     visible: false,
     query: '',
+    name: '',
     toggle: function () {
       $rootScope.search.visible = true;
       setTimeout(function () {

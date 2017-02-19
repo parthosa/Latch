@@ -23,7 +23,7 @@ class UserProfile(models.Model):
 
 	def save(self, *args, **kwargs):
 		if self.dp:
-			self.dp_url = '/media/dps/' + self.dp.url
+			self.dp_url = self.dp.url
 		else:
 			pass
 		super(UserProfile, self).save(*args, **kwargs)

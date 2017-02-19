@@ -85,6 +85,7 @@ angular.module('latchApp')
   };
 
   $scope.logout = function () {
+    db.delete();
     window.localStorage.clear();
   }
 
@@ -162,6 +163,13 @@ angular.module('latchApp')
       type: 'jsonp',
       success: function (response) {
         if (response.status == 1) {
+
+           db.version(1).stores({
+            indi_chat: 'nick, pic, distance, messages',
+            group_chat: 'group_name, members, pic, messages, mem_info',
+            chat_bot: 'nick,message'
+          });
+
           $state.go('app.profile_pic');
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
@@ -204,6 +212,14 @@ angular.module('latchApp')
         window.plugins.spinnerDialog.hide();}
         catch(err){}
         if (response.status == 1) {
+
+
+          db.version(1).stores({
+            indi_chat: 'nick, pic, distance, messages',
+            group_chat: 'group_name, members, pic, messages, mem_info',
+            chat_bot: 'nick,message'
+          });
+
 
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
@@ -482,10 +498,22 @@ angular.module('latchApp')
 
   var data = [];
 
-
+  var restId = chatData.restId;
 
   $scope.sendLoc;
   $scope.locModal;
+
+
+  $scope.reviews = [
+    {
+      name:'Partho',
+      text:'Good Place'
+    },
+    {
+      name:'John',
+      text:'Smelly'
+    }
+  ]
 
   function initMap() {
 
@@ -493,7 +521,10 @@ angular.module('latchApp')
         lat: parseFloat(chatData.lat),
         lng:parseFloat(chatData.long),
       }
-      console.log(pos);
+      console.log(restId);
+
+var map;
+var marker ;
 
       if(pos.lat != 0 && pos.lng !=0 ){
 
@@ -506,12 +537,35 @@ angular.module('latchApp')
     });
 
 
-    var marker = new google.maps.Marker({
+     marker = new google.maps.Marker({
           position: pos
         });
         map.setCenter(pos);
         marker.setMap(map);
         map.setZoom(13);
+
+
+          marker.addListener('click', function (event) {
+          $('.modal').modal();
+          $.ajax({
+            method:"POST",
+            url:baseUrl + "/main/user/restaraunt/reviews/",
+            data:{
+              id:restId
+            },
+            success:function (response) {
+              console.log(response);
+            }
+          })
+          $scope.locModal = {
+            lat: pos.lat,
+            lng: pos.lng,
+            name: $rootScope.title,
+            reviews: 'this is good'
+          }
+          $scope.$apply();
+          $('.modal').modal('open');
+        });
 
   }
   else{
@@ -527,17 +581,45 @@ angular.module('latchApp')
       streetViewControl: false,
       fullscreenControl: false
     });
-        var marker = new google.maps.Marker({
+        marker = new google.maps.Marker({
             map: map,
             position: results[0].geometry.location
         });
         map.setZoom(13);
+
+          marker.addListener('click', function (event) {
+          $('.modal').modal();
+
+           $.ajax({
+            method:"POST",
+            url:baseUrl + "/main/user/restaraunt/reviews/",
+            data:{
+              id:restId
+            },
+            success:function (response) {
+              console.log(response);
+            }
+          })
+
+          $scope.locModal = {
+            lat: pos.lat,
+            lng: pos.lng,
+            name: $rootScope.title,
+            reviews: 'this is good'
+          }
+          $scope.$apply();
+          $('.modal').modal('open');
+        });
+
+
       } else {
         alert('Geocode was not successful for the following reason: ' + status);
       }
     });
 
   }
+
+console.log(marker)
 
 
   
@@ -977,7 +1059,7 @@ angular.module('latchApp')
 
 
       $scope.messages.push(newMessage);
-        $scope.$apply();
+        // $scope.$apply();
 
       db.chat_bot.put({
         nick:'Harlie',
@@ -1021,8 +1103,10 @@ angular.module('latchApp')
                        address:ele.restaurants.address,
                        locality:ele.restaurants.locality,
                        city:ele.restaurants.city,
+                       id:ele.id,
                        type:'restaurants'
                   })
+                 console.log(ele.id)
               }) 
 
              
@@ -1107,8 +1191,9 @@ $scope.openMap = function (el) {
     var sep = el.message.message.indexOf('\n');
     chatData.address = el.message.address;
     chatData.locality = el.message.locality;
-    chatData.city = el.message.message.substr(sep);
-
+    chatData.restId = el.message.id;
+    chatData.city = el.message.city;
+    console.log(el.message.id);
     $rootScope.title = el.message.message.substr(0,sep);
     $state.go('app.bot_map');
   }

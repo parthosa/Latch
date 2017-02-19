@@ -1,7 +1,10 @@
 'use strict';
 
+var globalVar, blah;
+
+var baseUrl = 'http://172.20.10.4:8001';
 var globalVar;
-var socket = io.connect('192.168.43.116', {
+var socket = io.connect('172.20.10.4', {
   port: 4000
 });
 
@@ -20,8 +23,8 @@ angular.module('latchApp')
   }
 
   $rootScope.baseUrl = baseUrl;
-  $rootScope.chats;
-  $rootScope.groups;
+  $rootScope.chats = [];
+  $rootScope.groups = [];
   $rootScope.user = {};
   $rootScope.user.pic = window.localStorage.getItem('pic');
   $rootScope.user.nick = window.localStorage.getItem('nick');
@@ -68,6 +71,7 @@ angular.module('latchApp')
   $rootScope.search = {
     visible: false,
     query: '',
+    name: '',
     toggle: function () {
       $rootScope.search.visible = true;
       setTimeout(function () {
@@ -148,7 +152,9 @@ angular.module('latchApp')
 
   $scope.submit = function () {
     // $location.path('/chats');
-    window.plugins.spinnerDialog.show(null,"Please Wait", true);
+    try{
+    window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+    catch(err){}
     $.ajax({
       method: 'POST',
       url: baseUrl + '/main/accounts/register/',
@@ -164,12 +170,16 @@ angular.module('latchApp')
           pushNotification();
 
         }
-        window.plugins.spinnerDialog.hide();
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         Materialize.toast(response.message, 1000)
 
       },
       error: function (response) {
-        window.plugins.spinnerDialog.hide();
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
       }
     })
   }
@@ -182,13 +192,17 @@ angular.module('latchApp')
 
 
   $scope.submit = function () {
-    window.plugins.spinnerDialog.show(null,"Please Wait", true);
+    try{
+    window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+    catch(err){}
     $.ajax({
       method: 'POST',
       url: baseUrl + '/main/accounts/login/',
       data: $scope.user,
       success: function (response) {
-        window.plugins.spinnerDialog.hide();
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         if (response.status == 1) {
 
           window.localStorage.setItem('nick', response.nick);
@@ -208,7 +222,9 @@ angular.module('latchApp')
 
       },
       error: function (response) {
-         window.plugins.spinnerDialog.hide();
+        try{
+         window.plugins.spinnerDialog.hide();}
+         catch(err){}
       }
     })
   }
@@ -223,7 +239,9 @@ angular.module('latchApp')
   // $scope.user.nick = 'parthosa';
 
   $scope.submit = function () {
-     window.plugins.spinnerDialog.show(null,"Please Wait", true);
+    try{
+     window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+     catch(err){}
     var data = {
       nick: $scope.user.nick,
       session_key: window.localStorage.getItem('session_key')
@@ -233,7 +251,9 @@ angular.module('latchApp')
       url: baseUrl + '/main/user/nick/',
       data: data,
       success: function (response) {
-        window.plugins.spinnerDialog.hide();
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
         if (response.status == 1) {
           window.localStorage.setItem('nick', data.nick);
 
@@ -243,7 +263,9 @@ angular.module('latchApp')
 
       },
       error: function (response) {
-        window.plugins.spinnerDialog.hide();
+        try{
+        window.plugins.spinnerDialog.hide();}
+        catch(err){}
       }
     })
   }
@@ -456,9 +478,101 @@ angular.module('latchApp')
   }
 
 }])
+.controller('BotMapController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+
+  var data = [];
+
+
+
+  $scope.sendLoc;
+  $scope.locModal;
+
+  function initMap() {
+
+    var pos = {
+        lat: parseFloat(chatData.lat),
+        lng:parseFloat(chatData.long),
+      }
+      console.log(pos);
+
+      if(pos.lat != 0 && pos.lng !=0 ){
+
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: pos,
+      zoom: 5,
+      zoomControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+
+
+    var marker = new google.maps.Marker({
+          position: pos
+        });
+        map.setCenter(pos);
+        marker.setMap(map);
+        map.setZoom(13);
+
+  }
+  else{
+ var geocoder = new google.maps.Geocoder();
+        var address = chatData.locality +', '+ chatData.city;
+        console.log(address)
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == 'OK') {
+        map = new google.maps.Map(document.getElementById('map'), {
+      center: results[0].geometry.location,
+      zoom: 5,
+      zoomControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+        map.setZoom(13);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+
+  }
+
+
+  
+
+  }
+
+
+
+
+  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+
+  initMap();
+
+
+
+  $scope.redirect = function (el) {
+    chatData.chatId = el.locModal.nick;
+    chatData.chatUrl = '/users';
+    $('#modal').modal('close');
+    $state.go('app.message');
+    $rootScope.title = el.locModal.nick;
+    $rootScope.chatPic = el.locModal.pic;
+  }
+
+}])
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+  db.indi_chat.each(function (peer) {
+    $rootScope.chats.push(peer);
+    $scope.$apply();
+  })
+
+
   if (window.localStorage.getItem('name') == "undefined") {
 
     $.ajax({
@@ -499,8 +613,20 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $rootScope.chats = response.peers;
-      $scope.$apply();
+      console.log(response);
+      response.peers.map(function (e, i) {
+        console.log(e.messages);
+        if (e.messages == undefined)
+          e.messages = [];
+      })
+      db.indi_chat.bulkPut(response.peers).then(function () {
+        $rootScope.chats = [];
+        //        console.log(1)
+        db.indi_chat.each(function (peer) {
+          $rootScope.chats.push(peer);
+          $scope.$apply();
+        })
+      });
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Chat List', 1000);
@@ -515,9 +641,24 @@ angular.module('latchApp')
     $rootScope.chatPic = el.chat.pic;
   }
 
+  $scope.chatBot = function(){
+     chatData.chatId = 'Harlie';
+    $rootScope.title = 'Harlie';
+     $rootScope.chatPic = 'images/johndoe.png';
+     $state.go('app.bot_message');
+  }
+
 }])
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+
+    console.log($rootScope.groups);
+  if ($rootScope.groups == []) {
+    db.group_chat.each(function (group) {
+      $rootScope.groups.push(group);
+      $scope.$apply();
+    });}
+
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/get_groups/',
@@ -525,8 +666,22 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      $rootScope.groups = response.groups;
-      $scope.$apply();
+      response.groups.map(function (e, i) {
+//        console.log(e.messages);
+        if (e.messages == undefined)
+          e.messages = [];
+        if (e.mem_info == undefined)
+          e.mem_info = [];
+      })
+      db.group_chat.bulkPut(response.groups).then(function () {
+//        $rootScope.groups = response.groups;
+        db.group_chat.each(function (group) {
+          $rootScope.groups.push(group);
+          $scope.$apply();
+        })
+      });
+      //      $rootScope.groups = response.groups;
+      //      $scope.$apply();
     },
     error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
@@ -546,9 +701,16 @@ angular.module('latchApp')
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
-  $scope.group = {};
-  $scope.group.pic = $rootScope.chatPic;
-   window.plugins.spinnerDialog.show(null,"Please Wait", true);
+  if ($rootScope.group==undefined)
+    $rootScope.group = {members: []};
+  db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
+    $rootScope.group.members.push(group.mem_info);
+    $scope.$apply();
+  })
+
+  try{
+   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+   catch(err){}
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/room/' + chatData.chatId + '/get_members/',
@@ -557,17 +719,21 @@ angular.module('latchApp')
     },
     success: function (response) {
       if (response.status == 1) {
-        console.log()
-        $scope.group.members = response.members;
-        $scope.$apply();
+          db.group_chat.where('group_name').equals(chatData.chatId.toString()).modify({mem_info: response.members}).then(function (snapshot) {
+            $rootScope.group.members = response.members;
+            $scope.$apply();
+          });
       } else
         Materialize.toast('Could Not Fetch Group Members', 1000);
-       window.plugins.spinnerDialog.hide();
+        try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
     },
     error: function (response) {
-       window.plugins.spinnerDialog.hide();
+      try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
       Materialize.toast('Could Not Fetch Group Members', 1000);
-
     }
   });
 
@@ -584,7 +750,9 @@ angular.module('latchApp')
 .controller('ProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
   $rootScope.title = 'Profile';
-   window.plugins.spinnerDialog.show(null,"Please Wait", true);
+  try{
+   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+   catch(err){}
   $.ajax({
     method: 'POST',
     url: baseUrl + '/main/user/profile/',
@@ -606,11 +774,15 @@ angular.module('latchApp')
         Materialize.toast('Cannot load profile', 1000);
 
       }
-       window.plugins.spinnerDialog.hide();
+      try{
+       window.plugins.spinnerDialog.hide();}
+       catch(err){}
     },
     error: function (response) {
       Materialize.toast('Cannot load profile', 1000);
-      window.plugins.spinnerDialog.hide();
+      try{
+      window.plugins.spinnerDialog.hide();}
+      catch(err){}
     }
   })
 
@@ -631,6 +803,12 @@ angular.module('latchApp')
   if ($scope.messages == null)
     $scope.messages = [];
 
+  db.indi_chat.get(chatData.chatId.toString(), function (peer) {
+    console.log(chatData.chatId);
+    console.log(peer);
+    $scope.messages = peer.messages;
+    $scope.$apply();
+  })
 
   $scope.user = {};
   $scope.user.nick = window.localStorage.getItem('nick');
@@ -648,8 +826,12 @@ angular.module('latchApp')
       for (var i = 0; i < response.messages.length; i++) {
         response.messages[i].nick = response.messages[i].nick_name;
       }
-      $scope.messages = response.messages;
-      $scope.$apply();
+      db.indi_chat.where('nick').equals(chatData.chatId.toString()).modify({
+        messages: response.messages
+      }).then(function (snapshot) {
+        $scope.messages = response.messages;
+        $scope.$apply();
+      });
       chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
     },
     error: function (response) {
@@ -715,121 +897,347 @@ angular.module('latchApp')
 
 
 
-    } else {
-      console.log(3);
-          alert('push dispatched')
+    } else if(Object.getOwnPropertyNames(data).length > 0)  {
       
       Materialize.toast('New Message from ' + data.nick, 1000);
-    }
       dispatchPush(data,true);
+    }
 
 
 
   });
 
 }])
+.controller('BotMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
+  $rootScope.title='Harlie';
+  $scope.messages;
+  if ($scope.messages == null)
+    $scope.messages = [];
+
+  db.chat_bot.put({
+    name:'Harlie',
+    message:\$scope.messages
+    }, function (peer) {
+    $scope.messages = peer.messages;
+    $scope.$apply();
+
+  })
+
+  $scope.user = {};
+  $scope.user.nick = window.localStorage.getItem('nick');
+  var chatScreen = document.getElementsByClassName('chat-screen')[0];
+
+  // $.ajax({
+  //   method: 'POST',
+  //   url: baseUrl + '/main/user/chat/bot/',
+  //   data: {
+  //     'nick': chatData.chatId,
+  //     'session_key': window.localStorage.getItem('session_key')
+
+  //   },
+  //   success: function (response) {
+  //     for (var i = 0; i < response.messages.length; i++) {
+  //       response.messages[i].nick = response.messages[i].nick_name;
+  //     }
+  //     db.indi_chat.where('nick').equals(chatData.chatId.toString()).modify({
+  //       messages: response.messages
+  //     }).then(function (snapshot) {
+  //       $scope.messages = response.messages;
+  //       $scope.$apply();
+  //     });
+  //     chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
+  //   },
+  //   error: function (response) {
+  //     Materialize.toast('Could Not Fetch Messages', 1000)
+  //   }
+  // })
+
+
+  $scope.newMessageText = '';
+  var newMessage;
+  $scope.send = function () {
+    if ($scope.newMessageText != '') {
+
+      var date = new Date();
+      date = date.toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      })
+
+      newMessage = {
+        message: $scope.newMessageText,
+        nick: window.localStorage.getItem('nick'),
+        nick_name: chatData.chatId,
+        time: date,
+        sent: true,
+        msg_id: uuid.v4(),
+        session_key: window.localStorage.getItem('session_key')
+      }
+
+
+      $scope.messages.push(newMessage);
+        $scope.$apply();
+
+      db.chat_bot.put({
+        nick:'Harlie',
+        message:newMessage
+      })
+
+      
+
+      setTimeout(function () {
+      chatScreen.scrollTop = $('.message-wrapper').outerHeight() *  $scope.messages.length
+        // chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+      }, 100)
+
+      // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
+      // $('.chat-screen').scrollTop(scrollTop)
+      $scope.newMessageText = '';
+
+       $.ajax({
+      method: 'POST',
+      url: baseUrl + '/main/user/chat/bot/',
+      data: newMessage,
+      success: function (data) {
+
+         if (chatData.chatId == data.nick) {
+            if(data['restaurants']){
+              
+               $scope.messages.push({
+                 message: data.message,
+                  nick:data.nick,
+                  time: data.time
+               })
+
+              $.each(data['restaurants'],function (i,ele) {
+                  var indi_rest_msg = ele.name + ' \n ' + ele.restaurants.locality + ele.restaurants.city ;
+                  $scope.messages.push({
+                       message: indi_rest_msg,
+                       nick:data.nick,
+                       time:data.time,
+                       lat:ele.lat,
+                       long:ele.long,
+                       address:ele.restaurants.address,
+                       locality:ele.restaurants.locality,
+                       city:ele.restaurants.city,
+                       type:'restaurants'
+                  })
+              }) 
+
+             
+               db.chat_bot.put({
+                  nick:'Harlie',
+                  message:$scope.messages
+                })
+            }
+            else if(data['hotels']){
+              
+               $scope.messages.push({
+                 message: data.message,
+                  nick:data.nick,
+                  time: data.time
+               })
+              $.each(data['hotels'],function (i,ele) {
+                  var indi_rest_msg = ele.name + ' \n ' + ele.address;
+                  $scope.messages.push({
+                       message: indi_rest_msg,
+                       nick:data.nick,
+                       time:data.time,
+                       lat:ele.lat,
+                       long:ele.lng,
+                       type:'hotels',
+                       address:ele.address
+                  })
+              }) 
+
+               db.chat_bot.put({
+                  nick:'Harlie',
+                  message:$scope.messages
+                })
+
+            }else{
+
+            $scope.messages.push(data);
+            }
+            $scope.$apply();
+             db.chat_bot.put({
+                  nick:'Harlie',
+                  message:$scope.messages
+                })
+
+            chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+          } else if ($scope.user.nick == data.nick) {
+            for (var i = $scope.messages.length - 1; i >= 0; i--) {
+              if ($scope.messages[i].msg_id == data.msg_id) {
+                $scope.messages[i].sent = true;
+                $scope.$apply();
+                break;
+              }
+            }
+
+
+
+          } else if(Object.getOwnPropertyNames(data).length > 0)  {
+            
+            Materialize.toast('New Message from ' + data.nick, 1000);
+            dispatchPush(data,true);
+          }
+
+
+
+      },
+      error:function (response) {
+
+      }
+      // socket.emit('send_message_indi', newMessage);
+
+
+    });
+  }
+}
+
+
+
+$scope.openMap = function (el) {
+  if(el.message.type == "restaurants"){
+    console.log(el.message.message,el.message.lat,el.message.long);
+    chatData.lat = el.message.lat;
+    chatData.long = el.message.long;
+    var sep = el.message.message.indexOf('\n');
+    chatData.address = el.message.address;
+    chatData.locality = el.message.locality;
+    chatData.city = el.message.message.substr(sep);
+
+    $rootScope.title = el.message.message.substr(0,sep);
+    $state.go('app.bot_map');
+  }
+  if(el.message.type == "hotels"){
+    console.log(el.message.message,el.message.lat,el.message.long);
+    chatData.lat = el.message.lat;
+    chatData.long = el.message.long;
+    chatData.address = el.message.address;
+        var sep = el.message.message.indexOf('\n');
+    $rootScope.title = el.message.message.substr(0,sep);
+    $state.go('app.bot_map');
+  }
+}
+
+}])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
-        $scope.messages = [];
+  $scope.messages;
+  if ($scope.messages == null)
+    $scope.messages = [];
+
+  db.group_chat.get(chatData.chatId.toString(), function (group) {
+    console.log(chatData.chatId);
+    console.log(group);
+    $scope.messages = group.messages;
+    $scope.$apply();
+  })
+
+  $scope.user = {};
+  $scope.user.nick = window.localStorage.getItem('nick');
+
+  var chatScreen = document.getElementsByClassName('chat-screen')[0];
+
+  $.ajax({
+    method: 'POST',
+    url: baseUrl + '/main/room/get/' + chatData.chatId + '/',
+    data: {
+      'session_key': window.localStorage.getItem('session_key')
+
+    },
+    success: function (response) {
+      for (var i = 0; i < response.messages.length; i++) {
+        response.messages[i].nick = response.messages[i].nick_name;
+      }
+      db.group_chat.where('group_name').equals(chatData.chatId.toString()).modify({
+        messages: response.messages
+      }).then(function (snapshot) {
+        $scope.messages = response.messages;
+        $scope.$apply();
+      })
+      chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
 
 
-        $scope.user = {};
-        $scope.user.nick = window.localStorage.getItem('nick');
-
-        var chatScreen = document.getElementsByClassName('chat-screen')[0];
-
-        $.ajax({
-          method: 'POST',
-          url: baseUrl + '/main/room/get/' + chatData.chatId + '/',
-          data: {
-            'session_key': window.localStorage.getItem('session_key')
-
-          },
-          success: function (response) {
-            for (var i = 0; i < response.messages.length; i++) {
-              response.messages[i].nick = response.messages[i].nick_name;
-            }
-            $scope.messages = response.messages;
-            $scope.$apply();
-            chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
+    },
+    error: function (response) {
+      Materialize.toast('Could Not Fetch Messages', 1000)
+    }
+  })
 
 
-          },
-          error: function (response) {
-            Materialize.toast('Could Not Fetch Messages', 1000)
-          }
-        })
+  $scope.newMessageText = '';
+  var newMessage;
+  $scope.send = function () {
+    if ($scope.newMessageText != '') {
+      var date = new Date();
+      date = date.toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      })
+      newMessage = {
+        message: $scope.newMessageText,
+        nick: window.localStorage.getItem('nick'),
+        group_name: chatData.chatId,
+        time: date,
+        sent: false,
+        msg_id: uuid.v4(),
+        session_key: window.localStorage.getItem('session_key')
+      }
+
+      $scope.messages.push(newMessage);
+      setTimeout(function () {
+        chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+      }, 100)
+
+      $scope.newMessageText = '';
 
 
-        $scope.newMessageText = '';
-        var newMessage;
-        $scope.send = function () {
-          if ($scope.newMessageText != '') {
-            var date = new Date();
-            date = date.toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              hour12: true,
-              minute: 'numeric'
-            })
-            newMessage = {
-              message: $scope.newMessageText,
-              nick: window.localStorage.getItem('nick'),
-              group_name: chatData.chatId,
-              time: date,
-              sent: false,
-              msg_id: uuid.v4(),
-              session_key: window.localStorage.getItem('session_key')
-            }
-
-            $scope.messages.push(newMessage); 
-            setTimeout(function () {
-                chatScreen.scrollTop += $('.message-wrapper').outerHeight();
-              }, 100)
- 
-            $scope.newMessageText = '';
+      socket.emit('send_message_group', newMessage);
 
 
-            socket.emit('send_message_group', newMessage);
+    }
+  }
 
 
-          }
+  socket.on('send_message_group', function (data) {
+
+    if (chatData.chatId == data.group_name && $scope.user.nick != data.nick) {
+      $scope.messages.push(data);
+      $scope.$apply();
+      chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+    } else if ($scope.user.nick == data.nick) {
+      for (var i = $scope.messages.length - 1; i > 0; i--) {
+        if ($scope.messages[i].msg_id == data.msg_id) {
+          $scope.messages[i].sent = true;
+          $scope.$apply();
         }
-
-
-        socket.on('send_message_group', function(data) {
-      
-       if(chatData.chatId==data.group_name && $scope.user.nick != data.nick){
-              $scope.messages.push(data);
-              $scope.$apply();
-              chatScreen.scrollTop+=$('.message-wrapper').outerHeight();
+      }
         }
-        else if($scope.user.nick == data.nick){
-              for(var i=$scope.messages.length-1;i>0;i--){
-                if($scope.messages[i].msg_id==data.msg_id){
-                  $scope.messages[i].sent=true;
-                  $scope.$apply();
-                }
-              }
-
-        }
-        else{
-          alert('push dispatched')
+        else if(Object.getOwnPropertyNames(data).length > 0)  {
           Materialize.toast('New Message in '+data.group_name,1000);
-        }
           dispatchPush(data,false);
+        }
 
-      });
+  });
 
 
 
               }])
+
 
             .controller('InterestsController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
               $rootScope.title = 'Interests';
 
               $rootScope.sendCurrLocNoMap();
               $scope.submit = function () {
-                   window.plugins.spinnerDialog.show(null,"Please Wait", true);
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
                 var data = {};
                 data.interest = '';
                 var checkBox = $('#interests-form input:checked');
@@ -847,10 +1255,14 @@ angular.module('latchApp')
 
                     } else
                       Materialize.toast('Try Again', 1000);
-                   window.plugins.spinnerDialog.hide();
+                      try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                   },
                   error: function (response) {
-                   window.plugins.spinnerDialog.hide();
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                     Materialize.toast('Try Again', 1000);
                   }
                 })
@@ -877,9 +1289,10 @@ angular.module('latchApp')
               }
 
 }])
-            .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
+  .controller('SidebarController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
 
 }])
+
             .controller('EditProfileController', ['$rootScope', '$scope', '$state', function ($rootScope, $scope, $state) {
               $rootScope.title = 'Edit Profile';
 
@@ -888,7 +1301,9 @@ angular.module('latchApp')
               $scope.nick = window.localStorage.getItem('nick');
 
               $scope.submit = function () { 
-                   window.plugins.spinnerDialog.show(null,"Please Wait", true);
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
                 var file  = document.querySelector('input#edit-profile-pic-upload').files[0];
                 var session_key = window.localStorage.getItem('session_key')
                 var formData = new FormData();
@@ -922,10 +1337,14 @@ angular.module('latchApp')
                       $rootScope.$apply();
                       $state.go('app.chats');
                     }
-                   window.plugins.spinnerDialog.hide();
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                   },
                   error: function (response) {
-                   window.plugins.spinnerDialog.hide();
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                     Materialize.toast('Try Again', 1000);
 
                   }
@@ -939,7 +1358,9 @@ angular.module('latchApp')
               $scope.new_password_confirm;
 
               $scope.submit = function () {
-                   window.plugins.spinnerDialog.show(null,"Please Wait", true);
+                try{
+                   window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                   catch(err){}
                 var data = {};
                 data['old_password'] = $scope.old_password;
                 data['new_password'] = $scope.new_password;
@@ -955,10 +1376,14 @@ angular.module('latchApp')
                       $state.go('app.chats')
                     } else
                       Materialize.toast(response.message, 1000);
-                   window.plugins.spinnerDialog.hide();
+                      try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                   },
                   error: function (response) {
-                   window.plugins.spinnerDialog.hide();
+                    try{
+                   window.plugins.spinnerDialog.hide();}
+                   catch(err){}
                     Materialize.toast('Try Again', 1000);
                   }
                 })
@@ -975,7 +1400,9 @@ angular.module('latchApp')
 
 
                 $scope.submit = function () { 
-                     window.plugins.spinnerDialog.show(null,"Please Wait", true);
+                  try{
+                     window.plugins.spinnerDialog.show(null,"Please Wait", true);}
+                     catch(err){}
                   //    var file  = dataURL;
                   var session_key = window.localStorage.getItem('session_key')
                     //    var formData = new FormData();
@@ -995,14 +1422,18 @@ angular.module('latchApp')
                         data: data,
                         success: function (response) {
                           Materialize.toast(response.message, 1000);
-                         window.plugins.spinnerDialog.hide();
+                          try{
+                         window.plugins.spinnerDialog.hide();}
+                         catch(err){}
                           if (response.status == 1) {
                             $state.go('app.nick');
                             window.localStorage.setItem('pic', file);
                           }
                         },
                         error: function (response) {
-                         window.plugins.spinnerDialog.hide();
+                        try{
+                         window.plugins.spinnerDialog.hide();}
+                         catch(err){}
                           Materialize.toast('Try Again', 1000);
 
                         }

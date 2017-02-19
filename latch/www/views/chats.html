@@ -9,7 +9,7 @@
 		</li>
 
       <li class="collection-item avatar" ng-repeat="chat in chats | filter:search.name" ng-click='redirect(this)'>
-			<img ng-src="{{ chat.pic }}" alt="" class="circle">
+			<img ng-src="{{baseUrl + chat.pic }}" alt="" class="circle">
 			<p class="title">{{chat.nick}}</p>
 			<p class="chat-message">{{chat.distance}}</p>
 		<!-- <a href="#!" class="secondary-content">{{chat.time}}</a> -->

@@ -477,6 +477,92 @@ angular.module('latchApp')
   }
 
 }])
+.controller('BotMapController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
+
+  var data = [];
+
+
+
+  $scope.sendLoc;
+  $scope.locModal;
+
+  function initMap() {
+
+    var pos = {
+        lat: parseFloat(chatData.lat),
+        lng:parseFloat(chatData.long),
+      }
+      console.log(pos);
+
+      if(pos.lat != 0 && pos.lng !=0 ){
+
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: pos,
+      zoom: 5,
+      zoomControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+
+
+    var marker = new google.maps.Marker({
+          position: pos
+        });
+        map.setCenter(pos);
+        marker.setMap(map);
+        map.setZoom(13);
+
+  }
+  else{
+ var geocoder = new google.maps.Geocoder();
+        var address = chatData.locality +', '+ chatData.city;
+        console.log(address)
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == 'OK') {
+        map = new google.maps.Map(document.getElementById('map'), {
+      center: results[0].geometry.location,
+      zoom: 5,
+      zoomControl: false,
+      streetViewControl: false,
+      fullscreenControl: false
+    });
+        var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+        });
+        map.setZoom(13);
+      } else {
+        alert('Geocode was not successful for the following reason: ' + status);
+      }
+    });
+
+  }
+
+
+  
+
+  }
+
+
+
+
+  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+
+  initMap();
+
+
+
+  $scope.redirect = function (el) {
+    chatData.chatId = el.locModal.nick;
+    chatData.chatUrl = '/users';
+    $('#modal').modal('close');
+    $state.go('app.message');
+    $rootScope.title = el.locModal.nick;
+    $rootScope.chatPic = el.locModal.pic;
+  }
+
+}])
 
 
 .controller('ChatController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
@@ -552,6 +638,13 @@ angular.module('latchApp')
     $state.go('app.message');
     $rootScope.title = el.chat.nick;
     $rootScope.chatPic = el.chat.pic;
+  }
+
+  $scope.chatBot = function(){
+     chatData.chatId = 'Harlie';
+    $rootScope.title = 'Harlie';
+     $rootScope.chatPic = 'images/johndoe.png';
+     $state.go('app.bot_message');
   }
 
 }])
@@ -809,17 +902,231 @@ angular.module('latchApp')
 
 
 
-    } else {
-      console.log(3);
-          alert('push dispatched')
+    } else if(Object.getOwnPropertyNames(data).length > 0)  {
       
       Materialize.toast('New Message from ' + data.nick, 1000);
-    }
       dispatchPush(data,true);
+    }
 
 
 
   });
+
+}])
+.controller('BotMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
+  $rootScope.title='Harlie';
+  $scope.messages;
+  if ($scope.messages == null)
+    $scope.messages = [];
+
+  db.chat_bot.put({
+    name:'Harlie',
+    message:$scope.messages
+    }, function (peer) {
+    $scope.messages = peer.messages;
+    $scope.$apply();
+
+  })
+
+  $scope.user = {};
+  $scope.user.nick = window.localStorage.getItem('nick');
+  var chatScreen = document.getElementsByClassName('chat-screen')[0];
+
+  // $.ajax({
+  //   method: 'POST',
+  //   url: baseUrl + '/main/user/chat/bot/',
+  //   data: {
+  //     'nick': chatData.chatId,
+  //     'session_key': window.localStorage.getItem('session_key')
+
+  //   },
+  //   success: function (response) {
+  //     for (var i = 0; i < response.messages.length; i++) {
+  //       response.messages[i].nick = response.messages[i].nick_name;
+  //     }
+  //     db.indi_chat.where('nick').equals(chatData.chatId.toString()).modify({
+  //       messages: response.messages
+  //     }).then(function (snapshot) {
+  //       $scope.messages = response.messages;
+  //       $scope.$apply();
+  //     });
+  //     chatScreen.scrollTop = $('.message-wrapper').outerHeight() * response.messages.length
+  //   },
+  //   error: function (response) {
+  //     Materialize.toast('Could Not Fetch Messages', 1000)
+  //   }
+  // })
+
+
+  $scope.newMessageText = '';
+  var newMessage;
+  $scope.send = function () {
+    if ($scope.newMessageText != '') {
+
+      var date = new Date();
+      date = date.toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      })
+
+      newMessage = {
+        message: $scope.newMessageText,
+        nick: window.localStorage.getItem('nick'),
+        nick_name: chatData.chatId,
+        time: date,
+        sent: true,
+        msg_id: uuid.v4(),
+        session_key: window.localStorage.getItem('session_key')
+      }
+
+
+      $scope.messages.push(newMessage);
+        $scope.$apply();
+
+      db.chat_bot.put({
+        nick:'Harlie',
+        message:newMessage
+      })
+
+      
+
+      setTimeout(function () {
+      chatScreen.scrollTop = $('.message-wrapper').outerHeight() *  $scope.messages.length
+        // chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+      }, 100)
+
+      // var scrollTop = $('.chat-screen').scrollTop() + $($('.message-wrapper')[0]).outerHeight()
+      // $('.chat-screen').scrollTop(scrollTop)
+      $scope.newMessageText = '';
+
+       $.ajax({
+      method: 'POST',
+      url: baseUrl + '/main/user/chat/bot/',
+      data: newMessage,
+      success: function (data) {
+
+         if (chatData.chatId == data.nick) {
+            if(data['restaurants']){
+              
+               $scope.messages.push({
+                 message: data.message,
+                  nick:data.nick,
+                  time: data.time
+               })
+
+              $.each(data['restaurants'],function (i,ele) {
+                  var indi_rest_msg = ele.name + ' \n ' + ele.restaurants.locality + ele.restaurants.city ;
+                  $scope.messages.push({
+                       message: indi_rest_msg,
+                       nick:data.nick,
+                       time:data.time,
+                       lat:ele.lat,
+                       long:ele.long,
+                       address:ele.restaurants.address,
+                       locality:ele.restaurants.locality,
+                       city:ele.restaurants.city,
+                       type:'restaurants'
+                  })
+              }) 
+
+             
+               db.chat_bot.put({
+                  nick:'Harlie',
+                  message:$scope.messages
+                })
+            }
+            else if(data['hotels']){
+              
+               $scope.messages.push({
+                 message: data.message,
+                  nick:data.nick,
+                  time: data.time
+               })
+              $.each(data['hotels'],function (i,ele) {
+                  var indi_rest_msg = ele.name + ' \n ' + ele.address;
+                  $scope.messages.push({
+                       message: indi_rest_msg,
+                       nick:data.nick,
+                       time:data.time,
+                       lat:ele.lat,
+                       long:ele.lng,
+                       type:'hotels',
+                       address:ele.address
+                  })
+              }) 
+
+               db.chat_bot.put({
+                  nick:'Harlie',
+                  message:$scope.messages
+                })
+
+            }else{
+
+            $scope.messages.push(data);
+            }
+            $scope.$apply();
+             db.chat_bot.put({
+                  nick:'Harlie',
+                  message:$scope.messages
+                })
+
+            chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+          } else if ($scope.user.nick == data.nick) {
+            for (var i = $scope.messages.length - 1; i >= 0; i--) {
+              if ($scope.messages[i].msg_id == data.msg_id) {
+                $scope.messages[i].sent = true;
+                $scope.$apply();
+                break;
+              }
+            }
+
+
+
+          } else if(Object.getOwnPropertyNames(data).length > 0)  {
+            
+            Materialize.toast('New Message from ' + data.nick, 1000);
+            dispatchPush(data,true);
+          }
+
+
+
+      },
+      error:function (response) {
+
+      }
+      // socket.emit('send_message_indi', newMessage);
+
+
+    });
+  }
+}
+
+
+
+$scope.openMap = function (el) {
+  if(el.message.type == "restaurants"){
+    console.log(el.message.message,el.message.lat,el.message.long);
+    chatData.lat = el.message.lat;
+    chatData.long = el.message.long;
+    var sep = el.message.message.indexOf('\n');
+    chatData.address = el.message.address;
+    chatData.locality = el.message.locality;
+    chatData.city = el.message.message.substr(sep);
+
+    $rootScope.title = el.message.message.substr(0,sep);
+    $state.go('app.bot_map');
+  }
+  if(el.message.type == "hotels"){
+    console.log(el.message.message,el.message.lat,el.message.long);
+    chatData.lat = el.message.lat;
+    chatData.long = el.message.long;
+    chatData.address = el.message.address;
+        var sep = el.message.message.indexOf('\n');
+    $rootScope.title = el.message.message.substr(0,sep);
+    $state.go('app.bot_map');
+  }
+}
 
 }])
 
@@ -916,11 +1223,10 @@ angular.module('latchApp')
         }
       }
         }
-        else{
-          alert('push dispatched')
+        else if(Object.getOwnPropertyNames(data).length > 0)  {
           Materialize.toast('New Message in '+data.group_name,1000);
-        }
           dispatchPush(data,false);
+        }
 
   });
 

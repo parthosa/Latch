@@ -188,7 +188,8 @@ var db = new Dexie("database");
 
 db.version(1).stores({
   indi_chat: 'nick, pic, distance, messages',
-  group_chat: 'group_name, members, pic, messages, mem_info'
+  group_chat: 'group_name, members, pic, messages, mem_info',
+  chat_bot: 'nick,message'
 });
 
 //db.indi_chat.put();

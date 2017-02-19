@@ -141,8 +141,8 @@ def profile_pic(request):
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
 	else:
-		user_image = request.POST['dpic']
-		user_p.dp_url = user_image
+		user_image = request.FILES.get('dpic')
+		user_p.dp = user_image
 		user_p.save()
 
 	return JsonResponse({'status': 1, 'message': 'Successfully saved your profile pic'})
@@ -592,25 +592,33 @@ def get_profile(request):
 @csrf_exempt
 def indi_msg_notification(request):
 	if request.POST:
-		if len(device_id) != 0:
-			session_key = request.POST['session_key']
-			session = Session.objects.get(session_key = session_key)
-			uid = session.get_decoded().get('_auth_user_id')
+		# if len(device_id) != 0:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		message = request.POST['message']
+		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
+		# timestamp = request.POST['time']
+		gcm = GCM('AAAANbxRpq0:APA91bFgSsNBCJc2qubCF7--FQagNloimWcsRCMk_DezOPP88NvOO8ifcKilq_L1cmzaK9JHLXxXFV0a4nw3Lf-VHn1dxsxn5I0_6Gb7yNLtc-xRL0OUP7XrdfeEwkouS9kmfDkJCzYD')
+		reg_ids = user_c.device_id.all()
+		print reg_ids
+		reg_ids_tmp = []
+		for x in reg_ids:
+			# for y in range(0, len(reg_ids)):
 			try:
-				user = User.objects.get(pk=uid)
-			except ObjectDoesNotExist:
-				response = {'status':0, 'message':'Kindly login first'}
-			user_p = UserProfile.objects.get(user = user)
-			message = request.POST['message']
-			user_c = UserProfile.objects.get(request.POST['nick_name'])
-			timestamp = request.POST['time']
-			gcm = GCM(AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc)
-			reg_ids = [user_c.device_id]
-			notification_msg = '''New Message from %s''' % (user_p.nick_name)
-			notification = {'title': 'New message', 'message': notification_msg}
-			response = gcm.json_request(registration_ids=reg_ids, data=notification)
+				reg_ids_tmp.append(x.device_id)
+			except:
+				pass
+		notification_msg = '''New Message from %s''' % (user_p.nick_name)
+		notification = {'title': 'New message', 'message': notification_msg, 'additionalData': {'isUser': 'isUser'}}
+		response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
 
-			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
+		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': request.POST['isUser']})
 
 @csrf_exempt
 def device_id(request):
@@ -625,7 +633,7 @@ def device_id(request):
 		user_p = UserProfile.objects.get(user = user)
 		device_id = Device_ID.objects.create(device_id = request.POST['device_id'], user = user_p)
 		user_p.device_id.add(device_id)	
-		resposnse = {'status': 1, 'message': 'device id successfully saved'}
+		response = {'status': 1, 'message': 'device id successfully saved'}
 		return JsonResponse(response)
 	else:
 		session_key = request.POST['session_key']
@@ -642,25 +650,34 @@ def device_id(request):
 @csrf_exempt
 def group_msg_notification(request):
 	if request.POST:
-		if len(device_id) != 0:
-			session_key = request.POST['session_key']
-			session = Session.objects.get(session_key = session_key)
-			uid = session.get_decoded().get('_auth_user_id')
-			try:
-				user = User.objects.get(pk=uid)
-			except ObjectDoesNotExist:
-				response = {'status':0, 'message':'Kindly login first'}
-			user_p = UserProfile.objects.get(user = user)
-			message = request.POST['message']
-			group = Group.objects.get(name = request.POST['group_name'])
-			timestamp = request.POST['time']
-			gcm = GCM(AIzaSyAAxEfUDUWm0Kqxbg9UuwDBodXuw6jhvUc)
-			reg_ids = [x.device_id for x in UserProfile.objects.filter(group = group)]
-			notification_msg = '''New Message from %s''' % (user_p.nick_name)
-			notification = {'title': 'New message', 'message': notification_msg}
-			response = gcm.json_request(registration_ids=reg_ids, data=notification)
+		# if len(device_id) != 0:
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		message = request.POST['message']
+		group = Group.objects.get(name = request.POST['group_name'])
+		# timestamp = request.POST['time']
+		gcm = GCM('AAAANbxRpq0:APA91bFgSsNBCJc2qubCF7--FQagNloimWcsRCMk_DezOPP88NvOO8ifcKilq_L1cmzaK9JHLXxXFV0a4nw3Lf-VHn1dxsxn5I0_6Gb7yNLtc-xRL0OUP7XrdfeEwkouS9kmfDkJCzYD')
+		reg_ids = [x.device_id.all() for x in UserProfile.objects.filter(groups = group)]
+		reg_ids_tmp = []
+		for x in reg_ids:
+			for y in range(0, len(reg_ids)):
+				try:
+					print x[y].device_id
+					reg_ids_tmp.append(x[y].device_id)
+				except:
+					pass
+		print reg_ids
+		notification_msg = '''%s@%s: %s''' % (user_p.nick_name,group.name, request.POST['message'])
+		notification = {'title': 'Latch', 'message': notification_msg, 'additionalData': {'isUser': request.POST['isUser']}}
+		response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
 
-			return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
+		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': request.POST['isUser']})
 
 @csrf_exempt
 def edit_profile(request):
@@ -674,18 +691,21 @@ def edit_profile(request):
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
 		user_p.name = request.POST['name']
-		user_p.nick_name = request.POST['nick']
-		user_p.contact = request.POST['contact']
-		try:
-			user_image = request.POST['pic']
-			# img = Image.open(user_image)
-			# img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
-			user_p.dp_url = user_image
-		except:
-			pass
-		user_p.save()
+		if request.POST['nick'] not in [x.nick_name for x in UserProfile.objects.all()]:
+			user_p.nick_name = request.POST['nick']
+			user_p.contact = request.POST['contact']
+			try:
+				user_image = request.POST['pic']
+				# img = Image.open(user_image)
+				# img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
+				user_p.dp_url = user_image
+			except:
+				pass
+			user_p.save()
 
-		return JsonResponse({'status': 1, 'message': 'Changes have been successfully saved'})
+			return JsonResponse({'status': 1, 'message': 'Changes have been successfully saved'})
+		else:
+			return JsonResponse({'status': 0, 'message': 'This nick is already registered.'})
 
 @csrf_exempt
 def change_password(request):
@@ -711,3 +731,107 @@ def change_password(request):
 			response = {'status': 0, 'message' : 'You are entering the wrong old password'}
 
 		return JsonResponse(response)
+
+@csrf_exempt
+def chat_bot(request):
+	if request.POST:
+	#74c47b6322c6a40d4bef924bf238548c zomato api
+		session_key = request.POST['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		ai = apiai.ApiAI('819b6252e6c94b2ca7510d6d9da23574')
+		request_ai = ai.text_request()
+		request_ai.lang = 'en'
+		request_ai.session_id = session_key
+		query = request.POST['message']
+		print query
+		luis_url = '''https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/c413b2ef-382c-45bd-8ff0-f76d60e2a821?subscription-key=3dd64ac15d6049a7b4ac30f3eb591970&q=%s''' % (query)
+		print luis_url
+		request_ai.query = query
+		print request_ai.query
+		response = request_ai.getresponse()
+		# json_response = json.dumps(response)
+		bot_json = json.load(response)
+		print bot_json
+		try:
+			intent_name = bot_json['result']['metadata']['intentName']
+			bot_response = bot_json['result']['fulfillment']['speech']
+		except:
+			intent_name = 'Not eat'
+		if intent_name == 'Find me some places to eat near me':
+			url = '''https://developers.zomato.com/api/v2.1/search?count=8&lat=%s&lon=%s&radius=%s&sort=rating&order=desc''' % (user_p.lat, user_p.longitude, 250000)
+			headers = {'Accept': 'application/json','user-key': '74c47b6322c6a40d4bef924bf238548c'}
+			req_rest = requests.get(url, headers=headers)
+			# req_tmp = json.dumps(req_rest.text)
+			restaurants_json = json.loads(req_rest.text)
+			# print restaurants_json
+			if restaurants_json['results_found'] != 0:
+				rest_names = []
+				rest_lat = []
+				rest_longitude = []
+				response_list = []
+				for x in range(0,5):
+					try:
+						response_list.append({'name': restaurants_json['restaurants'][x]['restaurant']['name'], 'lat': restaurants_json['restaurants'][x]['restaurant']['location']['latitude'], 'long': restaurants_json['restaurants'][x]['restaurant']['location']['longitude']})
+						rest_lat.append(restaurants_json['restaurants'][x]['restaurant']['location']['latitude'])
+						rest_longitude.append(restaurants_json['restaurants'][x]['restaurant']['location']['longitude'])
+						# response_list.append(restaurants_json['restaurants'][x]['restaurant']['location']['latitude'])
+						# response_list.append(restaurants_json['restaurants'][x]['restaurant']['location']['longitude'])
+					except:
+						response_list.append({'name': restaurants_json['restaurants'][x]['restaurant']['name'], 'lat': restaurants_json['restaurants'][x]['restaurant']['location']['locality'], 'long': restaurants_json['restaurants'][x]['restaurant']['location']['city']})
+						rest_lat.append(restaurants_json['restaurants'][x]['restaurant']['location']['latitude'])
+						rest_longitude.append(restaurants_json['restaurants'][x]['restaurant']['location']['longitude'])
+						# response_list.append(restaurants_json['restaurants'][x]['location']['locality'])
+						# response_list.append(restaurants_json['restaurants'][x]['location']['city'])
+				distance_url = '''https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=%s,%s&destinations=%s,%s|%s,%s|%s,%s|%s,%s|%s,%s&key=AIzaSyC0NDPBi5LbvZcF8J5g98uKAyMyoAojQBE''' % (user_p.lat, user_p.longitude, rest_lat[0], rest_longitude[0],rest_lat[1], rest_longitude[1],rest_lat[2], rest_longitude[2],rest_lat[3], rest_longitude[3],rest_lat[4], rest_longitude[4])
+				distance_tmp = requests.get(distance_url)
+				distance_json = json.loads(distance_tmp.text)
+				rest_distance = []
+				for x in range(0,5):
+					try:
+						response_list[x]['distance'] = distance_json['rows'][0]['elements'][x]['distance']['text']
+					except:
+						response_list[x]['distance'] = 'null'
+					response_list[x]['restaurants'] = {}
+					response_list[x]['restaurants']['address'] = restaurants_json['restaurants'][x]['restaurant']['location']['address']
+					response_list[x]['restaurants']['locality'] = restaurants_json['restaurants'][x]['restaurant']['location']['locality']
+					response_list[x]['restaurants']['city'] = restaurants_json['restaurants'][x]['restaurant']['location']['city']
+					response_list[x]['id'] = restaurants_json['restaurants'][x]['restaurant']['id']
+
+				response = {'status': 1, 'restaurants': response_list, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name'], 'message': 'Here I found some awesome places to give your stomach a treat near you'}
+				return JsonResponse(response)
+			else:
+				response = {'status': 0, 'message': 'Sorry I couldn\'t find any place nearby to eat.', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
+				return JsonResponse(response)
+		elif json.loads((requests.get(luis_url)).text)['intents'][0]['intent'] == 'builtin.intent.places.make_reservation':
+			hotel_url = '''https://maps.googleapis.com/maps/api/place/textsearch/json?query=hotels+in+%s&key=AIzaSyATE-DjQxRSzwzn9OreHh_PvEkHQlVm_Hg''' % (user_p.locality)
+			response_list = []
+			hotel_tmp = requests.get(hotel_url)
+			hotel_json = json.loads(hotel_tmp.text)
+			for hotel in hotel_json['results']:
+				try:
+					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': hotel['rating'], 'address': hotel['formatted_address']})
+				except:
+					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': 'none', 'address': hotel['formatted_address']})
+			return JsonResponse({'status' :1, 'hotels': response_list, 'message': 'here are some hotels for you', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']})
+		else:
+			response = {'status': 1, 'message': bot_response, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
+			return JsonResponse(response)
+
+@csrf_exempt
+def get_reviews(request):
+	res_id = request.POST['id']
+	url = '''https://developers.zomato.com/api/v2.1/reviews?res_id=%s''' % (res_id)
+	headers = {'Accept': 'application/json','user-key': '74c47b6322c6a40d4bef924bf238548c'}
+	req_rest = requests.get(url, headers)
+	restaurants_json = json.load(req_rest.text)
+	response_list = []
+	for x in range(0, min(req_rest['reviews_count'], 3)):
+		response_list.append({'rating': restaurants_json['user_reviews'][x]['review']['rating'], 'review': restaurants_json['user_reviews'][x]['review']['review_text']})
+
+	return JsonResponse({'reviews': response_list})

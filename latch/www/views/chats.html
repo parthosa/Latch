@@ -8,8 +8,8 @@
 		<!-- <a href="#!" class="secondary-content">{{chat.time}}</a> -->
 		</li>
 
-      <li class="collection-item avatar" ng-repeat="chat in chats | filter:search.query" ng-click='redirect(this)'>
-			<img ng-src="{{ chat.pic}}" alt="" class="circle">
+      <li class="collection-item avatar" ng-repeat="chat in chats | filter:search.name" ng-click='redirect(this)'>
+			<img ng-src="{{ chat.pic }}" alt="" class="circle">
 			<p class="title">{{chat.nick}}</p>
 			<p class="chat-message">{{chat.distance}}</p>
 		<!-- <a href="#!" class="secondary-content">{{chat.time}}</a> -->

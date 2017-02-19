@@ -619,7 +619,7 @@ angular.module('latchApp')
         if (e.messages == undefined)
           e.messages = [];
       })
-      db.indi_chat.bulkPut(response.peers).then(function () {
+      db.indi_chat.bulkAdd(response.peers).then(function () {
         $rootScope.chats = [];
         //        console.log(1)
         db.indi_chat.each(function (peer) {
@@ -653,7 +653,7 @@ angular.module('latchApp')
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
     console.log($rootScope.groups);
-  if ($rootScope.groups == []) {
+  if ($rootScope.groups.length == 0) {
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);
       $scope.$apply();
@@ -666,15 +666,15 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      response.groups.map(function (e, i) {
-//        console.log(e.messages);
-        if (e.messages == undefined)
-          e.messages = [];
-        if (e.mem_info == undefined)
-          e.mem_info = [];
-      })
-      db.group_chat.bulkPut(response.groups).then(function () {
-//        $rootScope.groups = response.groups;
+//      response.groups.map(function (e, i) {
+////        console.log(e.messages);
+//        if (e.messages == undefined)
+//          e.messages = [];
+//        if (e.mem_info == undefined)
+//          e.mem_info = [];
+//      })
+      db.group_chat.bulkAdd(response.groups).then(function () {
+        $rootScope.groups = [];
         db.group_chat.each(function (group) {
           $rootScope.groups.push(group);
           $scope.$apply();
@@ -1126,8 +1126,9 @@ $scope.openMap = function (el) {
 }])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
-  $scope.messages;
-  if ($scope.messages == null)
+//  $scope.messages;
+  
+  if ($scope.messages == undefined)
     $scope.messages = [];
 
   db.group_chat.get(chatData.chatId.toString(), function (group) {

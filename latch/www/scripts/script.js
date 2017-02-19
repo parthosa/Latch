@@ -1,4 +1,4 @@
-var baseUrl = 'http://192.168.43.116:8001';
+//var baseUrl = 'http://192.168.43.116:8001';
 
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 

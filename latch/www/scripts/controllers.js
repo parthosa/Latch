@@ -71,7 +71,6 @@ angular.module('latchApp')
   $rootScope.search = {
     visible: false,
     query: '',
-    name: '',
     toggle: function () {
       $rootScope.search.visible = true;
       setTimeout(function () {
@@ -701,7 +700,7 @@ console.log(marker)
         if (e.messages == undefined)
           e.messages = [];
       })
-      db.indi_chat.bulkPut(response.peers).then(function () {
+      db.indi_chat.bulkAdd(response.peers).then(function () {
         $rootScope.chats = [];
         //        console.log(1)
         db.indi_chat.each(function (peer) {
@@ -735,11 +734,14 @@ console.log(marker)
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
     console.log($rootScope.groups);
-  if ($rootScope.groups == []) {
+  if ($rootScope.groups.length == 0) {
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);
       $scope.$apply();
-    });}
+//    console.log($rootScope.groups);
+//      console.log(1);
+    });
+  }
 
   $.ajax({
     method: 'POST',
@@ -748,23 +750,23 @@ console.log(marker)
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      response.groups.map(function (e, i) {
-//        console.log(e.messages);
-        if (e.messages == undefined)
-          e.messages = [];
-        if (e.mem_info == undefined)
-          e.mem_info = [];
-      })
-      db.group_chat.bulkPut(response.groups).then(function () {
-//        $rootScope.groups = response.groups;
+//      response.groups.map(function (e, i) {
+////        console.log(e.messages);
+//        if (e.messages == undefined)
+//          e.messages = [];
+//        if (e.mem_info == undefined)
+//          e.mem_info = [];
+//      })
+      db.group_chat.bulkAdd(response.groups).then(function () {
+        $rootScope.groups = [];
         db.group_chat.each(function (group) {
           $rootScope.groups.push(group);
           $scope.$apply();
-        })
-      });
+       });
+     });
       //      $rootScope.groups = response.groups;
       //      $scope.$apply();
-    },
+        },
     error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
     }
@@ -783,6 +785,7 @@ console.log(marker)
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
+    console.log($rootScope.group);
   if ($rootScope.group==undefined)
     $rootScope.group = {members: []};
   db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
@@ -1211,8 +1214,9 @@ $scope.openMap = function (el) {
 }])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
-  $scope.messages;
-  if ($scope.messages == null)
+//  $scope.messages;
+  
+  if ($scope.messages == undefined)
     $scope.messages = [];
 
   db.group_chat.get(chatData.chatId.toString(), function (group) {
@@ -1489,41 +1493,57 @@ $scope.openMap = function (el) {
                      window.plugins.spinnerDialog.show(null,"Please Wait", true);}
                      catch(err){}
                   //    var file  = dataURL;
-                  var session_key = window.localStorage.getItem('session_key')
-                    //    var formData = new FormData();
-                    //    formData.append('session_key', session_key);
-                    //    formData.append('dpic', file);
-                    //    console.log(formData.getAll('dpic'))
-                  console.log(dataURL);
+    var session_key = window.localStorage.getItem('session_key')
+    var formData = new FormData();
+    //    formData.append('dpic', file);
+    //    console.log(formData.getAll('dpic'))
 
-                  var data = {
-                    session_key: session_key,
-                    dpic: dataURL
-                  }
-                  if (dataURL != undefined) {
-                      $.ajax({
-                        method: 'POST',
-                        url: baseUrl + '/main/user/profile_pic/',
-                        data: data,
-                        success: function (response) {
-                          Materialize.toast(response.message, 1000);
-                          try{
-                         window.plugins.spinnerDialog.hide();}
-                         catch(err){}
-                          if (response.status == 1) {
-                            $state.go('app.nick');
-                            window.localStorage.setItem('pic', file);
-                          }
-                        },
-                        error: function (response) {
-                        try{
-                         window.plugins.spinnerDialog.hide();}
-                         catch(err){}
-                          Materialize.toast('Try Again', 1000);
+    formData.append('session_key', session_key);
 
-                        }
-                      })
-                    } else Materialize.toast('Please upload a image', 1000);
-                  }
+    function dataURItoBlob(dataURI) {
+      var binary = atob(dataURI.split(',')[1]);
+      var array = [];
+      for (var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+      }
+      return new Blob([new Uint8Array(array)], {
+        type: 'image/jpeg'
+      });
+    }
+//    canvas.toBlob(function (blob) {
+      formData.append('dpic', dataURItoBlob(dataURL), uuid.v4()+".png");
+//    }, "image/png");
+    //                  console.log(dataURL);
+    console.log(formData.getAll('dpic'));
 
+    //                  var data = {
+    //                    session_key: session_key,
+    //                    dpic: dataURL
+    //                  }
+    if (dataURL != undefined) {
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/profile_pic/',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+          Materialize.toast(response.message, 1000);
+          try {
+            window.plugins.spinnerDialog.hide();
+          } catch (err) {}
+          if (response.status == 1) {
+            $state.go('app.nick');
+            window.localStorage.setItem('pic', file);
+          }
+        },
+        error: function (response) {
+          try {
+            window.plugins.spinnerDialog.hide();
+          } catch (err) {}
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    } else Materialize.toast('Please upload a image', 1000);
+  }
                 }])

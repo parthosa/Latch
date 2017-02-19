@@ -1,4 +1,4 @@
-var baseUrl = 'http://192.168.43.116:8001';
+//var baseUrl = 'http://192.168.43.116:8001';
 
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 
@@ -187,9 +187,8 @@ function previewFile(canvasId) { 
 var db = new Dexie("database");
 
 db.version(1).stores({
-  indi_chat: 'nick, pic, distance, messages',
-  group_chat: 'group_name, members, pic, messages, mem_info',
-  chat_bot: 'nick,message'
+            indi_chat: 'nick, pic, distance, messages',
+            group_chat: 'group_name, members, pic, messages, mem_info',
+            chat_bot: 'nick,message'
 });
-
 //db.indi_chat.put();

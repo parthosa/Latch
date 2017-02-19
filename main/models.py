@@ -23,7 +23,8 @@ class UserProfile(models.Model):
 
 	def save(self, *args, **kwargs):
 		if self.dp:
-			self.dp_url = self.dp.url
+			tmp_dpurl = self.dp.url
+			self.dp_url = '/media/dps/' + tmp_dpurl.split('/')[:-1]
 		else:
 			pass
 		super(UserProfile, self).save(*args, **kwargs)
@@ -56,7 +57,7 @@ class Group(models.Model):
 
 	def __unicode__(self):
     		return self.name
-    		
+
 class Indi_group(models.Model):
 	user1 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user1')
 	user2 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user2')

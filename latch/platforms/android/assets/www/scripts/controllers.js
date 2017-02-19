@@ -2,9 +2,9 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://192.168.43.116:8001';
+var baseUrl = 'http://192.168.43.219:8001';
 var globalVar;
-var socket = io.connect('192.168.43.116', {
+var socket = io.connect('192.168.43.219', {
   port: 4000
 });
 
@@ -985,8 +985,8 @@ console.log(marker)
     } else if(Object.getOwnPropertyNames(data).length > 0)  {
       
       Materialize.toast('New Message from ' + data.nick, 1000);
-      dispatchPush(data,true);
     }
+      dispatchPush(data,true);
 
 
 
@@ -1168,8 +1168,8 @@ console.log(marker)
           } else if(Object.getOwnPropertyNames(data).length > 0)  {
             
             Materialize.toast('New Message from ' + data.nick, 1000);
-            dispatchPush(data,true);
           }
+            dispatchPush(data,true);
 
 
 
@@ -1309,8 +1309,8 @@ $scope.openMap = function (el) {
         }
         else if(Object.getOwnPropertyNames(data).length > 0)  {
           Materialize.toast('New Message in '+data.group_name,1000);
-          dispatchPush(data,false);
         }
+          dispatchPush(data,false);
 
   });
 

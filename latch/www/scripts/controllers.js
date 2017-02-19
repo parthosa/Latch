@@ -1405,41 +1405,58 @@ $scope.openMap = function (el) {
                      window.plugins.spinnerDialog.show(null,"Please Wait", true);}
                      catch(err){}
                   //    var file  = dataURL;
-                  var session_key = window.localStorage.getItem('session_key')
-                    //    var formData = new FormData();
-                    //    formData.append('session_key', session_key);
-                    //    formData.append('dpic', file);
-                    //    console.log(formData.getAll('dpic'))
-                  console.log(dataURL);
+    var session_key = window.localStorage.getItem('session_key')
+    var formData = new FormData();
+    //    formData.append('dpic', file);
+    //    console.log(formData.getAll('dpic'))
 
-                  var data = {
-                    session_key: session_key,
-                    dpic: dataURL
-                  }
-                  if (dataURL != undefined) {
-                      $.ajax({
-                        method: 'POST',
-                        url: baseUrl + '/main/user/profile_pic/',
-                        data: data,
-                        success: function (response) {
-                          Materialize.toast(response.message, 1000);
-                          try{
-                         window.plugins.spinnerDialog.hide();}
-                         catch(err){}
-                          if (response.status == 1) {
-                            $state.go('app.nick');
-                            window.localStorage.setItem('pic', file);
-                          }
-                        },
-                        error: function (response) {
-                        try{
-                         window.plugins.spinnerDialog.hide();}
-                         catch(err){}
-                          Materialize.toast('Try Again', 1000);
+    formData.append('session_key', session_key);
 
-                        }
-                      })
-                    } else Materialize.toast('Please upload a image', 1000);
-                  }
+    function dataURItoBlob(dataURI) {
+      var binary = atob(dataURI.split(',')[1]);
+      var array = [];
+      for (var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+      }
+      return new Blob([new Uint8Array(array)], {
+        type: 'image/jpeg'
+      });
+    }
+//    canvas.toBlob(function (blob) {
+      formData.append('dpic', dataURItoBlob(dataURL), uuid.v4()+".png");
+//    }, "image/png");
+    //                  console.log(dataURL);
+    console.log(formData.getAll('dpic'));
 
+    //                  var data = {
+    //                    session_key: session_key,
+    //                    dpic: dataURL
+    //                  }
+    if (dataURL != undefined) {
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/profile_pic/',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+          Materialize.toast(response.message, 1000);
+          try {
+            window.plugins.spinnerDialog.hide();
+          } catch (err) {}
+          if (response.status == 1) {
+            $state.go('app.nick');
+            window.localStorage.setItem('pic', file);
+          }
+        },
+        error: function (response) {
+          try {
+            window.plugins.spinnerDialog.hide();
+          } catch (err) {}
+          Materialize.toast('Try Again', 1000);
+
+        }
+      })
+    } else Materialize.toast('Please upload a image', 1000);
+  }
                 }])

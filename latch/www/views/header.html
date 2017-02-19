@@ -14,7 +14,7 @@
       <div ng-if="search.visible">
         <form ng-init="$('#search')[0].focus();">
           <div class="input-field">
-            <input id="search" type="search" ng-model="search.name" required>
+            <input id="search" type="search" ng-model="search.query" required>
             <label class="label-icon" for="search"><i class="material-icons">search</i></label>
             <i class="material-icons" ng-click="search.close()">close</i>
           </div>

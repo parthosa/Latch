@@ -2,9 +2,9 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://192.168.43.116:8001';
+var baseUrl = 'http://172.17.45.40:8001';
 var globalVar;
-var socket = io.connect('192.168.43.116', {
+var socket = io.connect('172.17.45.40', {
   port: 4000
 });
 
@@ -71,7 +71,6 @@ angular.module('latchApp')
   $rootScope.search = {
     visible: false,
     query: '',
-    name: '',
     toggle: function () {
       $rootScope.search.visible = true;
       setTimeout(function () {
@@ -657,7 +656,10 @@ angular.module('latchApp')
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);
       $scope.$apply();
-    });}
+//    console.log($rootScope.groups);
+//      console.log(1);
+    });
+  }
 
   $.ajax({
     method: 'POST',
@@ -678,8 +680,8 @@ angular.module('latchApp')
         db.group_chat.each(function (group) {
           $rootScope.groups.push(group);
           $scope.$apply();
-        })
-      });
+//        })
+//      });
       //      $rootScope.groups = response.groups;
       //      $scope.$apply();
     },
@@ -701,6 +703,7 @@ angular.module('latchApp')
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
+    console.log($rootScope.group);
   if ($rootScope.group==undefined)
     $rootScope.group = {members: []};
   db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
@@ -1454,7 +1457,6 @@ $scope.openMap = function (el) {
             window.plugins.spinnerDialog.hide();
           } catch (err) {}
           Materialize.toast('Try Again', 1000);
-
         }
       })
     } else Materialize.toast('Please upload a image', 1000);

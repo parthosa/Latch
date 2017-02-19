@@ -763,6 +763,7 @@ def chat_bot(request):
 			bot_response = bot_json['result']['fulfillment']['speech']
 		except:
 			intent_name = 'Not eat'
+			bot_response = bot_json['result']['fulfillment']['speech']
 		if intent_name == 'Find me some places to eat near me':
 			url = '''https://developers.zomato.com/api/v2.1/search?count=8&lat=%s&lon=%s&radius=%s&sort=rating&order=desc''' % (user_p.lat, user_p.longitude, 250000)
 			headers = {'Accept': 'application/json','user-key': '74c47b6322c6a40d4bef924bf238548c'}

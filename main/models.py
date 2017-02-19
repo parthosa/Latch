@@ -56,7 +56,7 @@ class Group(models.Model):
 
 	def __unicode__(self):
     		return self.name
-    		
+
 class Indi_group(models.Model):
 	user1 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user1')
 	user2 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user2')

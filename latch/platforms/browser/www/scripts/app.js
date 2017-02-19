@@ -157,6 +157,28 @@ angular.module('latchApp', ['ui.router'])
               }
           }
       })
+       .state('app.bot_message', {
+          url: 'bot_message',
+          views: {
+              'header@': {
+                  templateUrl: 'views/chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/bot_messages.html'
+              }
+          }
+      })
+       .state('app.bot_map', {
+          url: 'bot_map',
+          views: {
+              'header@': {
+                  templateUrl: 'views/chat_header.html',
+              },
+              'content@': {
+                  templateUrl: 'views/bot_map.html'
+              }
+          }
+      })
 
 
       .state('app.group_info', {

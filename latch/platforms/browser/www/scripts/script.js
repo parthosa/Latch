@@ -1,4 +1,4 @@
-var baseUrl = 'http://192.168.43.116:8001';
+var baseUrl = 'http://172.20.10.4:8001';
 
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 
@@ -72,13 +72,14 @@ function pushNotification(){
 
     push.on('notification', function(data) {
        // console.log('notification event',data);
-        // navigator.notification.alert(
-        //     data.message,         // message
-        //     null,                 // callback
-        //     data.title,           // title
-        //     'Ok'                  // buttonName
-        // );
+        navigator.notification.alert(
+            'new message',         // message
+            null,                 // callback
+            'latch',           // title
+            'Ok'                  // buttonName
+        );
         // alert(data.message);
+        // alert('is user: '+data.additionalData['isUser']);
     });
 
     push.on('error', function(e) {
@@ -110,7 +111,6 @@ function dispatchPush(data,isUser){
       console.log("Push Request Sent")
     }
   });
-  alert("indi notify");
 }
   else{
    $.ajax({
@@ -126,10 +126,14 @@ function dispatchPush(data,isUser){
       console.log("Push Request Sent")
     }
   });
-   alert("group notify");
  }
 
 }
+
+document.addEventListener("resume", function(){
+
+
+}, false);
 
 
 
@@ -154,14 +158,14 @@ function previewFile(canvasId) { 
     var oc = document.createElement('canvas'),
       octx = oc.getContext('2d');
 
-    oc.width = img.width * 0.5;
-    oc.height = img.height * 0.5;
-    octx.drawImage(img, 0, 0, 250, 250);
+    oc.width = 250;
+    oc.height = 250;
+    octx.drawImage(img, 0, 0, oc.width, oc.height);
 
     /// step 2
-//    octx.drawImage(oc, 0, 0, oc.width * 0.5, oc.height * 0.5);
+//    octx.drawImage(oc, 0, 0, oc.width, oc.height);
 
-    ctx.drawImage(oc, 0, 0, 250, 250,
+    ctx.drawImage(oc, 0, 0, oc.width, oc.height,
       0, 0, canvas.width, canvas.height);
     dataURL = canvas.toDataURL();
   }
@@ -177,3 +181,15 @@ function previewFile(canvasId) { 
      }, false);
 
 }
+
+// IndexedDB
+
+var db = new Dexie("database");
+
+db.version(1).stores({
+  indi_chat: 'nick, pic, distance, messages',
+  group_chat: 'group_name, members, pic, messages, mem_info',
+  chat_bot: 'nick,message'
+});
+
+//db.indi_chat.put();

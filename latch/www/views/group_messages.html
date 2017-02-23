@@ -24,7 +24,7 @@
           </div>
             <div class="col s8">
             <div class="input-field">
-            <input id="message" placeholder="Type your text" type="text" class="validate" ng-model="newMessageText">
+            <input id="message" placeholder="Type your text" type="text" class="validate" ng-model="newMessageText" ng-keypress="enterSend($event)">
             </div>
             </div>
             <div class="col s2">

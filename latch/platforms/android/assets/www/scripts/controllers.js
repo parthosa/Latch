@@ -503,16 +503,15 @@ angular.module('latchApp')
   $scope.locModal;
 
 
-  $scope.reviews = [
-    {
-      name:'Partho',
-      text:'Good Place'
-    },
-    {
-      name:'John',
-      text:'Smelly'
-    }
-  ]
+  $scope.reviews = [{
+    rating:1,
+    review:"Were looking forward to a Japanese lunch at Kuuraku restaurant this afternoon. "
+  },
+  {
+    rating:2,
+    review:"Please correct the timings.... This is NOT OPEN for public for breakfast and we came.100 km to have breakfast here all because Zonato said it's open from 6 am. "
+  }
+  ];
 
   function initMap() {
 
@@ -553,7 +552,11 @@ var marker ;
               id:restId
             },
             success:function (response) {
-              console.log(response);
+              // $.each(response.reviews,function (i,ele) {
+              //     $scope.reviews.push(ele);
+              // })
+              // console.log($scope.reviews);
+              // $scope.$apply();
             }
           })
           $scope.locModal = {
@@ -596,7 +599,12 @@ var marker ;
               id:restId
             },
             success:function (response) {
-              console.log(response);
+              //  $.each(response.reviews,function (i,ele) {
+              //     $scope.reviews.push(ele);
+              // })
+              //  console.log($scope.reviews);
+              // $scope.$apply();
+
             }
           })
 

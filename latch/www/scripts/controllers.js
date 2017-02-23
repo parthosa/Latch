@@ -2,9 +2,9 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://192.168.43.219:8001';
+var baseUrl = 'http://172.20.10.4:8001';
 var globalVar;
-var socket = io.connect('192.168.43.219', {
+var socket = io.connect('172.20.10.4', {
   port: 4000
 });
 
@@ -503,16 +503,7 @@ angular.module('latchApp')
   $scope.locModal;
 
 
-  $scope.reviews = [
-    {
-      name:'Partho',
-      text:'Good Place'
-    },
-    {
-      name:'John',
-      text:'Smelly'
-    }
-  ]
+  $scope.reviews = [];
 
   function initMap() {
 
@@ -520,7 +511,6 @@ angular.module('latchApp')
         lat: parseFloat(chatData.lat),
         lng:parseFloat(chatData.long),
       }
-      console.log(restId);
 
 var map;
 var marker ;
@@ -554,6 +544,14 @@ var marker ;
             },
             success:function (response) {
               console.log(response);
+              $.each(response.reviews,function (i,ele) {
+                  console.log(ele);
+                  $scope.reviews.push(ele);
+              })
+              $scope.$apply();
+            },
+            error:function (res,textS,xhr) {
+              console.log(res);
             }
           })
           $scope.locModal = {
@@ -570,7 +568,6 @@ var marker ;
   else{
  var geocoder = new google.maps.Geocoder();
         var address = chatData.locality +', '+ chatData.city;
-        console.log(address)
     geocoder.geocode( { 'address': address}, function(results, status) {
       if (status == 'OK') {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -597,6 +594,12 @@ var marker ;
             },
             success:function (response) {
               console.log(response);
+               $.each(response.reviews,function (i,ele) {
+                  $scope.reviews.push(ele);
+              })
+               console.log($scope.reviews);
+              $scope.$apply();
+
             }
           })
 
@@ -618,7 +621,6 @@ var marker ;
 
   }
 
-console.log(marker)
 
 
   
@@ -694,9 +696,7 @@ console.log(marker)
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      console.log(response);
       response.peers.map(function (e, i) {
-        console.log(e.messages);
         if (e.messages == undefined)
           e.messages = [];
       })
@@ -733,7 +733,6 @@ console.log(marker)
 
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
-    console.log($rootScope.groups);
   if ($rootScope.groups.length == 0) {
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);
@@ -785,7 +784,6 @@ console.log(marker)
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
-    console.log($rootScope.group);
   if ($rootScope.group==undefined)
     $rootScope.group = {members: []};
   db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
@@ -889,8 +887,6 @@ console.log(marker)
     $scope.messages = [];
 
   db.indi_chat.get(chatData.chatId.toString(), function (peer) {
-    console.log(chatData.chatId);
-    console.log(peer);
     $scope.messages = peer.messages;
     $scope.$apply();
   })
@@ -927,6 +923,13 @@ console.log(marker)
 
   $scope.newMessageText = '';
   var newMessage;
+
+  $scope.enterSend = function (keyEvent) {
+    
+     if (keyEvent.which === 13)
+         $scope.send();
+  }
+
   $scope.send = function () {
     if ($scope.newMessageText != '') {
 
@@ -967,7 +970,6 @@ console.log(marker)
 
   socket.on('send_message_indi', function (data) {
     if (chatData.chatId == data.nick) {
-      console.log(1);
       $scope.messages.push(data);
       $scope.$apply();
       chatScreen.scrollTop += $('.message-wrapper').outerHeight();
@@ -1040,6 +1042,12 @@ console.log(marker)
 
   $scope.newMessageText = '';
   var newMessage;
+  $scope.enterSend = function (keyEvent) {
+    
+     if (keyEvent.which === 13)
+         $scope.send();
+  }
+
   $scope.send = function () {
     if ($scope.newMessageText != '') {
 
@@ -1109,7 +1117,6 @@ console.log(marker)
                        id:ele.id,
                        type:'restaurants'
                   })
-                 console.log(ele.id)
               }) 
 
              
@@ -1188,7 +1195,6 @@ console.log(marker)
 
 $scope.openMap = function (el) {
   if(el.message.type == "restaurants"){
-    console.log(el.message.message,el.message.lat,el.message.long);
     chatData.lat = el.message.lat;
     chatData.long = el.message.long;
     var sep = el.message.message.indexOf('\n');
@@ -1196,12 +1202,10 @@ $scope.openMap = function (el) {
     chatData.locality = el.message.locality;
     chatData.restId = el.message.id;
     chatData.city = el.message.city;
-    console.log(el.message.id);
     $rootScope.title = el.message.message.substr(0,sep);
     $state.go('app.bot_map');
   }
   if(el.message.type == "hotels"){
-    console.log(el.message.message,el.message.lat,el.message.long);
     chatData.lat = el.message.lat;
     chatData.long = el.message.long;
     chatData.address = el.message.address;
@@ -1220,8 +1224,6 @@ $scope.openMap = function (el) {
     $scope.messages = [];
 
   db.group_chat.get(chatData.chatId.toString(), function (group) {
-    console.log(chatData.chatId);
-    console.log(group);
     $scope.messages = group.messages;
     $scope.$apply();
   })
@@ -1260,6 +1262,14 @@ $scope.openMap = function (el) {
 
   $scope.newMessageText = '';
   var newMessage;
+
+  $scope.enterSend = function (keyEvent) {
+    
+     if (keyEvent.which === 13)
+         $scope.send();
+  }
+
+
   $scope.send = function () {
     if ($scope.newMessageText != '') {
       var date = new Date();
@@ -1514,7 +1524,6 @@ $scope.openMap = function (el) {
       formData.append('dpic', dataURItoBlob(dataURL), uuid.v4()+".png");
 //    }, "image/png");
     //                  console.log(dataURL);
-    console.log(formData.getAll('dpic'));
 
     //                  var data = {
     //                    session_key: session_key,

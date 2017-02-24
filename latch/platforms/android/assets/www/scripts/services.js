@@ -10,6 +10,7 @@ angular.module('latchApp')
       this.address = '';
       this.locality = '';
       this.city = '';
+      this.restId = '';
     });
 
 ;

@@ -2,9 +2,9 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://192.168.43.116:8001';
+var baseUrl = 'http://192.168.43.219:8001';
 var globalVar;
-var socket = io.connect('192.168.43.116', {
+var socket = io.connect('192.168.43.219', {
   port: 4000
 });
 
@@ -71,7 +71,6 @@ angular.module('latchApp')
   $rootScope.search = {
     visible: false,
     query: '',
-    name: '',
     toggle: function () {
       $rootScope.search.visible = true;
       setTimeout(function () {
@@ -85,6 +84,7 @@ angular.module('latchApp')
   };
 
   $scope.logout = function () {
+    db.delete();
     window.localStorage.clear();
   }
 
@@ -162,6 +162,13 @@ angular.module('latchApp')
       type: 'jsonp',
       success: function (response) {
         if (response.status == 1) {
+
+           db.version(1).stores({
+            indi_chat: 'nick, pic, distance, messages',
+            group_chat: 'group_name, members, pic, messages, mem_info',
+            chat_bot: 'nick,message'
+          });
+
           $state.go('app.profile_pic');
           window.localStorage.setItem('session_key', response.session_key);
           window.localStorage.setItem('loggedIn', true);
@@ -204,6 +211,14 @@ angular.module('latchApp')
         window.plugins.spinnerDialog.hide();}
         catch(err){}
         if (response.status == 1) {
+
+
+          db.version(1).stores({
+            indi_chat: 'nick, pic, distance, messages',
+            group_chat: 'group_name, members, pic, messages, mem_info',
+            chat_bot: 'nick,message'
+          });
+
 
           window.localStorage.setItem('nick', response.nick);
           window.localStorage.setItem('pic', response.pic);
@@ -482,10 +497,21 @@ angular.module('latchApp')
 
   var data = [];
 
-
+  var restId = chatData.restId;
 
   $scope.sendLoc;
   $scope.locModal;
+
+
+  $scope.reviews = [{
+    rating:1,
+    review:"Were looking forward to a Japanese lunch at Kuuraku restaurant this afternoon. "
+  },
+  {
+    rating:2,
+    review:"Please correct the timings.... This is NOT OPEN for public for breakfast and we came.100 km to have breakfast here all because Zonato said it's open from 6 am. "
+  }
+  ];
 
   function initMap() {
 
@@ -493,7 +519,10 @@ angular.module('latchApp')
         lat: parseFloat(chatData.lat),
         lng:parseFloat(chatData.long),
       }
-      console.log(pos);
+      console.log(restId);
+
+var map;
+var marker ;
 
       if(pos.lat != 0 && pos.lng !=0 ){
 
@@ -506,12 +535,39 @@ angular.module('latchApp')
     });
 
 
-    var marker = new google.maps.Marker({
+     marker = new google.maps.Marker({
           position: pos
         });
         map.setCenter(pos);
         marker.setMap(map);
         map.setZoom(13);
+
+
+          marker.addListener('click', function (event) {
+          $('.modal').modal();
+          $.ajax({
+            method:"POST",
+            url:baseUrl + "/main/user/restaraunt/reviews/",
+            data:{
+              id:restId
+            },
+            success:function (response) {
+              // $.each(response.reviews,function (i,ele) {
+              //     $scope.reviews.push(ele);
+              // })
+              // console.log($scope.reviews);
+              // $scope.$apply();
+            }
+          })
+          $scope.locModal = {
+            lat: pos.lat,
+            lng: pos.lng,
+            name: $rootScope.title,
+            reviews: 'this is good'
+          }
+          $scope.$apply();
+          $('.modal').modal('open');
+        });
 
   }
   else{
@@ -527,17 +583,50 @@ angular.module('latchApp')
       streetViewControl: false,
       fullscreenControl: false
     });
-        var marker = new google.maps.Marker({
+        marker = new google.maps.Marker({
             map: map,
             position: results[0].geometry.location
         });
         map.setZoom(13);
+
+          marker.addListener('click', function (event) {
+          $('.modal').modal();
+
+           $.ajax({
+            method:"POST",
+            url:baseUrl + "/main/user/restaraunt/reviews/",
+            data:{
+              id:restId
+            },
+            success:function (response) {
+              //  $.each(response.reviews,function (i,ele) {
+              //     $scope.reviews.push(ele);
+              // })
+              //  console.log($scope.reviews);
+              // $scope.$apply();
+
+            }
+          })
+
+          $scope.locModal = {
+            lat: pos.lat,
+            lng: pos.lng,
+            name: $rootScope.title,
+            reviews: 'this is good'
+          }
+          $scope.$apply();
+          $('.modal').modal('open');
+        });
+
+
       } else {
         alert('Geocode was not successful for the following reason: ' + status);
       }
     });
 
   }
+
+console.log(marker)
 
 
   
@@ -619,7 +708,7 @@ angular.module('latchApp')
         if (e.messages == undefined)
           e.messages = [];
       })
-      db.indi_chat.bulkPut(response.peers).then(function () {
+      db.indi_chat.bulkAdd(response.peers).then(function () {
         $rootScope.chats = [];
         //        console.log(1)
         db.indi_chat.each(function (peer) {
@@ -653,11 +742,14 @@ angular.module('latchApp')
 .controller('GroupController', ['$rootScope', '$scope', '$state', '$location', 'chatData', function ($rootScope, $scope, $state, $location, chatData) {
 
     console.log($rootScope.groups);
-  if ($rootScope.groups == []) {
+  if ($rootScope.groups.length == 0) {
     db.group_chat.each(function (group) {
       $rootScope.groups.push(group);
       $scope.$apply();
-    });}
+//    console.log($rootScope.groups);
+//      console.log(1);
+    });
+  }
 
   $.ajax({
     method: 'POST',
@@ -666,23 +758,23 @@ angular.module('latchApp')
       session_key: window.localStorage.getItem('session_key')
     },
     success: function (response) {
-      response.groups.map(function (e, i) {
-//        console.log(e.messages);
-        if (e.messages == undefined)
-          e.messages = [];
-        if (e.mem_info == undefined)
-          e.mem_info = [];
-      })
-      db.group_chat.bulkPut(response.groups).then(function () {
-//        $rootScope.groups = response.groups;
+//      response.groups.map(function (e, i) {
+////        console.log(e.messages);
+//        if (e.messages == undefined)
+//          e.messages = [];
+//        if (e.mem_info == undefined)
+//          e.mem_info = [];
+//      })
+      db.group_chat.bulkAdd(response.groups).then(function () {
+        $rootScope.groups = [];
         db.group_chat.each(function (group) {
           $rootScope.groups.push(group);
           $scope.$apply();
-        })
-      });
+       });
+     });
       //      $rootScope.groups = response.groups;
       //      $scope.$apply();
-    },
+        },
     error: function (response) {
       Materialize.toast('Could Not Fetch Groups List', 1000);
     }
@@ -701,6 +793,7 @@ angular.module('latchApp')
   // $rootScope.title = 'Group Info';
   // $rootScope.chatPic = 'image/batman.png';
 
+    console.log($rootScope.group);
   if ($rootScope.group==undefined)
     $rootScope.group = {members: []};
   db.group_chat.where('group_name').equals(chatData.chatId.toString()).each(function(group) {
@@ -900,8 +993,8 @@ angular.module('latchApp')
     } else if(Object.getOwnPropertyNames(data).length > 0)  {
       
       Materialize.toast('New Message from ' + data.nick, 1000);
-      dispatchPush(data,true);
     }
+      dispatchPush(data,true);
 
 
 
@@ -977,7 +1070,7 @@ angular.module('latchApp')
 
 
       $scope.messages.push(newMessage);
-        $scope.$apply();
+        // $scope.$apply();
 
       db.chat_bot.put({
         nick:'Harlie',
@@ -1021,8 +1114,10 @@ angular.module('latchApp')
                        address:ele.restaurants.address,
                        locality:ele.restaurants.locality,
                        city:ele.restaurants.city,
+                       id:ele.id,
                        type:'restaurants'
                   })
+                 console.log(ele.id)
               }) 
 
              
@@ -1081,8 +1176,8 @@ angular.module('latchApp')
           } else if(Object.getOwnPropertyNames(data).length > 0)  {
             
             Materialize.toast('New Message from ' + data.nick, 1000);
-            dispatchPush(data,true);
           }
+            dispatchPush(data,true);
 
 
 
@@ -1107,8 +1202,9 @@ $scope.openMap = function (el) {
     var sep = el.message.message.indexOf('\n');
     chatData.address = el.message.address;
     chatData.locality = el.message.locality;
-    chatData.city = el.message.message.substr(sep);
-
+    chatData.restId = el.message.id;
+    chatData.city = el.message.city;
+    console.log(el.message.id);
     $rootScope.title = el.message.message.substr(0,sep);
     $state.go('app.bot_map');
   }
@@ -1126,8 +1222,9 @@ $scope.openMap = function (el) {
 }])
 
 .controller('GroupMessageController', ['$rootScope', '$scope', '$state', 'chatData', '$location', function ($rootScope, $scope, $state, chatData, $location) {
-  $scope.messages;
-  if ($scope.messages == null)
+//  $scope.messages;
+  
+  if ($scope.messages == undefined)
     $scope.messages = [];
 
   db.group_chat.get(chatData.chatId.toString(), function (group) {
@@ -1220,8 +1317,8 @@ $scope.openMap = function (el) {
         }
         else if(Object.getOwnPropertyNames(data).length > 0)  {
           Materialize.toast('New Message in '+data.group_name,1000);
-          dispatchPush(data,false);
         }
+          dispatchPush(data,false);
 
   });
 
@@ -1404,41 +1501,57 @@ $scope.openMap = function (el) {
                      window.plugins.spinnerDialog.show(null,"Please Wait", true);}
                      catch(err){}
                   //    var file  = dataURL;
-                  var session_key = window.localStorage.getItem('session_key')
-                    //    var formData = new FormData();
-                    //    formData.append('session_key', session_key);
-                    //    formData.append('dpic', file);
-                    //    console.log(formData.getAll('dpic'))
-                  console.log(dataURL);
+    var session_key = window.localStorage.getItem('session_key')
+    var formData = new FormData();
+    //    formData.append('dpic', file);
+    //    console.log(formData.getAll('dpic'))
 
-                  var data = {
-                    session_key: session_key,
-                    dpic: dataURL
-                  }
-                  if (dataURL != undefined) {
-                      $.ajax({
-                        method: 'POST',
-                        url: baseUrl + '/main/user/profile_pic/',
-                        data: data,
-                        success: function (response) {
-                          Materialize.toast(response.message, 1000);
-                          try{
-                         window.plugins.spinnerDialog.hide();}
-                         catch(err){}
-                          if (response.status == 1) {
-                            $state.go('app.nick');
-                            window.localStorage.setItem('pic', file);
-                          }
-                        },
-                        error: function (response) {
-                        try{
-                         window.plugins.spinnerDialog.hide();}
-                         catch(err){}
-                          Materialize.toast('Try Again', 1000);
+    formData.append('session_key', session_key);
 
-                        }
-                      })
-                    } else Materialize.toast('Please upload a image', 1000);
-                  }
+    function dataURItoBlob(dataURI) {
+      var binary = atob(dataURI.split(',')[1]);
+      var array = [];
+      for (var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+      }
+      return new Blob([new Uint8Array(array)], {
+        type: 'image/jpeg'
+      });
+    }
+//    canvas.toBlob(function (blob) {
+      formData.append('dpic', dataURItoBlob(dataURL), uuid.v4()+".png");
+//    }, "image/png");
+    //                  console.log(dataURL);
+    console.log(formData.getAll('dpic'));
 
+    //                  var data = {
+    //                    session_key: session_key,
+    //                    dpic: dataURL
+    //                  }
+    if (dataURL != undefined) {
+      $.ajax({
+        method: 'POST',
+        url: baseUrl + '/main/user/profile_pic/',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+          Materialize.toast(response.message, 1000);
+          try {
+            window.plugins.spinnerDialog.hide();
+          } catch (err) {}
+          if (response.status == 1) {
+            $state.go('app.nick');
+            window.localStorage.setItem('pic', file);
+          }
+        },
+        error: function (response) {
+          try {
+            window.plugins.spinnerDialog.hide();
+          } catch (err) {}
+          Materialize.toast('Try Again', 1000);
+        }
+      })
+    } else Materialize.toast('Please upload a image', 1000);
+  }
                 }])

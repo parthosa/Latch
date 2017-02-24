@@ -8,11 +8,16 @@
 
   <div id="modal" class="modal">
     <div class="collection">
-    <div class="collection-item avatar">
-      <img ng-src="{{locModal.pic}}" alt="" class="circle">
-			<p class="title">{{locModal.nick}}</p>
-			<p class="chat-message">{{locModal.distance}} away</p>
-		 <a href="" ng-click="redirect(this)" class="secondary-content"><i class="material-icons medium">chat</i></a> 
+    <div class="collection-item avatar" style="padding-left:20px !important;display: flex; align-items: center;">
+      <!-- <img ng-src="{{locModal.p?ic}}" alt="" class="circle"> -->
+			<p class="title" style="font-size: 1.6em; ">Reviews</p>
+		 <!-- <a href="" ng-click="redirect(this)" class="secondary-content"><i class="material-icons medium">chat</i></a>  -->
+    </div>
+    <div class="collection-item avatar" ng-repeat="key in reviews" style="padding-left:20px !important;">
+      <!-- <img ng-src="{{locModal.p?ic}}" alt="" class="circle"> -->
+      <p class="title">{{key.review}}</p>
+      <p class="rating">Rating:&nbsp;{{key.rating}}</p>
+
     </div>
     </div>
 <!--

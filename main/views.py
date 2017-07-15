@@ -804,7 +804,7 @@ def chat_bot(request):
 					response_list[x]['restaurants']['city'] = restaurants_json['restaurants'][x]['restaurant']['location']['city']
 					response_list[x]['id'] = restaurants_json['restaurants'][x]['restaurant']['id']
 
-				response = {'status': 1, 'restaurants': response_list, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name'], 'message': 'Here I found some awesome places to give your stomach a treat near you'}
+				response = {'status': 1, 'restaurants': response_list, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name'], 'message': 'Here I found some awesome places to give your stomach a treat near you. Click on the names to know more about them :D'}
 				return JsonResponse(response)
 			else:
 				response = {'status': 0, 'message': 'Sorry I couldn\'t find any place nearby to eat.', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
@@ -829,10 +829,11 @@ def get_reviews(request):
 	res_id = request.POST['id']
 	url = '''https://developers.zomato.com/api/v2.1/reviews?res_id=%s''' % (res_id)
 	headers = {'Accept': 'application/json','user-key': '74c47b6322c6a40d4bef924bf238548c'}
-	req_rest = requests.get(url, headers)
-	restaurants_json = json.load(req_rest.text)
+	req_rest = requests.get(url, headers=headers)
+	restaurants_json = json.loads(req_rest.text)
+	print restaurants_json
 	response_list = []
-	for x in range(0, min(req_rest['reviews_count'], 3)):
+	for x in range(0, min(restaurants_json['reviews_count'], 3)):
 		response_list.append({'rating': restaurants_json['user_reviews'][x]['review']['rating'], 'review': restaurants_json['user_reviews'][x]['review']['review_text']})
-
+		print response_list
 	return JsonResponse({'reviews': response_list})

@@ -1,4 +1,4 @@
-var baseUrl = 'http://172.20.10.4:8001';
+var baseUrl = 'http://localhost:8001';
 
 var API_KEY = 'AIzaSyDOCdq5yBdwwuE6A5H4RLxWe_34fEY6WDk';
 

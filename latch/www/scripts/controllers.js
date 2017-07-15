@@ -2,10 +2,11 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://172.20.10.4:8001';
+var baseUrl = 'http://localhost:8001';
 var globalVar;
-var socket = io.connect('172.20.10.4', {
+var socket = io.connect('localhost', {
   port: 4000
+
 });
 
 //var socket = io();

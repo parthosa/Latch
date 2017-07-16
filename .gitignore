@@ -95,3 +95,7 @@ ENV/
 # Node Modules
 node-modules/
 /chat_node/node_modules/
+
+
+ionic/
+latch/platforms/

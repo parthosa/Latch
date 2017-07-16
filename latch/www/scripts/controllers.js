@@ -2,9 +2,9 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://172.20.10.4:8001';
+var baseUrl = 'http://127.0.0.1:8001';
 var globalVar;
-var socket = io.connect('172.20.10.4', {
+var socket = io.connect('127.0.0.1', {
   port: 4000
 });
 
@@ -940,8 +940,11 @@ var marker ;
         minute: 'numeric'
       })
 
+      var encodedMessage = $scope.newMessageText;
+      console.log(encodedMessage);
+
       newMessage = {
-        message: $scope.newMessageText,
+        message: encodedMessage,
         nick: window.localStorage.getItem('nick'),
         nick_name: chatData.chatId,
         time: date,
@@ -950,8 +953,8 @@ var marker ;
         session_key: window.localStorage.getItem('session_key')
       }
 
-
       $scope.messages.push(newMessage);
+      newMessage.message = btoa(encodedMessage);
       setTimeout(function () {
         chatScreen.scrollTop += $('.message-wrapper').outerHeight();
       }, 100)
@@ -969,6 +972,9 @@ var marker ;
 
 
   socket.on('send_message_indi', function (data) {
+      console.log(data.message);
+      data.message = atob(data.message);
+      console.log(data.message);
     if (chatData.chatId == data.nick) {
       $scope.messages.push(data);
       $scope.$apply();
@@ -1278,8 +1284,12 @@ $scope.openMap = function (el) {
         hour12: true,
         minute: 'numeric'
       })
+
+      var encodedMessage = $scope.newMessageText;
+      console.log(encodedMessage);
+      
       newMessage = {
-        message: $scope.newMessageText,
+        message: encodedMessage,
         nick: window.localStorage.getItem('nick'),
         group_name: chatData.chatId,
         time: date,
@@ -1292,7 +1302,7 @@ $scope.openMap = function (el) {
       setTimeout(function () {
         chatScreen.scrollTop += $('.message-wrapper').outerHeight();
       }, 100)
-
+      newMessage.message = btoa(encodedMessage);
       $scope.newMessageText = '';
 
 
@@ -1304,7 +1314,8 @@ $scope.openMap = function (el) {
 
 
   socket.on('send_message_group', function (data) {
-
+    console.log(data.message);
+    data.message = atob(data.message);
     if (chatData.chatId == data.group_name && $scope.user.nick != data.nick) {
       $scope.messages.push(data);
       $scope.$apply();

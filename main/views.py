@@ -382,11 +382,13 @@ def get_chatroom(request, group_name):
 
 @csrf_exempt
 def node_api_message_group(request):
+	print request.POST
 	try:
         #Get User from sessionid
 	        # post_string = request.POST['key']
 	        # post_item_list = post_string.split(',')
 		session_key = request.POST['session_key']
+		print session_key
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -394,7 +396,7 @@ def node_api_message_group(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
 			return JsonResponse(response)
-
+		print 1
         #Create message
 		user_p = UserProfile.objects.get(user = user)
 		group = Group.objects.get(name = request.POST['group_name'])
@@ -403,18 +405,22 @@ def node_api_message_group(request):
  		except Exception, e:
  			return e
  		message = Message.objects.get(msg_id = request.POST['msg_id'])
+ 		print message
  		group.message.add(message)
 		group.save()
+		print 2
         #Once comment has been created post it to the chat channel
 		# r = redis.StrictRedis(host='localhost', port=6379, db=0)
 		# r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:
+		print e
 		return e
 
 @csrf_exempt
 def node_api_message_user(request):
+	print request.POST
 	try:
         #Get User from sessionid
 		# post_string = request.POST['key']
@@ -517,6 +523,7 @@ def get_indi_chat(request):
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
+		print uid
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
@@ -525,10 +532,15 @@ def get_indi_chat(request):
 	try:
 		indi_chat = Indi_group.objects.get(user1 = user_p, user2 = user_t)
 	except ObjectDoesNotExist:
+		print 1	
 		try:
 			indi_chat = Indi_group.objects.get(user2 = user_p, user1 = user_t)
 		except ObjectDoesNotExist:
+			print 2
+			print user_p
+			print user_t
 			Indi_group.objects.create(user1 = user_p, user2 = user_t)
+			print 3
 			indi_chat = Indi_group.objects.get(user1 = user_p, user2 = user_t)
 
 	messages = indi_chat.message.all()

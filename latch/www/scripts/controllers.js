@@ -2,9 +2,10 @@
 
 var globalVar, blah;
 
-var baseUrl = 'http://localhost:8001';
+
+var baseUrl = 'http://127.0.0.1:8001';
 var globalVar;
-var socket = io.connect('localhost', {
+var socket = io.connect('127.0.0.1', {
   port: 4000
 
 });
@@ -196,7 +197,10 @@ angular.module('latchApp')
 .controller('LoginController', ['$rootScope', '$scope', '$state', '$location', function ($rootScope, $scope, $state, $location) {
   $rootScope.title = 'Login';
 
-  $scope.user = {};
+  $scope.user = {
+    'contact' :'psarthi16@gmail.com',
+    'password':'techiegeek'
+  };
 
 
   $scope.submit = function () {
@@ -924,6 +928,7 @@ var marker ;
 
   $scope.newMessageText = '';
   var newMessage;
+  var encodedMessage;
 
   $scope.enterSend = function (keyEvent) {
     
@@ -941,8 +946,10 @@ var marker ;
         minute: 'numeric'
       })
 
+      encodedMessage = $scope.newMessageText;
+
       newMessage = {
-        message: $scope.newMessageText,
+        message: btoa(encodedMessage),
         nick: window.localStorage.getItem('nick'),
         nick_name: chatData.chatId,
         time: date,
@@ -951,7 +958,8 @@ var marker ;
         session_key: window.localStorage.getItem('session_key')
       }
 
-
+      socket.emit('send_message_indi', newMessage);
+      newMessage.message = encodedMessage;
       $scope.messages.push(newMessage);
       setTimeout(function () {
         chatScreen.scrollTop += $('.message-wrapper').outerHeight();
@@ -962,7 +970,6 @@ var marker ;
       $scope.newMessageText = '';
 
 
-      socket.emit('send_message_indi', newMessage);
 
 
     }
@@ -970,6 +977,8 @@ var marker ;
 
 
   socket.on('send_message_indi', function (data) {
+      data.message = atob(data.message);
+      console.log(data.message);
     if (chatData.chatId == data.nick) {
       $scope.messages.push(data);
       $scope.$apply();
@@ -1263,6 +1272,7 @@ $scope.openMap = function (el) {
 
   $scope.newMessageText = '';
   var newMessage;
+  var encodedMessage;
 
   $scope.enterSend = function (keyEvent) {
     
@@ -1279,8 +1289,11 @@ $scope.openMap = function (el) {
         hour12: true,
         minute: 'numeric'
       })
+
+      encodedMessage = $scope.newMessageText;
+      
       newMessage = {
-        message: $scope.newMessageText,
+        message: btoa(encodedMessage),
         nick: window.localStorage.getItem('nick'),
         group_name: chatData.chatId,
         time: date,
@@ -1289,15 +1302,15 @@ $scope.openMap = function (el) {
         session_key: window.localStorage.getItem('session_key')
       }
 
+      socket.emit('send_message_group', newMessage);
+      newMessage.message = encodedMessage;
       $scope.messages.push(newMessage);
       setTimeout(function () {
         chatScreen.scrollTop += $('.message-wrapper').outerHeight();
       }, 100)
-
       $scope.newMessageText = '';
 
 
-      socket.emit('send_message_group', newMessage);
 
 
     }
@@ -1305,7 +1318,8 @@ $scope.openMap = function (el) {
 
 
   socket.on('send_message_group', function (data) {
-
+    data.message = atob(data.message);
+    console.log(data.message);
     if (chatData.chatId == data.group_name && $scope.user.nick != data.nick) {
       $scope.messages.push(data);
       $scope.$apply();

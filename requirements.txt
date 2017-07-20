@@ -1,0 +1,5 @@
+Django==1.7.0
+Pillow
+apiai
+urllib2
+python-gcm

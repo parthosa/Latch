@@ -64,7 +64,7 @@ class Indi_group(models.Model):
 	message = models.ManyToManyField('Indi_msg', related_name = 'indi_msgs')
 
 	def save(self, *args, **kwargs):
-		self.name = self.user1.nick_name+'_'+self.user2.nick_name
+		self.name = str(self.user1.nick_name)+'_'+str(self.user2.nick_name)
 		super(Indi_group, self).save(*args, **kwargs)
 
 	def __unicode__(self):

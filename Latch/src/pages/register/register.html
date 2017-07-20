@@ -1,0 +1,48 @@
+<!--
+  Generated template for the Register page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Register</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+	<ion-grid>
+	    <ion-row justify-content-center>
+			<ion-col col-10 >
+				<ion-list>
+				  <ion-item>
+				    
+				    <ion-input type="text" placeholder="Name" [(ngModel)] = "user.name"></ion-input>
+				  </ion-item>
+
+				  <ion-item>
+				    
+				    <ion-input type="text" placeholder="Email" [(ngModel)] = "user.email"></ion-input>
+				  </ion-item>
+
+				  <ion-item>
+				    
+				    <ion-input type="password" placeholder="Password" [(ngModel)] = "user.password"></ion-input>
+				  </ion-item>
+
+				  <ion-item>
+				    
+				    <ion-input type="password" placeholder="Confirm Password" [(ngModel)] = "user.confirm_password"></ion-input>
+				  </ion-item>
+
+				</ion-list>
+			</ion-col>
+			<ion-col col-10 >
+		        <button ion-button full color="primary" (click)="signUp()">Sign Up</button>
+		    </ion-col>
+		</ion-row>
+	</ion-grid>
+</ion-content>

@@ -821,23 +821,23 @@ def chat_bot(request):
 			else:
 				response = {'status': 0, 'message': 'Sorry I couldn\'t find any place nearby to eat.', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
 				return JsonResponse(response)
-		elif json.loads((requests.get(luis_url)).text)['intents'][0]['intent'] == 'builtin.intent.places.make_reservation':
+		elif intent_name == "find hotels near me":
 			hotel_url = '''https://maps.googleapis.com/maps/api/place/textsearch/json?query=hotels+in+%s&key=AIzaSyATE-DjQxRSzwzn9OreHh_PvEkHQlVm_Hg''' % (user_p.locality)
 			response_list = []
 			hotel_tmp = requests.get(hotel_url)
 			hotel_json = json.loads(hotel_tmp.text)
 			for hotel in hotel_json['results']:
 				try:
-					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': hotel['rating'], 'address': hotel['formatted_address']})
+					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': hotel['rating'], 'address': hotel['formatted_address'], 'place_id': hotel[place_id]})
 				except:
-					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': 'none', 'address': hotel['formatted_address']})
+					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': 'none', 'address': hotel['formatted_address'], 'place_id': hotel[place_id]})
 			return JsonResponse({'status' :1, 'hotels': response_list, 'message': 'here are some hotels for you', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']})
 		else:
 			response = {'status': 1, 'message': bot_response, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
 			return JsonResponse(response)
 
 @csrf_exempt
-def get_reviews(request):
+def get_reviews_restaraunt(request):
 	res_id = request.POST['id']
 	url = '''https://developers.zomato.com/api/v2.1/reviews?res_id=%s''' % (res_id)
 	headers = {'Accept': 'application/json','user-key': '74c47b6322c6a40d4bef924bf238548c'}
@@ -848,4 +848,15 @@ def get_reviews(request):
 	for x in range(0, min(restaurants_json['reviews_count'], 3)):
 		response_list.append({'rating': restaurants_json['user_reviews'][x]['review']['rating'], 'review': restaurants_json['user_reviews'][x]['review']['review_text']})
 		print response_list
+	return JsonResponse({'reviews': response_list})
+
+@csrf_exempt
+def get_reviews_hotels(request):
+	place_id = request.POST['place_id']
+	url = '''https://maps.googleapis.com/maps/api/place/details/json?placeid=%s&key=AIzaSyATE-DjQxRSzwzn9OreHh_PvEkHQlVm_Hg'''% (place_id)
+	req_hotel = requests.get(url)
+	hotel_review_json = json.loads(req_hotel.text)
+	review_list = hotel_review_json['result']['reviews']
+	for review in range(0, len(review_list), 3):
+		response_list.append({'rating': review_list[review]['rating'], 'review': review_list[review]['text']})
 	return JsonResponse({'reviews': response_list})

@@ -16,14 +16,37 @@
 // automatically applied to the <body> element in the app.
 
 
-.toolbar-background-md {
-  border-color: #b2b2b2;
-  background: color($colors,primary);
-}
+// .toolbar-background-md {
+//   border-color: #b2b2b2;
+//   background: color($colors,primary);
+// }
 
 ion-navbar{
 	button, ion-title .toolbar-title{
 		  color:white !important;
 	}
 
+}
+ion-menu{
+ion-toolbar{
+	padding: 0 !important;
+	ion-list{
+		margin-bottom: 0 !important;
+		ion-item{
+			    background: url(http://materializecss.com/images/office.jpg);
+			    background-size: cover;
+		}
+	}
+
+	ion-avatar{
+		img{
+			width: 60px !important;
+		    height: 60px !important;
+		}
+	}
+	}
+
+}
+.scroll-content{
+	overflow-y: auto;
 }

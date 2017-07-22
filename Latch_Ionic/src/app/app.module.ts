@@ -31,6 +31,8 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { File } from '@ionic-native/file';
+import { ImagePicker } from '@ionic-native/image-picker';
+
 
 @NgModule({
   declarations: [
@@ -49,6 +51,7 @@ import { File } from '@ionic-native/file';
      Chats,
     Groups,
     Location,
+    ImagePicker,
   ],
   imports: [
     BrowserModule,
@@ -86,7 +89,8 @@ import { File } from '@ionic-native/file';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     HttpModule,
     HttpService,
-    GlobalVariables
+    GlobalVariables,
+    ImagePicker,
   ]
 })
 export class AppModule {}

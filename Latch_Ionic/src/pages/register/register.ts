@@ -6,6 +6,8 @@ import { OtpPage } from '../otp/otp';
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
+import { UploadPicPage } from '../upload-pic/upload-pic'
+
 /**
  * Generated class for the Register page.
  *
@@ -35,9 +37,9 @@ export class RegisterPage {
   signUp(){
     this.httpService.postData(this.globalVars.baseUrl+'/main/accounts/register/',this.user)
     .then(response=>{
-       this.storage.set('indi_chat',{});
-       this.storage.set('group_chat',{});
-       this.storage.set('chat_bot',{});
+       this.storage.set('indi_chat',[]);
+       this.storage.set('group_chat',[]);
+       this.storage.set('chat_bot',[]);
        this.storage.set('loggedIn', true);
        this.storage.set('name', this.user['name']);
        this.storage.set('contact', this.user['contact']);
@@ -49,6 +51,7 @@ export class RegisterPage {
       	this.navCtrl.push(OtpPage);
        }
     });
+
     console.log(this.user);
   }
 

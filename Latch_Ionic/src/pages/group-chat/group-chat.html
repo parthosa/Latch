@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title> Travel </ion-title>
+    <ion-title> Group </ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -15,14 +15,29 @@
 
 <ion-content no-padding>
 <div class="message-section">
+	<ion-grid>
+		<ion-row justify-content-center>
+			<ion-col col-12 >
+				<div class="message-wrapper me " *ngFor="let message of messages" ngClass="{me : message.nick==user.nick,them: message.nick!=user.nick,'not-sent' : message.nick==user.nick && message.sent==false}">
+					<div class="text-wrapper animated fadeIn">
+						<p class="name">{{ message.nick }}</p>
+						<p class="message-text" >{{ message.message }}</p>
+						<p class="time" >{{ message.time }}</p>
+					</div>
+				</div>
+			</ion-col>
+		</ion-row>
+	</ion-grid>
 </div>
 </ion-content>
 <ion-footer>
 <ion-list>
   <ion-item>
 	  <ion-icon name="attach" item-start></ion-icon>
-    <ion-input type="text" placeholder="New Message"></ion-input>
-    <ion-icon name="send" item-end></ion-icon>
+    <ion-input type="text" placeholder="New Message" [(ngModel)]="newMessageText"></ion-input>
+    <button class="send-new-message" item-end clear (click)="sendNewMessage()" >
+	    <ion-icon name="send" ></ion-icon>
+    </button>
   </ion-item>
   </ion-list>
 </ion-footer>

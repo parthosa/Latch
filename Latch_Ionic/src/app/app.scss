@@ -50,3 +50,117 @@ ion-toolbar{
 .scroll-content{
 	overflow-y: auto;
 }
+
+	.item-inner{
+		margin-left: 0 !important;
+	}
+
+	ion-footer {
+		ion-icon{
+			font-size: 1.4em !important;
+		    margin: 8px 9px !important;
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		}
+
+		ion-list {
+		    margin-bottom: 0 !important;
+		}
+
+		ion-item{
+			padding-left:0 !important;
+			border: none !important;
+		}
+	}
+
+	ion-content{
+		background-color: color($colors,secondary) !important;
+	}
+
+	.message-wrapper {
+	  position: relative;
+	  overflow: hidden;
+	  width: 100%;
+	  margin: 20px 0;
+	}
+	.message-wrapper .circle-wrapper {
+	  height: 57px;
+	  width: 57px;
+	  border-radius: 50%;
+	  background-size: cover !important;
+	    background-position: center !important;
+	}
+	.message-wrapper .text-wrapper {
+	  padding: 5px 9px;
+	  min-height: 42.66667px;
+	  width: 60%;
+	  margin: 0 15px;
+	  box-shadow: 0px 1px 0px 0px rgba(50, 50, 50, 0.3);
+	  border-radius: 2px;
+	  font-weight: 300;
+	  position: relative;
+	  /* word-break: break-all; */
+	  opacity: 1;
+	  font-size: 1.6em;
+	  transition: opacity 0.4s;
+	}
+	.message-wrapper .text-wrapper:before {
+	  content: '';
+	  width: 0;
+	  height: 0;
+	  border-style: solid;
+	}
+	.message-wrapper.them .circle-wrapper, .message-wrapper.them .text-wrapper {
+	  background:#57b5fc;
+	  float: left;
+	  color: #ffffff;
+	}
+
+
+	.message-wrapper.them .text-wrapper:before {
+	  border-width: 0 10px 10px 0;
+	  border-color: transparent #57b5fc transparent transparent;
+	  position: absolute;
+	  top: 0;
+	  left: -9px;
+	}
+	.message-wrapper.me .circle-wrapper, .message-wrapper.me .text-wrapper {
+	  background:#fff;
+	  float: right;
+	  color: #333333;
+	}
+	.message-wrapper.me .text-wrapper {
+	  background: #ffffff;
+	}
+	.message-wrapper.me .text-wrapper:before {
+	  border-width: 10px 10px 0 0;
+	  border-color: #ffffff transparent transparent transparent;
+	  position: absolute;
+	  top: 0;
+	  right: -9px;
+	}
+	p.time {
+	    font-size: 1.1rem !important;
+	    margin: 0 !important;
+	}
+
+	p.message-text {
+	    margin: 5px 0 15px 0!important;
+	    font-size: 2rem !important;
+	}
+
+	.me p.time {
+	    float: right;
+	}
+
+	p.name {
+	    font-size: 1rem !important;
+	    margin: 0.8rem 0;
+	    opacity: 0.8;
+	}
+
+	.send-new-message{
+		background:none;
+	}
+

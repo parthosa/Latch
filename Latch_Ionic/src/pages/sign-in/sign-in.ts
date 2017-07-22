@@ -21,7 +21,7 @@ export class SignInPage {
 
   user = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httService : HttpService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService : HttpService) {
   	this.user['email'] = '';
   	this.user['password'] = '';
   }

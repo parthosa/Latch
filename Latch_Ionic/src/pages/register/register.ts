@@ -4,6 +4,8 @@ import { InterestsPage } from '../interests/interests';
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
+import { UploadPicPage } from '../upload-pic/upload-pic'
+
 /**
  * Generated class for the Register page.
  *
@@ -32,17 +34,18 @@ export class RegisterPage {
 
   signUp(){
     console.log(this.globalVars.baseUrl+'/main/accounts/register/');
-    this.httpService.postData(this.globalVars.baseUrl+'/main/accounts/register/',this.user)
-    .then(response=>{
-       this.storage.set('indi_chat',{});
-       this.storage.set('group_chat',{});
-       this.storage.set('chat_bot',{});
-       this.storage.set('session_key', response.session_key);
-       this.storage.set('loggedIn', true);
-       this.storage.set('name', this.user['name']);
-       this.storage.set('contact', this.user['contact']);
-      	this.navCtrl.push(InterestsPage);
-    });
+    // this.httpService.postData(this.globalVars.baseUrl+'/main/accounts/register/',this.user)
+    // .then(response=>{
+    //    this.storage.set('indi_chat',{});
+    //    this.storage.set('group_chat',{});
+    //    this.storage.set('chat_bot',{});
+    //    this.storage.set('session_key', response.session_key);
+    //    this.storage.set('loggedIn', true);
+    //    this.storage.set('name', this.user['name']);
+    //    this.storage.set('contact', this.user['contact']);
+    //   	this.navCtrl.push(InterestsPage);
+    // });
+    this.navCtrl.push(UploadPicPage);
     console.log(this.user);
   }
 

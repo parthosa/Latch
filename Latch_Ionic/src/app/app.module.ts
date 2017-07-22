@@ -12,6 +12,7 @@ import { RegisterPage } from '../pages/register/register';
 import { OtpPage } from '../pages/otp/otp';
 import { MobileNumPage } from '../pages/mobile-num/mobile-num';
 
+import { NickPage } from '../pages/nick/nick';
 import { InterestsPage } from '../pages/interests/interests';
 import { UploadPicPage } from '../pages/upload-pic/upload-pic';
 import { IndiChatPage } from '../pages/indi-chat/indi-chat';
@@ -45,6 +46,7 @@ import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
     RegisterPage,
     MobileNumPage,
     OtpPage,
+    NickPage,
     InterestsPage,
     UploadPicPage,
     IndiChatPage,
@@ -69,6 +71,7 @@ import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
     RegisterPage,
     MobileNumPage,
     OtpPage,
+    NickPage,
     InterestsPage,
     UploadPicPage,
     IndiChatPage,

@@ -35,13 +35,11 @@ export class RegisterPage {
   }
 
   signUp(){
-    console.log(this.globalVars.baseUrl+'/main/accounts/register/');
-
     this.httpService.postData(this.globalVars.baseUrl+'/main/accounts/register/',this.user)
     .then(response=>{
-       this.storage.set('indi_chat',{});
-       this.storage.set('group_chat',{});
-       this.storage.set('chat_bot',{});
+       this.storage.set('indi_chat',[]);
+       this.storage.set('group_chat',[]);
+       this.storage.set('chat_bot',[]);
        this.storage.set('loggedIn', true);
        this.storage.set('name', this.user['name']);
        this.storage.set('contact', this.user['contact']);

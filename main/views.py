@@ -18,12 +18,13 @@ from django.contrib.sessions.models import Session
 from gcm import GCM
 from PIL import Image
 import apiai
+from django.core.signing import Signer
 
 @csrf_exempt
 def social_login(request):
-	if request.POST:
-		fbid = request.POST['fbid']
-		name = request.POST['name']
+	if request.method == "POST":
+		fbid = json.loads(request.body)['fbid']
+		name = json.loads(request.body)['name']
 		try:
 			user = User.objects.get(username = fbid)
 			user_login = authenticate(username = fbid, password = fbid)
@@ -32,23 +33,31 @@ def social_login(request):
 			return JsonResponse(response)
 		except:
 			user = User.objects.create_user(username = fbid, password = fbid)
+			user.is_active = False
 			user.save()
 			member = UserProfile()
 			member.name = name
 			member.user = user
 			member.fbid = fbid
 			member.save()
-			user_login = authenticate(username = fbid, password = fbid)
-			login(request, user_login)
-			return JsonResponse({'status': 2, 'message': 'You will be redirected to where we can know you better! :D', 'session_key': request.session.session_key})
+			request.session['fbid'] = fbid
+			request.session['password'] = fbid
+			# user_login = authenticate(username = fbid, password = fbid)
+			# login(request, user_login)
+			return JsonResponse({'status': 2, 'message': 'You will be redirected to where we can know you better! :D', 'session_key': request.session.session_key, 'get_contact_num': True})
 
-@csrf_exempt
+# @csrf_exempt
 def Register(request):
-	if request.POST:
-		name = request.POST['name']
-		contact = request.POST['contact'] # could be either phone or email id
-		password = request.POST['password']
-		confirm_password = request.POST['confirm_password']
+	print request.body
+	print request.method
+	# json_ob = json.loads(json.loads(request.body))
+	print json
+	if request.method == "POST":
+
+		name = json.loads(request.body)['name']
+		contact = json.loads(request.body)['contact'] # could be either phone or email id
+		password = json.loads(request.body)['password']
+		confirm_password = json.loads(request.body)['confirm_password']
 
 		registered_users = User.objects.all()
 		registered_contacts = [x.username for x in registered_users]
@@ -64,14 +73,25 @@ def Register(request):
 					return JsonResponse({'status': 0, 'message': 'Kindly enter a valid phone number or email'})
 				else:
 					user = User.objects.create_user(username = contact, password = password)
+					user.is_active = False
 					user.save()
 					member = UserProfile()
 					member.name = name
 					member.user = user
+					member.contact_number = contact
 					member.save()
-					user_login = authenticate(username = contact, password = password)
-					login(request, user_login)
-					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key})
+
+					request.session['contact'] = contact
+					request.session['password'] = password
+					status = { "registered" : True , "id" : user.id }
+					send_otp_url = '''http://2factor.in/API/V1/b5dfcd4a-cf26-11e6-afa5-00163ef91450/SMS/%s/AUTOGEN'''%(contact)
+					send_otp = requests.get(send_otp_url)
+					otp_id = send_otp.text.split(',')[1][11:-2]
+					request.session['otp_id'] = otp_id
+
+					# user_login = authenticate(username = contact, password = password)
+					# login(request, user_login)
+					return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key, 'get_contact_num': False, 'otp_id': otp_id})
 			else:
 				user = User.objects.create_user(username = contact, password = password)
 				user.save()
@@ -79,31 +99,118 @@ def Register(request):
 				member.name = name
 				member.user = user
 				member.save()
-				user_login = authenticate(username = contact, password = password)
-				login(request, user_login)
-				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key})
+				request.session['contact'] = contact
+				request.session['password'] = password
+				print request.session['contact']
+				print request.session.keys()
+				request.session.modified = True
+				# for key, value in request.session.iteritems():
+		  #   		print key, value
+				# user_login = authenticate(username = contact, password = password)
+				# login(request, user_login)
+				return JsonResponse({'status': 1, 'message': 'You will be redirected to where we can know you better! :D','session_key': request.session.session_key, 'get_contact_num': True})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Your password did not match'})
 
 @csrf_exempt
+def contact_number(request):
+	if request.method == "POST":
+		# for key, value in request.session.iteritems():
+  #   		print key, value
+	  	registered_users = UserProfile.objects.all()
+		registered_contacts = [str(x.contact_number) for x in registered_users]
+		contact_number = json.loads(request.body)['contact_number']
+		print contact_number
+		print registered_contacts
+		if not str(contact_number) in registered_contacts:
+			print 1
+			try:
+				user = User.objects.get(username = json.loads(request.body)['contact'])
+			except:
+				user = User.objects.get(username = json.loads(request.body)['fbid'])
+			user_p = UserProfile.objects.get(user = user)
+			if type(contact_number) is int and len(str(contact_number)) == 10:
+				# user_p.contact_number = contact_number
+				# user_p.save()
+				send_otp_url = '''http://2factor.in/API/V1/b5dfcd4a-cf26-11e6-afa5-00163ef91450/SMS/%s/AUTOGEN'''%(contact_number)
+				send_otp = requests.get(send_otp_url)
+				otp_id = send_otp.text.split(',')[1][11:-2]
+				request.session['otp_id'] = otp_id
+				return JsonResponse({'status': 1, 'message': 'verify otp', 'otp_id': otp_id})
+			else:
+				return JsonResponse({'status': 0, 'message': 'Kindly enter a valid contact number'})
+		else:
+			return JsonResponse({'status': 0, 'message': 'this contact is laready registered'})
+	else:
+		return JsonResponse({'status': 0})
+@csrf_exempt
+def verify_otp(request):
+	if request.method == "POST":
+		# session_key = json.loads(request.body)['session_key']
+		# session = Session.objects.get(session_key = session_key)
+		# uid = session.get_decoded().get('_auth_user_id')
+		# try:
+		# 	user = User.objects.get(pk=uid)
+		# except ObjectDoesNotExist:
+		# 	response = {'status':0, 'message':'Kindly login first'}
+		# 	return JsonResponse(response)
+		otp = json.loads(request.body)['otp']
+		otp_id = json.loads(request.body)['otp_id']
+		contact = json.loads(request.body)['contact']
+		verify_otp_api = '''http://2factor.in/API/V1/b5dfcd4a-cf26-11e6-afa5-00163ef91450/SMS/VERIFY/%s/%s'''%(otp_id, otp)
+		verify_otp = requests.get(verify_otp_api)
+		if json.loads(verify_otp.text)['Status'] == 'Success':
+			if not 'fbid' in json.loads(request.body):
+				user = User.objects.get(username = contact)
+				user.is_active = True
+				user.save()
+				contact = json.loads(request.body)['contact']
+				user_p = UserProfile.objects.get(user = user)
+				user_login = authenticate(username = contact, password = json.loads(request.body)['password'])
+				login(request, user_login)
+				user_p.contact_number = json.loads(request.body)['contact_number']
+				user_p.save()
+				resp = {'status': 1 , 'message': 'You have successfully verified your phone number. You can login now', 'session_key': request.session.session_key}
+
+			else:
+				user = User.objects.get(username = json.loads(request.body)['fbid'])
+				user.is_active = True
+				user.save()
+				user_login = authenticate(username = json.loads(request.body)['fbid'], password = json.loads(request.body)['fbid'])
+				login(request, user_login)
+				resp = {'status': 1 , 'message': 'You have successfully verified your phone number. You can login now', 'session_key': request.session.session_key}
+
+		else:
+			resp = {'status': 0, 'message': 'The OTP you entered is incorrect. Kindly check it again'}
+
+		return JsonResponse(resp)
+
+
+@csrf_exempt
 def login_user(request):
 	if request.method == 'POST':
-		contact = request.POST['contact']
-		password = request.POST['password']
+		contact = json.loads(request.body)['contact']
+		password = json.loads(request.body)['password']
 		user = authenticate(username = contact, password = password)
 
 		if user:
 			user_p = UserProfile.objects.get(user = user)
-			login(request,user)
-			return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url})
-			
+			if user.is_active:
+				login(request,user)
+				return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url})
+			else:
+				try:
+					return JsonResponse({'status': 2, 'message': 'Kindly verify your mobile number first', 'contact_number': user_p.contact_number})
+				except:
+					return JsonResponse({'status': 2, 'message': 'Kindly verify your mobile number first'})
 		else:
 			return JsonResponse({'status': 0, 'message': 'Invalid credentials'})
+
 @csrf_exempt
 def nick_name(request):
-	if request.POST:
-		nick = request.POST['nick']
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		nick = json.loads(request.body)['nick']
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -125,7 +232,7 @@ def nick_name(request):
 
 @csrf_exempt
 def profile_pic(request):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -136,7 +243,7 @@ def profile_pic(request):
 
 	user_p = UserProfile.objects.get(user = user)
 	if 'getfromfb' in request.POST:
-		fbdp = request.POST['fbdp']
+		fbdp = json.loads(request.body)['fbdp']
 		user_p.dp_url = fbdp
 		user_p.save()
 		response = {'status':1, 'message': 'dp has been successfully saved'}
@@ -155,8 +262,8 @@ def logout_user(request):
 
 @csrf_exempt
 def interests(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -166,7 +273,9 @@ def interests(request):
 			return JsonResponse(response)
 
 		user_p = UserProfile.objects.get(user = user)
-		interest_list = request.POST['interest'].split(',')
+		print json.loads(request.body)['interest']
+		interest_list = json.loads(request.body)['interest'].split(',')
+		print interest_list
 		for interest in interest_list[:-1]:
 			interest_object = Interest.objects.get(name = interest)
 			user_p.interests.add(interest_object)
@@ -184,8 +293,8 @@ def interests(request):
 
 @csrf_exempt
 def get_location(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -194,8 +303,8 @@ def get_location(request):
 			response = {'status':0, 'message':'Kindly login first'}
 			return JsonResponse(response)
 
-		lat = request.POST['lat']
-		longitude = request.POST['longitude']
+		lat = json.loads(request.body)['lat']
+		longitude = json.loads(request.body)['longitude']
 		user_p = UserProfile.objects.get(user = user)
 		user_p.lat = lat
 		user_p.longitude = longitude
@@ -208,7 +317,7 @@ def get_location(request):
 
 @csrf_exempt
 def add_to_chatroom(request):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -249,7 +358,7 @@ def add_to_chatroom(request):
 
 @csrf_exempt
 def send_nearby(request):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -273,8 +382,8 @@ def send_nearby(request):
 
 @csrf_exempt
 def get_members_chatroom(request, room_name):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -301,8 +410,8 @@ def get_members_chatroom(request, room_name):
 
 @csrf_exempt
 def start_chat_indi(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -312,7 +421,7 @@ def start_chat_indi(request):
 			return JsonResponse(response)
 
 		user_p = UserProfile.objects.get(user = user)
-		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
+		user_c = UserProfile.objects.get(nick_name = json.loads(request.body)['nick'])
 		try:
 			gr = Indi_group.objects.get(user1 = user_p, user2 = user_c)
 		except ObjectDoesNotExist:
@@ -324,7 +433,7 @@ def start_chat_indi(request):
 
 @csrf_exempt
 def go_anonymous(request):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -345,6 +454,41 @@ def go_anonymous(request):
 		response = {'status': 1, 'message': 'You have gone anonymous'}
 		return JsonResponse(response)
 
+def create_group(request):
+	session_key = json.loads(request.body)['session_key']
+	session = Session.objects.get(session_key = session_key)
+	uid = session.get_decoded().get('_auth_user_id')
+	try:
+		user = User.objects.get(pk=uid)
+	except ObjectDoesNotExist:
+		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
+
+	user_p = UserProfile.objects.get(user = user)
+	group_name = json.loads(request.body)['group_name']
+	uid = uuid.uuid4()
+	group = User_group.objects.create(name = group_name, created_by = user_p, uid = uid)
+	group.members.add(user_p)
+	group.save()
+	user_p.groups_manual.add(group)
+	user_p.save()
+	members = json.loads(request.body)['members']
+	not_registered = []
+	app_url = 'http://127.0.0.1:3000/'
+	invite_message = '''You have been invited to register on Latch-The Location Chat by %s. Kindly follow this link to register - %s''' % (user_p.name, app_url)
+	for member in members:
+		try:
+			user_member = UserProfile.objects.get(contact_number = int(member))
+			group.members.add(user_member)
+			group.save()
+			user_member.groups_manual.add(group)
+			user_member.save()
+		except ObjectDoesNotExist:
+			not_registered.append(member)
+	invite_url = '''https://control.msg91.com/api/sendhttp.php?authkey=166486AW8yGyhB59730184&mobiles=%s&message=%s&sender=%s&route=1&country=91''' % (str(not_registered)[1:-1], invite_message, user_p.name)
+	requests.get(invite_url)
+	return JsonResponse({'status': 1, 'not_registered': not_registered, 'uid': uid})
+
 def test_room(request, label):
 	try:
 		group = Group.objects.get(name = label)
@@ -360,7 +504,7 @@ def test_room(request, label):
 
 @csrf_exempt
 def get_chatroom(request, group_name):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -370,24 +514,30 @@ def get_chatroom(request, group_name):
 		return JsonResponse(response)
 
 	user_p = UserProfile.objects.get(user = user)
-	Group_ob = Group.objects.get(name = group_name)
+	try:
+		Group_ob = Group.objects.get(name = group_name)
+	except ObjectDoesNotExist: # search for non location-interest based chat groups
+		Group_ob = User_group.objects.get(uid = group_name)
 	messages = Message.objects.filter(group = Group_ob)
-	user_group = Group_user(user = user_p, group = Group_ob)
+	# user_group = Group_user(user = user_p, group = Group_ob)
 	msg_list = []
+	signer = Signer()
 	for message in messages:
-		msg_list.append({'message': message.message, 'nick_name': message.user.nick_name, 'time': message.timestamp})
-
+		if message.is_image:
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'true'})
+		else:
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'false'})
 	response = {'messages': msg_list}
 	return JsonResponse(response)
 
 @csrf_exempt
 def node_api_message_group(request):
-	print request.POST
+	print request.body
 	try:
         #Get User from sessionid
-	        # post_string = request.POST['key']
+	        # post_string = json.loads(request.body)['key']
 	        # post_item_list = post_string.split(',')
-		session_key = request.POST['session_key']
+		session_key = json.loads(request.body)['session_key']
 		print session_key
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
@@ -399,19 +549,28 @@ def node_api_message_group(request):
 		print 1
         #Create message
 		user_p = UserProfile.objects.get(user = user)
-		group = Group.objects.get(name = request.POST['group_name'])
 		try:
-			message_create = Message.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
+			group = Group.objects.get(name = json.loads(request.body)['group_name'])
+		except ObjectDoesNotExist:
+			group = User_group.objects.get(uid = json.loads(request.body)['group_name'])
+		try:
+			signer = Signer()
+			message_encrypted = signer.sign(json.loads(request.body)['message'])
+			if str(json.loads(request.body)['is_image']) == 'true':
+				message_create = Message.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = True)
+			else:
+				message_create = Message.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = False)
  		except Exception, e:
+ 			print e
  			return e
- 		message = Message.objects.get(msg_id = request.POST['msg_id'])
+ 		message = Message.objects.get(msg_id = json.loads(request.body)['msg_id'])
  		print message
  		group.message.add(message)
 		group.save()
 		print 2
         #Once comment has been created post it to the chat channel
 		# r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		# r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
+		# r.publish('chat_message', user_p.nick_name + ': ' + json.loads(request.body)['message'] + ':' + datetime.now)
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:
@@ -423,9 +582,9 @@ def node_api_message_user(request):
 	print request.POST
 	try:
         #Get User from sessionid
-		# post_string = request.POST['key']
+		# post_string = json.loads(request.body)['key']
 		# post_item_list = post_string.split(',')
-		session_key = request.POST['session_key']
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -437,22 +596,27 @@ def node_api_message_user(request):
         #Create message
 
 		user_p = UserProfile.objects.get(user = user)
-		user_c = UserProfile.objects.get(nick_name = request.POST['nick_name'])
+		user_c = UserProfile.objects.get(nick_name = json.loads(request.body)['nick_name'])
 		try:
 			group = Indi_group.objects.get(user1 = user_p, user2 = user_c)
 		except ObjectDoesNotExist:
 			group = Indi_group.objects.get(user2 = user_p, user1 = user_c)
 
 		try:
-			message_create = Indi_msg.objects.create(message = request.POST['message'], user = user_p, group = group, msg_id = request.POST['msg_id'], timestamp = request.POST['time'])
+			signer = Signer()
+			message_encrypted = signer.sign(json.loads(request.body)['message'])
+			if str(json.loads(request.body)['is_image']) == 'true':
+				message_create = Indi_msg.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = True)
+			else:
+				message_create = Indi_msg.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = False)
 		except Exception, e:
 			return e
- 		message = Indi_msg.objects.get(msg_id = request.POST['msg_id'])
+ 		message = Indi_msg.objects.get(msg_id = json.loads(request.body)['msg_id'])
  		group.message.add(message)
 		group.save()
         #Once comment has been created post it to the chat channel
 		# r = redis.StrictRedis(host='localhost', port=6379, db=0)
-		# r.publish('chat_message', user_p.nick_name + ': ' + request.POST['message'] + ':' + datetime.now)
+		# r.publish('chat_message', user_p.nick_name + ': ' + json.loads(request.body)['message'] + ':' + datetime.now)
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:
@@ -462,8 +626,8 @@ def node_api_message_user(request):
 
 @csrf_exempt
 def user_groups(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -473,17 +637,21 @@ def user_groups(request):
 			return JsonResponse(response)
 
 		user_p = UserProfile.objects.get(user = user)
-		groups = user_p.groups.all()
+		groups_location = user_p.groups.all()
+		groups_manual = user_p.groups_manual.all()
+		# groups = groups_manual | groups_location
 		group_list = []
-		for group in groups:
+		for group in groups_manual:
 			group_list.append({'group_name': group.name, 'pic': group.pic_url, 'members': group.members.all().count()})
 
+		for group in groups_location:
+			group_list.append({'group_name': group.name, 'pic': group.pic_url, 'members': group.members.all().count()})
 		return JsonResponse({'groups': group_list})
 
 @csrf_exempt
 def user_users(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -519,7 +687,7 @@ def user_users(request):
 
 @csrf_exempt
 def get_indi_chat(request):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -528,7 +696,7 @@ def get_indi_chat(request):
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
 	user_p = UserProfile.objects.get(user = user)
-	user_t = UserProfile.objects.get(nick_name = request.POST['nick'])
+	user_t = UserProfile.objects.get(nick_name = json.loads(request.body)['nick'])
 	try:
 		indi_chat = Indi_group.objects.get(user1 = user_p, user2 = user_t)
 	except ObjectDoesNotExist:
@@ -545,16 +713,19 @@ def get_indi_chat(request):
 
 	messages = indi_chat.message.all()
 	msg_list = []
+	signer = Signer()
 	for message in messages:
-		msg_list.append({'message': message.message, 'nick_name': message.user.nick_name, 'time': message.timestamp})
-
+		if message.is_image:
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'true'})
+		else:
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'false'})
 	response = {'messages': msg_list}
 	return JsonResponse(response)
 
 @csrf_exempt
 def test_node_api(request):
-	# if request.POST:
-	# c = request.POST['comment']
+	# if request.method == "POST":
+	# c = json.loads(request.body)['comment']
 	return JsonResponse({'message': 'c'})
 	# else:
 	# 	return JsonResponse({'partho_chutiya': request.session.session_key})
@@ -571,7 +742,7 @@ def test_img(request):
 	return 1
 
 def get_profile(request):
-	session_key = request.POST['session_key']
+	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
 	try:
@@ -587,8 +758,8 @@ def get_profile(request):
 	return JsonResponse({'status':1, 'name': name, 'nick': nick, 'contact': contact, 'pic': pic})
 
 # def get_device(request):
-# 	if request.POST:
-# 		session_key = request.POST['session_key']
+# 	if request.method == "POST":
+# 		session_key = json.loads(request.body)['session_key']
 # 		session = Session.objects.get(session_key = session_key)
 # 		uid = session.get_decoded().get('_auth_user_id')
 # 		try:
@@ -596,16 +767,16 @@ def get_profile(request):
 # 		except ObjectDoesNotExist:
 # 			response = {'status':0, 'message':'Kindly login first'}
 # 		user_p = UserProfile.objects.get(user = user)
-# 		device_id = Device_ID.objects.create(user = user_p, device_id = request.POST['device_id'])
-# 		user_p.device_id.add(Device_ID.objects.get(device_id = request.POST['device_id']))
+# 		device_id = Device_ID.objects.create(user = user_p, device_id = json.loads(request.body)['device_id'])
+# 		user_p.device_id.add(Device_ID.objects.get(device_id = json.loads(request.body)['device_id']))
 # 		user_p.save()
 # 		return JsonResponse({'status': 1, 'message': 'successfully saved'})
 
 @csrf_exempt
 def indi_msg_notification(request):
-	if request.POST:
+	if request.method == "POST":
 		# if len(device_id) != 0:
-		session_key = request.POST['session_key']
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -613,9 +784,9 @@ def indi_msg_notification(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
-		message = request.POST['message']
-		user_c = UserProfile.objects.get(nick_name = request.POST['nick'])
-		# timestamp = request.POST['time']
+		message = json.loads(request.body)['message']
+		user_c = UserProfile.objects.get(nick_name = json.loads(request.body)['nick'])
+		# timestamp = json.loads(request.body)['time']
 		gcm = GCM('AAAANbxRpq0:APA91bFgSsNBCJc2qubCF7--FQagNloimWcsRCMk_DezOPP88NvOO8ifcKilq_L1cmzaK9JHLXxXFV0a4nw3Lf-VHn1dxsxn5I0_6Gb7yNLtc-xRL0OUP7XrdfeEwkouS9kmfDkJCzYD')
 		reg_ids = user_c.device_id.all()
 		print reg_ids
@@ -630,12 +801,12 @@ def indi_msg_notification(request):
 		notification = {'title': 'New message', 'message': notification_msg, 'additionalData': {'isUser': 'isUser'}}
 		response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
 
-		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': request.POST['isUser']})
+		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': json.loads(request.body)['isUser']})
 
 @csrf_exempt
 def device_id(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -643,12 +814,12 @@ def device_id(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
-		device_id = Device_ID.objects.create(device_id = request.POST['device_id'], user = user_p)
+		device_id = Device_ID.objects.create(device_id = json.loads(request.body)['device_id'], user = user_p)
 		user_p.device_id.add(device_id)	
 		response = {'status': 1, 'message': 'device id successfully saved'}
 		return JsonResponse(response)
 	else:
-		session_key = request.POST['session_key']
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -661,9 +832,9 @@ def device_id(request):
 
 @csrf_exempt
 def group_msg_notification(request):
-	if request.POST:
+	if request.method == "POST":
 		# if len(device_id) != 0:
-		session_key = request.POST['session_key']
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -671,9 +842,9 @@ def group_msg_notification(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
-		message = request.POST['message']
-		group = Group.objects.get(name = request.POST['group_name'])
-		# timestamp = request.POST['time']
+		message = json.loads(request.body)['message']
+		group = Group.objects.get(name = json.loads(request.body)['group_name'])
+		# timestamp = json.loads(request.body)['time']
 		gcm = GCM('AAAANbxRpq0:APA91bFgSsNBCJc2qubCF7--FQagNloimWcsRCMk_DezOPP88NvOO8ifcKilq_L1cmzaK9JHLXxXFV0a4nw3Lf-VHn1dxsxn5I0_6Gb7yNLtc-xRL0OUP7XrdfeEwkouS9kmfDkJCzYD')
 		reg_ids = [x.device_id.all() for x in UserProfile.objects.filter(groups = group)]
 		reg_ids_tmp = []
@@ -685,16 +856,16 @@ def group_msg_notification(request):
 				except:
 					pass
 		print reg_ids
-		notification_msg = '''%s@%s: %s''' % (user_p.nick_name,group.name, request.POST['message'])
-		notification = {'title': 'Latch', 'message': notification_msg, 'additionalData': {'isUser': request.POST['isUser']}}
+		notification_msg = '''%s@%s: %s''' % (user_p.nick_name,group.name, json.loads(request.body)['message'])
+		notification = {'title': 'Latch', 'message': notification_msg, 'additionalData': {'isUser': json.loads(request.body)['isUser']}}
 		response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
 
-		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': request.POST['isUser']})
+		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': json.loads(request.body)['isUser']})
 
 @csrf_exempt
 def edit_profile(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -702,12 +873,12 @@ def edit_profile(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
-		user_p.name = request.POST['name']
-		if request.POST['nick'] not in [x.nick_name for x in UserProfile.objects.all()]:
-			user_p.nick_name = request.POST['nick']
-			user_p.contact = request.POST['contact']
+		user_p.name = json.loads(request.body)['name']
+		if json.loads(request.body)['nick'] not in [x.nick_name for x in UserProfile.objects.all()]:
+			user_p.nick_name = json.loads(request.body)['nick']
+			user_p.contact = json.loads(request.body)['contact']
 			try:
-				user_image = request.POST['pic']
+				user_image = json.loads(request.body)['pic']
 				# img = Image.open(user_image)
 				# img_final = img.resize((200/img.size[1]*img.size[0], 200), Image.ANTIALIAS)
 				user_p.dp_url = user_image
@@ -721,8 +892,8 @@ def edit_profile(request):
 
 @csrf_exempt
 def change_password(request):
-	if request.POST:
-		session_key = request.POST['session_key']
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -731,10 +902,10 @@ def change_password(request):
 			response = {'status':0, 'message':'Kindly login first'}
 			return JsonResponse(response)
 
-		user_auth = authenticate(username = user.username, password = request.POST['old_password'])
+		user_auth = authenticate(username = user.username, password = json.loads(request.body)['old_password'])
 		if user_auth:
-			if request.POST['new_password'] == request.POST['new_password_confirm']:
-				user.set_password(request.POST['new_password'])
+			if json.loads(request.body)['new_password'] == json.loads(request.body)['new_password_confirm']:
+				user.set_password(json.loads(request.body)['new_password'])
 				user.save()
 				response = {'status': 1, 'message': 'Your password has been successfully changed'}
 			else:
@@ -746,9 +917,9 @@ def change_password(request):
 
 @csrf_exempt
 def chat_bot(request):
-	if request.POST:
+	if request.method == "POST":
 	#74c47b6322c6a40d4bef924bf238548c zomato api
-		session_key = request.POST['session_key']
+		session_key = json.loads(request.body)['session_key']
 		session = Session.objects.get(session_key = session_key)
 		uid = session.get_decoded().get('_auth_user_id')
 		try:
@@ -760,7 +931,7 @@ def chat_bot(request):
 		request_ai = ai.text_request()
 		request_ai.lang = 'en'
 		request_ai.session_id = session_key
-		query = request.POST['message']
+		query = json.loads(request.body)['message']
 		print query
 		luis_url = '''https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/c413b2ef-382c-45bd-8ff0-f76d60e2a821?subscription-key=3dd64ac15d6049a7b4ac30f3eb591970&q=%s''' % (query)
 		print luis_url
@@ -816,10 +987,10 @@ def chat_bot(request):
 					response_list[x]['restaurants']['city'] = restaurants_json['restaurants'][x]['restaurant']['location']['city']
 					response_list[x]['id'] = restaurants_json['restaurants'][x]['restaurant']['id']
 
-				response = {'status': 1, 'restaurants': response_list, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name'], 'message': 'Here I found some awesome places to give your stomach a treat near you. Click on the names to know more about them :D'}
+				response = {'status': 1, 'restaurants': response_list, 'msg_id': json.loads(request.body)['msg_id'], 'time': json.loads(request.body)['time'], 'nick': json.loads(request.body)['nick_name'], 'message': 'Here I found some awesome places to give your stomach a treat near you. Click on the names to know more about them :D'}
 				return JsonResponse(response)
 			else:
-				response = {'status': 0, 'message': 'Sorry I couldn\'t find any place nearby to eat.', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
+				response = {'status': 0, 'message': 'Sorry I couldn\'t find any place nearby to eat.', 'msg_id': json.loads(request.body)['msg_id'], 'time': json.loads(request.body)['time'], 'nick': json.loads(request.body)['nick_name']}
 				return JsonResponse(response)
 		elif intent_name == "find hotels near me":
 			hotel_url = '''https://maps.googleapis.com/maps/api/place/textsearch/json?query=hotels+in+%s&key=AIzaSyATE-DjQxRSzwzn9OreHh_PvEkHQlVm_Hg''' % (user_p.locality)
@@ -828,17 +999,17 @@ def chat_bot(request):
 			hotel_json = json.loads(hotel_tmp.text)
 			for hotel in hotel_json['results']:
 				try:
-					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': hotel['rating'], 'address': hotel['formatted_address'], 'place_id': hotel[place_id]})
+					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': hotel['rating'], 'address': hotel['formatted_address'], 'place_id': hotel['place_id']})
 				except:
-					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': 'none', 'address': hotel['formatted_address'], 'place_id': hotel[place_id]})
-			return JsonResponse({'status' :1, 'hotels': response_list, 'message': 'here are some hotels for you', 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']})
+					response_list.append({'name': hotel['name'], 'lat': hotel['geometry']['location']['lat'], 'lng': hotel['geometry']['location']['lng'], 'rating': 'none', 'address': hotel['formatted_address'], 'place_id': hotel['place_id']})
+			return JsonResponse({'status' :1, 'hotels': response_list, 'message': 'here are some hotels for you', 'msg_id': json.loads(request.body)['msg_id'], 'time': json.loads(request.body)['time'], 'nick': json.loads(request.body)['nick_name']})
 		else:
-			response = {'status': 1, 'message': bot_response, 'msg_id': request.POST['msg_id'], 'time': request.POST['time'], 'nick': request.POST['nick_name']}
+			response = {'status': 1, 'message': bot_response, 'msg_id': json.loads(request.body)['msg_id'], 'time': json.loads(request.body)['time'], 'nick': json.loads(request.body)['nick_name']}
 			return JsonResponse(response)
 
 @csrf_exempt
 def get_reviews_restaraunt(request):
-	res_id = request.POST['id']
+	res_id = json.loads(request.body)['id']
 	url = '''https://developers.zomato.com/api/v2.1/reviews?res_id=%s''' % (res_id)
 	headers = {'Accept': 'application/json','user-key': '74c47b6322c6a40d4bef924bf238548c'}
 	req_rest = requests.get(url, headers=headers)
@@ -851,8 +1022,8 @@ def get_reviews_restaraunt(request):
 	return JsonResponse({'reviews': response_list})
 
 @csrf_exempt
-def get_reviews_hotels(request):
-	place_id = request.POST['place_id']
+def get_reviews_hotel(request):
+	place_id = json.loads(request.body)['place_id']
 	url = '''https://maps.googleapis.com/maps/api/place/details/json?placeid=%s&key=AIzaSyATE-DjQxRSzwzn9OreHh_PvEkHQlVm_Hg'''% (place_id)
 	req_hotel = requests.get(url)
 	hotel_review_json = json.loads(req_hotel.text)
@@ -860,3 +1031,35 @@ def get_reviews_hotels(request):
 	for review in range(0, len(review_list), 3):
 		response_list.append({'rating': review_list[review]['rating'], 'review': review_list[review]['text']})
 	return JsonResponse({'reviews': response_list})
+
+@csrf_exempt
+def add_members_sos(request):
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
+
+		user_p = UserProfile.objects.get(user = user)
+		user_p.sos = str(json.loads(request.body)['members'])[1:-1]
+		user_p.save()
+		return JsonResponse({'status': 1, 'messsage': 'SOS successfully set up'})
+
+# @csrf_exempt
+# def send_sos(request):
+# 	if request.method == "POST":
+# 		session_key = json.loads(request.body)['session_key']
+# 		session = Session.objects.get(session_key = session_key)
+# 		uid = session.get_decoded().get('_auth_user_id')
+# 		try:
+# 			user = User.objects.get(pk=uid)
+# 		except ObjectDoesNotExist:
+# 			response = {'status':0, 'message':'Kindly login first'}
+# 			return JsonResponse(response)
+
+# 		user_p = UserProfile.objects.get(user = user)
+# 		message = '''%s is in trouble. He sent you SOS. Click to view location %s''' % (user_p.name, location_url)

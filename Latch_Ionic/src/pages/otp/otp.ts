@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
-import { InterestsPage } from '../interests/interests';
+import { NickPage } from '../nick/nick';
 
 
 import { GlobalVariables } from '../../providers/global-variables';
@@ -49,7 +49,7 @@ export class OtpPage {
 			  	.then(response=>{
 			  		if(response.status == 1){
 				        this.storage.set('session_key', response.session_key);
-			  			this.navCtrl.push(InterestsPage);
+			  			this.navCtrl.push(NickPage);
 			  		}
 
 			  	});

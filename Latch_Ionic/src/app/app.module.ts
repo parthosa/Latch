@@ -9,6 +9,7 @@ import { LandingPage } from '../pages/landing/landing';
 import { HomePage } from '../pages/home/home';
 import { SignInPage } from '../pages/sign-in/sign-in';
 import { RegisterPage } from '../pages/register/register';
+import { InterestsPage } from '../pages/interests/interests';
 import { UploadPicPage } from '../pages/upload-pic/upload-pic';
 import { IndiChatPage } from '../pages/indi-chat/indi-chat';
 import { GroupChatPage } from '../pages/group-chat/group-chat';
@@ -17,6 +18,8 @@ import { Groups } from '../components/groups/groups';
 import { Location } from '../components/location/location';
 
 import { HttpService } from '../providers/http-service';
+import { GlobalVariables } from '../providers/global-variables';
+
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -32,12 +35,13 @@ import { File } from '@ionic-native/file';
     HomePage,
     SignInPage,
     RegisterPage,
+    InterestsPage,
     UploadPicPage,
     IndiChatPage,
     GroupChatPage,
      Chats,
     Groups,
-    Location
+    Location,
   ],
   imports: [
     BrowserModule,
@@ -52,12 +56,13 @@ import { File } from '@ionic-native/file';
     HomePage,
     SignInPage,
     RegisterPage,
+    InterestsPage,
     UploadPicPage,
     IndiChatPage,
     GroupChatPage,
      Chats,
     Groups,
-    Location
+    Location,
   ],
   providers: [
     StatusBar,
@@ -69,7 +74,8 @@ import { File } from '@ionic-native/file';
     GoogleMaps,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     HttpModule,
-    HttpService
+    HttpService,
+    GlobalVariables
   ]
 })
 export class AppModule {}

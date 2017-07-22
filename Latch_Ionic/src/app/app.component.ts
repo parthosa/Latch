@@ -10,7 +10,6 @@ import { LandingPage } from '../pages/landing/landing';
 })
 export class Latch {
   rootPage:any = LandingPage;
-  baseUrl = '192.0.0.1:8001';
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public menuCtrl: MenuController) {
     platform.ready().then(() => {
@@ -21,5 +20,9 @@ export class Latch {
       this.menuCtrl.enable(false);
 
     });
+  }
+
+  logout(){
+    // 
   }
 }

@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { UploadPicPage } from '../upload-pic/upload-pic';
+import { InterestsPage } from '../interests/interests';
+import { GlobalVariables } from '../../providers/global-variables';
+import { HttpService } from '../../providers/http-service';
+
 /**
  * Generated class for the Register page.
  *
@@ -15,9 +18,9 @@ import { UploadPicPage } from '../upload-pic/upload-pic';
 export class RegisterPage {
 
   user = {};
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService) {
   	this.user['name'] = '';
-  	this.user['email'] = '';
+  	this.user['contact'] = '';
   	this.user['password'] = '';
   	this.user['confirm_password'] = '';
 
@@ -28,8 +31,9 @@ export class RegisterPage {
   }
 
   signUp(){
+    this.httpService.postData(GlobalVariables.baseUrl+'/main/accounts/register/')
   	console.log(this.user);
-  	this.navCtrl.push(UploadPicPage);
+  	this.navCtrl.push(InterestsPage);
   }
 
 }

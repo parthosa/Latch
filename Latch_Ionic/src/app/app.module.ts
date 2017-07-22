@@ -9,6 +9,9 @@ import { LandingPage } from '../pages/landing/landing';
 import { HomePage } from '../pages/home/home';
 import { SignInPage } from '../pages/sign-in/sign-in';
 import { RegisterPage } from '../pages/register/register';
+import { OtpPage } from '../pages/otp/otp';
+import { MobileNumPage } from '../pages/mobile-num/mobile-num';
+
 import { InterestsPage } from '../pages/interests/interests';
 import { UploadPicPage } from '../pages/upload-pic/upload-pic';
 import { IndiChatPage } from '../pages/indi-chat/indi-chat';
@@ -35,6 +38,8 @@ import { File } from '@ionic-native/file';
     HomePage,
     SignInPage,
     RegisterPage,
+    MobileNumPage,
+    OtpPage,
     InterestsPage,
     UploadPicPage,
     IndiChatPage,
@@ -57,6 +62,8 @@ import { File } from '@ionic-native/file';
     HomePage,
     SignInPage,
     RegisterPage,
+    MobileNumPage,
+    OtpPage,
     InterestsPage,
     UploadPicPage,
     IndiChatPage,

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { InterestsPage } from '../interests/interests';
+import { MobileNumPage } from '../mobile-num/mobile-num';
+import { OtpPage } from '../otp/otp';
+
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
@@ -37,11 +39,16 @@ export class RegisterPage {
        this.storage.set('indi_chat',{});
        this.storage.set('group_chat',{});
        this.storage.set('chat_bot',{});
-       this.storage.set('session_key', response.session_key);
        this.storage.set('loggedIn', true);
        this.storage.set('name', this.user['name']);
        this.storage.set('contact', this.user['contact']);
-      	this.navCtrl.push(InterestsPage);
+       this.storage.set('password', this.user['password']);
+       if(response.get_contact_num)
+        this.navCtrl.push(MobileNumPage);
+       else{
+        this.storage.set('otp_id', response.otp_id);
+      	this.navCtrl.push(OtpPage);
+       }
     });
     console.log(this.user);
   }

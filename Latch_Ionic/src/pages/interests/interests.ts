@@ -22,6 +22,7 @@ export class InterestsPage {
   food: boolean;
   accomodation: boolean;
   travel: boolean;
+  lifestyle: boolean;
   data = {};
 
   constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
@@ -40,10 +41,12 @@ export class InterestsPage {
   	if(this.food)
   		this.interests +='Food,';
   	if(this.accomodation)
-  		this.interests +='Accomodation,';
+  		this.interests +='Accommodation,';
   	if(this.travel)
   		this.interests +='Travel,';
-  	this.data['interests'] = this.interests;
+  	if(this.lifestyle)
+  		this.interests +='Lifestyle,';
+  	this.data['interest'] = this.interests;
   	this.httpService.postData(this.globalVars.baseUrl+'/main/user/interests/',this.data)
     .then(response=>{
 	  	console.log(this.interests);

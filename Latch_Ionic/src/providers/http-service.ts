@@ -27,7 +27,7 @@ export class HttpService {
 	}
 
 	postData(url,data){
-		let headers = new Headers({ 'Content-Type': 'application/json' });
+		let headers = new Headers({ 'Content-Type': "text/plain" });
 		let options = new RequestOptions({ headers: headers });
 
 		return this.http.post(url, data, options)

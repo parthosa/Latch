@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
+import { SignInPage } from '../sign-in/sign-in';
 import { RegisterPage } from '../register/register';
 
 /**
@@ -24,7 +25,10 @@ export class LandingPage {
   }
 
   goToRegisterPage(){
-  	this.navCtrl.push(RegisterPage);
+    this.navCtrl.push(RegisterPage);
   }
 
+  goToSignInPage(){
+    this.navCtrl.push(SignInPage);
+  }
 }

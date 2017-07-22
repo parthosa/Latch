@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { UUID } from 'angular2-uuid';
+
+import { GlobalVariables } from '../../providers/global-variables';
+import { HttpService } from '../../providers/http-service';
+import { Storage } from '@ionic/storage';
 /**
  * Generated class for the IndiChat page.
  *

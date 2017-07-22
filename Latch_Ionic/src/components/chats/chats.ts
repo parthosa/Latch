@@ -4,6 +4,8 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
+import { Storage } from '@ionic/storage';
+
 /**
  * Generated class for the Groups component.
  *
@@ -19,9 +21,11 @@ export class Chats {
   text: string;
   chats: any[];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private globalVars: GlobalVariables,private storage:Storage) {
     console.log('Hello Groups Component');
     this.text = 'Hello World';
+  	// this.httpService.postData(this.globalVars.baseUrl+'/main/user/interests/',this.data)
+    
     this.chats = [{
     	'nick':"Partho",
     	'distance':'1km',

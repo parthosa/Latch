@@ -33,7 +33,6 @@ export class RegisterPage {
   }
 
   signUp(){
-    console.log(this.globalVars.baseUrl+'/main/accounts/register/');
     this.httpService.postData(this.globalVars.baseUrl+'/main/accounts/register/',this.user)
     .then(response=>{
        this.storage.set('indi_chat',{});

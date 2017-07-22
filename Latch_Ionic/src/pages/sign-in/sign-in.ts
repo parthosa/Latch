@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-import { HttpService } from '../../providers/http-service';
 
+
+import { GlobalVariables } from '../../providers/global-variables';
+import { HttpService } from '../../providers/http-service';
+import { Storage } from '@ionic/storage';
 
 import { HomePage } from '../home/home';
 
@@ -21,7 +24,7 @@ export class SignInPage {
 
   user = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService : HttpService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
   	this.user['email'] = '';
   	this.user['password'] = '';
   }
@@ -31,10 +34,19 @@ export class SignInPage {
   }
 
   signIn(){
-  	console.log(this.user);
-  	this.httpService.postData('/api/sign-in',this.user)
+
+  	this.httpService.postData(this.globalVars.baseUrl + '/main/accounts/login/',this.user)
   	.then(response=>{
-  		console.log(response);
+  		
+  		this.storage.set('indi_chat',{});
+       this.storage.set('group_chat',{});
+       this.storage.set('chat_bot',{});
+       this.storage.set('loggedIn', true);
+       this.storage.set('nick', response.nick);
+       this.storage.set('pic', response.pic);
+       this.storage.set('session_key', response.session_key);
+	  	this.navCtrl.setRoot(HomePage);
+
   	});
   	// signIn
 	this.navCtrl.setRoot(HomePage);

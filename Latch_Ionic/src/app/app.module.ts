@@ -36,6 +36,8 @@ import { File } from '@ionic-native/file';
 import { ImagePicker } from '@ionic-native/image-picker';
 // import { Push } from '@ionic-native/push';
 
+import { Push } from '@ionic-native/push';
+
 const cloudSettings: CloudSettings = {
   'core': {
     'app_id': '9b9de210'
@@ -113,6 +115,7 @@ const cloudSettings: CloudSettings = {
     HttpService,
     GlobalVariables,
     ImagePicker,
+    Push
   ]
 })
 export class AppModule {}

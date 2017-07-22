@@ -125,23 +125,12 @@ export class GroupChatPage {
     this.newMessageText = '';
   }
 
-  dispatchPush(pushData){
-  	this.httpService.postData(this.globalVars.baseUrl + '/main/user/get_device/id/',{'session_key':this.data['session_key']})
-  	.then((response)=>{
-	  	let data = {
-	  		'tokens' : response.tokens,
-	  		'profile' : 'latch',
-	  		"notification": {
-	  			"title" : pushData.nick+'@'+pushData.group_name,
-		        "message": pushData.message
-		    }
-	  	}
-	  	this.httpService.postData('https://api.ionic.io/push/notifications/',data,'application/json',true)
-	    .then((response)=>{
-	    	console.log('push');
-	    });
-
-  	});
+  dispatchPush(data){
+  	data['session_key'] =  this.data['session_key'];
+  	this.httpService.postData(this.globalVars.baseUrl+'/main/user/group_notify/',data)
+    .then((response)=>{
+    	console.log('push');
+    });
   }
 
 }

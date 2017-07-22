@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+import { HttpService } from '../../providers/http-service';
+
+
 import { HomePage } from '../home/home';
+
 
 /**
  * Generated class for the SignIn page.
@@ -17,7 +21,7 @@ export class SignInPage {
 
   user = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private httService : HttpService) {
   	this.user['email'] = '';
   	this.user['password'] = '';
   }
@@ -28,6 +32,10 @@ export class SignInPage {
 
   signIn(){
   	console.log(this.user);
+  	this.httpService.postData('/api/sign-in',this.user)
+  	.then(response=>{
+  		console.log(response);
+  	});
   	// signIn
 	this.navCtrl.setRoot(HomePage);
 

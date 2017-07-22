@@ -3,6 +3,7 @@ import { NavController, NavParams } from 'ionic-angular';
 
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { File } from '@ionic-native/file';
+import { ImagePicker } from '@ionic-native/image-picker';
 
 /**
  * Generated class for the UploadPic page.
@@ -19,7 +20,7 @@ export class UploadPicPage {
 
 
  	user = {};
-	constructor(public navCtrl: NavController, public navParams: NavParams,private transfer: FileTransfer, private file: File) {
+	constructor(public navCtrl: NavController, public navParams: NavParams,private transfer: FileTransfer, private file: File, private imagePicker: ImagePicker) {
 		this.user['profile_pic'] = '';
 	}
 

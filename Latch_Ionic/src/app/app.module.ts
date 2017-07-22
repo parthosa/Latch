@@ -30,7 +30,10 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { File } from '@ionic-native/file';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
+import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
+
 
 
 @NgModule({
@@ -49,7 +52,6 @@ import { ImagePicker } from '@ionic-native/image-picker';
      Chats,
     Groups,
     Location,
-    ImagePicker,
   ],
   imports: [
     BrowserModule,
@@ -87,7 +89,9 @@ import { ImagePicker } from '@ionic-native/image-picker';
     HttpModule,
     HttpService,
     GlobalVariables,
+    Camera,
     ImagePicker,
+    ImageResizer,
   ]
 })
 export class AppModule {}

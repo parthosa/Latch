@@ -34,16 +34,18 @@ export class UploadPicPage {
 
 	pickImage() {
 		let options = {
-			maximumImagesCount: 1,
+			// maximumImagesCount: 1,
 
 		};
 
+		console.log(this.imagePicker);
+
 		this.imagePicker.requestReadPermission().then(()=>{
 			this.imagePicker.getPictures(options).then((results) => {
-			  // for (var i = 0; i < results.length; i++) {
-			  //     console.log('Image URI: ' + results[i]);
-			  //     this.uploadedPic.src = results[i];
-			  // }
+			  for (var i = 0; i < results.length; i++) {
+			      console.log('Image URI: ' + results[i]);
+			      this.uploadedPic.src = results[i];
+			  }
 			}, (err) => { });
 		})
 	}

@@ -19,7 +19,7 @@ import { Location } from '../components/location/location';
 
 import { HttpService } from '../providers/http-service';
 import { GlobalVariables } from '../providers/global-variables';
-
+import { IonicStorageModule } from '@ionic/storage';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -47,7 +47,8 @@ import { File } from '@ionic-native/file';
     BrowserModule,
     FormsModule,
     HttpModule,
-    IonicModule.forRoot(Latch)
+    IonicModule.forRoot(Latch),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [

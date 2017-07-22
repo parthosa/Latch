@@ -1,4 +1,7 @@
 export class GlobalVariables {
-	
-	  baseUrl = '172.16.1.139:8001';
+
+	  public baseUrl : String;
+	  constructor(){
+	  	this.baseUrl = 'http://172.16.1.139:8001'
+	  }
 }

@@ -46,6 +46,7 @@ export class UploadPicPage {
 			this.imagePicker.getPictures(options).then((results) => {
 			  for (var i = 0; i < results.length; i++) {
 			      console.log('Image URI: ' + results[i]);
+			      console.log(uploadedPic);
 			      uploadedPic.src = results[i];
 			  }
 			}, (err) => { });

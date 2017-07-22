@@ -34,6 +34,7 @@ import { File } from '@ionic-native/file';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
+import { Crop } from '@ionic-native/crop';
 
 
 
@@ -95,6 +96,7 @@ import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
     Camera,
     ImagePicker,
     ImageResizer,
+    Crop,
   ]
 })
 export class AppModule {}

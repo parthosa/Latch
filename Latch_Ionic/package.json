@@ -22,6 +22,7 @@
         "@angular/platform-browser-dynamic": "4.1.3",
         "@ionic-native/camera": "^4.1.0",
         "@ionic-native/core": "3.12.1",
+        "@ionic-native/crop": "^4.1.0",
         "@ionic-native/file": "^4.0.1",
         "@ionic-native/file-transfer": "^4.0.1",
         "@ionic-native/geolocation": "^4.0.1",
@@ -33,10 +34,12 @@
         "@ionic/storage": "^2.0.1",
         "ImagePicker": "git+https://github.com/Keko94/ImagePicker.git",
         "angular2-uuid": "^1.1.1",
+        "com.synconset.imagepicker": "https://github.com/suvigyavijay/ImagePicker.git",
         "cordova-android": "^6.2.3",
         "cordova-plugin-camera": "^2.4.1",
         "cordova-plugin-compat": "^1.1.0",
         "cordova-plugin-console": "1.0.5",
+        "cordova-plugin-crop": "^0.4.0",
         "cordova-plugin-device": "1.1.4",
         "cordova-plugin-file": "^4.3.3",
         "cordova-plugin-file-transfer": "^1.6.3",
@@ -53,8 +56,7 @@
         "ionicons": "3.0.0",
         "rxjs": "5.4.0",
         "sw-toolbox": "3.6.0",
-        "zone.js": "0.8.12",
-        "com.synconset.imagepicker": "https://github.com/suvigyavijay/ImagePicker.git"
+        "zone.js": "0.8.12"
     },
     "devDependencies": {
         "@ionic/app-scripts": "2.0.2",
@@ -89,7 +91,8 @@
             "cordova-plugin-camera": {},
             "com.synconset.imagepicker": {
                 "PHOTO_LIBRARY_USAGE_DESCRIPTION": "Upload Profile Pic"
-            }
+            },
+            "cordova-plugin-crop": {}
         },
         "dependencies": {
             "@angular/common": "4.1.3",

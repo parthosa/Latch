@@ -17,12 +17,18 @@
 	<ion-grid>
 		<ion-row justify-content-center>
 			<ion-col col-10 >
-				<img id="uploadedPic" width="250" height="250" #uploadedPic />
+				<!-- <img id="uploadedPic" width="250" height="250" #uploadedPic /> -->
+				<canvas id="uploaded-image" width="250" height="250"></canvas>
 		    </ion-col>
 		</ion-row>
 	    <ion-row justify-content-center>
 			<ion-col col-10 >
 				<button ion-button full (click)="pickImage()">Upload Profile Picture</button>
+		    </ion-col>
+		</ion-row>
+		<ion-row justify-content-center>
+			<ion-col col-10 >
+				<button ion-button full (click)="submitPic()" disabled="true" id="submit">Submit</button>
 		    </ion-col>
 		</ion-row>
 	</ion-grid>

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IndiChatPage } from '../../pages/indi-chat/indi-chat';
+import { ChatBotPage } from '../../pages/chat-bot/chat-bot';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { GlobalVariables } from '../../providers/global-variables';
@@ -20,21 +21,40 @@ export class Chats {
 
   text: string;
   chats: any[];
+  data = {};
 
   constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private globalVars: GlobalVariables,private storage:Storage) {
-    console.log('Hello Groups Component');
-    this.text = 'Hello World';
-  	// this.httpService.postData(this.globalVars.baseUrl+'/main/user/interests/',this.data)
-    
-    this.chats = [{
-    	'nick':"Partho",
-    	'distance':'1km',
-    	'pic':'assets/images/batman.png'
-    }];
+    this.initChats();
+  	this.storage.get('session_key').then((session_key) => {
+	  	this.data = {
+	  		'session_key' : session_key,
+	  	}
+	    this.getChats();
+	  });
+  }
+
+  initChats(){
+      	this.storage.get('indi_chat').then((indi_chat)=>{
+      		console.log(indi_chat);
+      		this.chats = indi_chat;
+      	});
+
+  }
+
+  getChats(){
+  	 this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_chat_list/',this.data)
+    .then(response=>{
+    	response.peers.map(function (e, i) {
+        if (e.messages == undefined)
+          e.messages = [];
+      	});
+      	this.storage.set('indi_chat',response.peers);
+      	this.chats = response.peers;
+    });
   }
 
   openChatBot(){
-  	// do something
+  	this.navCtrl.push(ChatBotPage);
   }
 
   openChat(){

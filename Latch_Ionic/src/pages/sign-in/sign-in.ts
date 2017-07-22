@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams,AlertController } from 'ionic-angular';
 
 
 import { GlobalVariables } from '../../providers/global-variables';
@@ -7,6 +7,11 @@ import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
 
 import { HomePage } from '../home/home';
+
+import {
+  Push,
+  PushToken
+} from '@ionic/cloud-angular';
 
 
 /**
@@ -24,9 +29,9 @@ export class SignInPage {
 
   user = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
-  	this.user['email'] = '';
-  	this.user['password'] = '';
+  constructor(public navCtrl: NavController, public navParams: NavParams,public push: Push,public alertCtrl: AlertController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  	this.user['contact'] = 'test167@gmail.com';
+  	this.user['password'] = 'techiegeek';
   }
 
   ionViewDidLoad() {
@@ -37,19 +42,31 @@ export class SignInPage {
 
   	this.httpService.postData(this.globalVars.baseUrl + '/main/accounts/login/',this.user)
   	.then(response=>{
-  		
-  		this.storage.set('indi_chat',{});
-       this.storage.set('group_chat',{});
-       this.storage.set('chat_bot',{});
+  		console.log(response.status == 0);
+  		if(response.status == 0){
+  			console.log(1);
+          let alert = this.alertCtrl.create({
+            title: 'Message',
+            subTitle: response.message,
+            buttons: ['OK']
+          });
+          alert.present();
+      } else{
+  		this.storage.set('indi_chat',[]);
+       this.storage.set('group_chat',[]);
+       this.storage.set('chat_bot',[]);
        this.storage.set('loggedIn', true);
        this.storage.set('nick', response.nick);
        this.storage.set('pic', response.pic);
        this.storage.set('session_key', response.session_key);
+       this.globalVars.updateLocation();
+	  	this.globalVars.initPush();
 	  	this.navCtrl.setRoot(HomePage);
 
-  	});
+
+  	}
+  });
   	// signIn
-	this.navCtrl.setRoot(HomePage);
 
   }
 

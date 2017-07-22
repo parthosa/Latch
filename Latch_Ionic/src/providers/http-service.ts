@@ -26,8 +26,12 @@ export class HttpService {
 		.catch(this.handleError);
 	}
 
-	postData(url,data){
-		let headers = new Headers({ 'Content-Type': "text/plain" });
+	postData(url,data,contentType = "text/plain",authorizationToken = false){
+		let headers;
+		if(authorizationToken == false)
+			headers = new Headers({ 'Content-Type': contentType });
+		else
+			headers = new Headers({ 'Content-Type': contentType ,'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5MGZhY2NiOS05Mzk1LTQ2YzItYmFkNy03OTA0NzUyMGIwYTMifQ.eZZzaJkmlWZSJxc8de7xGs-o99rryxR6tAIt51eQzXc'});
 		let options = new RequestOptions({ headers: headers });
 
 		return this.http.post(url, data, options)

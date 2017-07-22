@@ -1,5 +1,6 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
 import { FormsModule }   from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
@@ -17,6 +18,7 @@ import { InterestsPage } from '../pages/interests/interests';
 import { UploadPicPage } from '../pages/upload-pic/upload-pic';
 import { IndiChatPage } from '../pages/indi-chat/indi-chat';
 import { GroupChatPage } from '../pages/group-chat/group-chat';
+import { ChatBotPage } from '../pages/chat-bot/chat-bot';
 import { Chats } from '../components/chats/chats';
 import { Groups } from '../components/groups/groups';
 import { Location } from '../components/location/location';
@@ -32,7 +34,25 @@ import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { File } from '@ionic-native/file';
 import { ImagePicker } from '@ionic-native/image-picker';
+// import { Push } from '@ionic-native/push';
 
+const cloudSettings: CloudSettings = {
+  'core': {
+    'app_id': '9b9de210'
+  },
+  'push': {
+    'sender_id': '1082407628646',
+    'pluginConfig': {
+      'ios': {
+        'badge': true,
+        'sound': true
+      },
+      'android': {
+        'iconColor': '#343434'
+      }
+    }
+  }
+};
 
 @NgModule({
   declarations: [
@@ -46,19 +66,20 @@ import { ImagePicker } from '@ionic-native/image-picker';
     NickPage,
     InterestsPage,
     UploadPicPage,
+    ChatBotPage,
     IndiChatPage,
     GroupChatPage,
      Chats,
     Groups,
     Location,
-    ImagePicker,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     IonicModule.forRoot(Latch),
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    CloudModule.forRoot(cloudSettings)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -72,6 +93,7 @@ import { ImagePicker } from '@ionic-native/image-picker';
     NickPage,
     InterestsPage,
     UploadPicPage,
+    ChatBotPage,
     IndiChatPage,
     GroupChatPage,
      Chats,

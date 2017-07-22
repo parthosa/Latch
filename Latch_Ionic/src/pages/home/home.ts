@@ -5,6 +5,13 @@ import { Chats } from '../../components/chats/chats';
 import { Groups } from '../../components/groups/groups';
 import { Location } from '../../components/location/location';
 
+
+import { GlobalVariables } from '../../providers/global-variables';
+import { HttpService } from '../../providers/http-service';
+import { Storage } from '@ionic/storage';
+
+
+
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
@@ -12,9 +19,13 @@ import { Location } from '../../components/location/location';
 export class HomePage {
 
   screens = '';
-  constructor(public navCtrl: NavController,public menuCtrl: MenuController) {
+  data = {};
+  constructor(public navCtrl: NavController,public menuCtrl: MenuController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
   	this.menuCtrl.enable(true);
   	this.screens = 'Chats';
+
   }
+
+ 
 
 }

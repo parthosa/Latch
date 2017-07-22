@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams,AlertController } from 'ionic-angular';
 
 import { NickPage } from '../nick/nick';
 
@@ -8,6 +8,11 @@ import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
 
+
+import {
+  Push,
+  PushToken
+} from '@ionic/cloud-angular';
 /**
  * Generated class for the Otp page.
  *
@@ -23,7 +28,7 @@ export class OtpPage {
 
   otp = '';
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,private push:Push,public alertCtrl: AlertController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
   }
 
   ionViewDidLoad() {
@@ -47,10 +52,19 @@ export class OtpPage {
 		   		data['password'] = password;
 			  	this.httpService.postData(this.globalVars.baseUrl+'/main/user/verify/otp/',data)
 			  	.then(response=>{
+			  		if(response.status == 0){
+				          this.alertCtrl.create({
+				            title: 'Message',
+				            subTitle: response.message,
+				            buttons: ['OK']
+				          }).present();
+				          return;
+				      }
 			  		if(response.status == 1){
 				        this.storage.set('session_key', response.session_key);
+                this.globalVars.initPush();
 			  			this.navCtrl.push(NickPage);
-			  		}
+            }
 
 			  	});
 		  	});

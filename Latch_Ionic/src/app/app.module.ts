@@ -33,8 +33,12 @@ import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { File } from '@ionic-native/file';
+// import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
 // import { Push } from '@ionic-native/push';
+// import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
+// import { Crop } from '@ionic-native/crop';
+
 
 import { Push } from '@ionic-native/push';
 

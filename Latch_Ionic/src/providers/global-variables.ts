@@ -43,21 +43,4 @@ export class GlobalVariables {
 	  }
 
 
-	  initPush(){
-	  	 this.push.register().then((t: PushToken) => {
-        return this.push.saveToken(t);
-      }).then((t: PushToken) => {
-      	this.storage.get('session_key').then((session_key) => {
-      	this.httpService.postData(this.baseUrl+'/main/user/get_device/',{'session_id':session_key,'device_id':t.token})
-        .then(response=>{
-        console.log('Token saved:', t.token);
-        	
-      });
-    });
-    });
- 
-     
-
-	  
-}
 }

@@ -49,6 +49,7 @@ export class GroupChatPage {
 		});
 	  let $this;
 	  this.socket.on('send_message_group', (rawData)=>{
+	  		console.log(1);
 	  		let data = JSON.parse(rawData);
 	  		// console.log(this.user['nick'] != data.nick
 		    data.message = atob(data.message);
@@ -116,7 +117,7 @@ export class GroupChatPage {
         sent: false,
         msg_id: UUID.UUID(),
         session_key: this.data['session_key'],
-        is_image : false
+        is_image : false,
       }
 
     this.socket.emit('send_message_group', JSON.stringify(this.newMessage));
@@ -127,6 +128,7 @@ export class GroupChatPage {
 
   dispatchPush(data){
   	data['session_key'] =  this.data['session_key'];
+  	data['isUser'] = 'isUser';
   	this.httpService.postData(this.globalVars.baseUrl+'/main/user/group_notify/',data)
     .then((response)=>{
     	console.log('push');

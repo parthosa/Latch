@@ -60,14 +60,23 @@ export class SignInPage {
        this.storage.set('pic', response.pic);
        this.storage.set('session_key', response.session_key);
        this.globalVars.updateLocation();
-	  	this.globalVars.initPush();
-	  	this.navCtrl.setRoot(HomePage);
+        this.push.register().then((t: PushToken) => {
+        return this.push.saveToken(t);
+      }).then((t: PushToken) => {
+      	this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_device/',{'session_key':response.session_key,'device_id':t.token})
+        .then(response=>{
+        console.log('Token saved:', t.token);
+        	
+       	  	this.navCtrl.setRoot(HomePage);
 
 
-  	}
+	  	});
   });
   	// signIn
 
   }
 
+
+});
+}
 }

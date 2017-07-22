@@ -7,7 +7,6 @@ import { OtpPage } from '../otp/otp';
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
-import { UploadPicPage } from '../upload-pic/upload-pic'
 
 
 

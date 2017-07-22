@@ -9,14 +9,17 @@ class UserProfile(models.Model):
 	fbid = models.CharField(max_length = 30 ,null = True, unique = True)
 	interests = models.ManyToManyField('Interest', related_name = "user_interest")
 	groups = models.ManyToManyField('Group', related_name = 'user_group')
+	groups_manual = models.ManyToManyField('User_group', related_name = 'user_group_manual')
 	anonymous = models.BooleanField(default = False)
 	timestamp = models.DateTimeField(default = datetime.now)
 	lat = models.CharField(max_length = 30, null = True)
 	longitude = models.CharField(max_length = 30, null = True)
 	locality = models.CharField(max_length = 100, null = True)
 	dp = models.ImageField(upload_to='dps', null = True)
+	contact_number = models.BigIntegerField(null = True, unique = True)
 	dp_url = models.SlugField(max_length = 500, null = True)
 	device_id = models.ManyToManyField('Device_ID', related_name = 'user_devices')
+	sos = models.TextField(null = True)
 
 	def __unicode__(self):
 		return self.name
@@ -57,6 +60,19 @@ class Group(models.Model):
 	def __unicode__(self):
     		return self.name
 
+# for creating manual groups
+class User_group(models.Model):
+	message = models.ManyToManyField('Message', related_name = 'manual_group_message', null = True)
+	members = models.ManyToManyField('UserProfile', related_name = 'manual_group_members' ,null = True)
+	created_by = models.ForeignKey('UserProfile', related_name = 'created_by', null = True)
+	name = models.CharField(max_length = 30, null = True)
+	pic = models.ImageField(upload_to = 'dps', null = True)
+	pic_url = models.SlugField(max_length = 500, null = True)
+	uid = models.CharField(max_length = 40, null = True)	
+
+	def __unicode__(self):
+		return self.name+self.created_by.name
+
 class Indi_group(models.Model):
 	user1 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user1')
 	user2 = models.ForeignKey('UserProfile', null = True, related_name = 'indi_user2')
@@ -78,7 +94,10 @@ class Indi_msg(models.Model):
 	msg_id = models.CharField(max_length = 100, null = True)
 
 	def __unicode__(self):
-		return self.user.nick_name + self.message
+		try:
+			return self.user.nick_name + self.message
+		except:
+			return self.message
 
 class Message(models.Model):
 	group = models.ForeignKey('Group', related_name = 'message_group')
@@ -86,10 +105,13 @@ class Message(models.Model):
 	user = models.ForeignKey('UserProfile', related_name = 'user_message')
 	timestamp = models.CharField(max_length = 100)
 	msg_id = models.CharField(max_length = 100, null = True)
+	is_image = models.BooleanField(default = False)
 
 	def __unicode__(self):
-		return self.user.nick_name + self.message
-
+		try:
+			return self.user.nick_name + self.message
+		except:
+			return self.message
 class Group_user(models.Model):
 	user = models.ForeignKey('UserProfile', null = True, related_name = 'group_user_time')
 	group = models.ForeignKey('Group', null = True, related_name = 'user_group_time')

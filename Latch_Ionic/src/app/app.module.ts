@@ -69,6 +69,7 @@ import { File } from '@ionic-native/file';
     GoogleMaps,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     HttpModule,
+    HttpService
   ]
 })
 export class AppModule {}

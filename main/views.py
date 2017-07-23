@@ -528,9 +528,9 @@ def get_chatroom(request, group_name):
 	signer = Signer()
 	for message in messages:
 		if message.is_image:
-			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'true'})
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
 		else:
-			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'false'})
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
 	response = {'messages': msg_list}
 	return JsonResponse(response)
 
@@ -722,9 +722,9 @@ def get_indi_chat(request):
 	signer = Signer()
 	for message in messages:
 		if message.is_image:
-			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'true'})
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
 		else:
-			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp, 'is_image': 'false'})
+			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
 	response = {'messages': msg_list}
 	return JsonResponse(response)
 

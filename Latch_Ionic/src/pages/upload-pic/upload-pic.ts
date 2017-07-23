@@ -31,6 +31,7 @@ export class UploadPicPage {
 
 	constructor(public navCtrl: NavController, public navParams: NavParams,private transfer: FileTransfer,private imagePicker:ImagePicker, private file: File,  private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
 		this.dataURL;
+		this.globalVars.updateLocation();
 	}
 
  		
@@ -78,7 +79,7 @@ export class UploadPicPage {
 		    ctx.drawImage(oc, 0, 0, oc.width, oc.height, 0, 0, canvas.width, canvas.height);
 		    uploadClass.dataURL = canvas.toDataURL();
 
-		    submit_button.setAttribute('disabled', 'false');
+		    submit_button.removeAttribute('disabled');
 
 		}
 	

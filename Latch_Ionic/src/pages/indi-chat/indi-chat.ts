@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { UUID } from 'angular2-uuid';
+import { ImagePicker } from '@ionic-native/image-picker';
 
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
@@ -30,7 +31,7 @@ export class IndiChatPage {
   nick_name = '';
   socket: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private httpService: HttpService, private storage:Storage,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, private imagePicker:ImagePicker, public navParams: NavParams, private httpService: HttpService, private storage:Storage,private globalVars: GlobalVariables) {
   	this.nick_name = this.navParams.get('chat')['nick_name'];
 	  this.storage.get('nick').then((nick)=>{
 	  	this.user['nick'] = nick;
@@ -109,7 +110,8 @@ export class IndiChatPage {
         time: dateString,
         sent: false,
         msg_id: UUID.UUID(),
-        session_key: this.data['session_key']
+        session_key: this.data['session_key'],
+        is_image: false
       }
 
     this.socket.emit('send_message_indi', JSON.stringify(this.newMessage));
@@ -125,6 +127,38 @@ export class IndiChatPage {
     .then((response)=>{
     	console.log('push');
     });
+  }
+
+  attachPic() {
+    let options = {
+      maximumImagesCount: 1,
+    };
+    let date = new Date();
+    let dateString = new Date().toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      });
+
+    this.imagePicker.getPictures(options).then((results) => {
+        for (var i = 0; i < results.length; i++) {
+            console.log('Image URI: ' + results[i]);
+            this.newMessage = {
+              message: results[i],
+              nick: this.user['nick'],
+              nick_name: this.nick_name,
+              time: dateString,
+              sent: false,
+              msg_id: UUID.UUID(),
+              session_key: this.data['session_key'],
+              is_image : true,
+            };
+            this.socket.emit('send_message_indi', JSON.stringify(this.newMessage));
+            this.messages.push(this.newMessage);
+            this.newMessageText = '';
+
+        }
+      }, (err) => { });
   }
 
 }

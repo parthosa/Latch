@@ -34,10 +34,13 @@ urlpatterns = [
     url(r'^user/hotel/reviews/$', views.get_reviews_hotel, name='get_reviews_hotel'), # call on this url for hotel reviews by appending place_id provided in hotel_list previously
     url(r'^user/chat/indi/$', views.node_api_message_user, name='node_api_message_user'),
     url(r'^test_img/$', views.test_img, name='test_img'),
-    url(r'^user/get_device/$', views.device_id, name='get_device'),
+    url(r'^user/get_device/$', views.get_device, name='get_device'),
+    url(r'^user/get_device/id/$', views.device_id, name='device_id'),
     url(r'^user/indi_notify/$', views.indi_msg_notification, name='indi_msg_notification'),
     url(r'^user/group_notify/$', views.group_msg_notification, name='group_msg_notification'),
     url(r'^user/profile/$', views.get_profile, name='get_profile'),
     url(r'^user/edit_profile/$', views.edit_profile, name='edit_profile'),
     url(r'^user/password/change/$', views.change_password, name='change_password'),
+    url(r'^user/add/sos/$', views.add_members_sos, name='add_members_sos'),
+    url(r'^user/send/sos/$', views.send_sos, name='send_sos'),
 ]

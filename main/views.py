@@ -19,6 +19,7 @@ from gcm import GCM
 from PIL import Image
 import apiai
 from django.core.signing import Signer
+import uuid
 
 @csrf_exempt
 def social_login(request):
@@ -197,7 +198,10 @@ def login_user(request):
 			user_p = UserProfile.objects.get(user = user)
 			if user.is_active:
 				login(request,user)
-				return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url})
+				if user_p.anonymous:
+					return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url, 'anonymous': 'true'})
+				else:
+					return JsonResponse({'status':1, 'message': 'Successfully logged in', 'session_key': request.session.session_key, 'nick': user_p.nick_name, 'pic': user_p.dp_url, 'anonymous': 'false'})
 			else:
 				try:
 					return JsonResponse({'status': 2, 'message': 'Kindly verify your mobile number first', 'contact_number': user_p.contact_number})
@@ -466,7 +470,7 @@ def create_group(request):
 
 	user_p = UserProfile.objects.get(user = user)
 	group_name = json.loads(request.body)['group_name']
-	uid = uuid.uuid4()
+	uid = str(uuid.uuid1())
 	group = User_group.objects.create(name = group_name, created_by = user_p, uid = uid)
 	group.members.add(user_p)
 	group.save()
@@ -642,7 +646,7 @@ def user_groups(request):
 		# groups = groups_manual | groups_location
 		group_list = []
 		for group in groups_manual:
-			group_list.append({'group_name': group.name, 'pic': group.pic_url, 'members': group.members.all().count()})
+			group_list.append({'group_name': group.name, 'pic': group.pic_url, 'members': group.members.all().count(), 'uid': group.uid})
 
 		for group in groups_location:
 			group_list.append({'group_name': group.name, 'pic': group.pic_url, 'members': group.members.all().count()})
@@ -757,20 +761,25 @@ def get_profile(request):
 
 	return JsonResponse({'status':1, 'name': name, 'nick': nick, 'contact': contact, 'pic': pic})
 
-# def get_device(request):
-# 	if request.method == "POST":
-# 		session_key = json.loads(request.body)['session_key']
-# 		session = Session.objects.get(session_key = session_key)
-# 		uid = session.get_decoded().get('_auth_user_id')
-# 		try:
-# 			user = User.objects.get(pk=uid)
-# 		except ObjectDoesNotExist:
-# 			response = {'status':0, 'message':'Kindly login first'}
-# 		user_p = UserProfile.objects.get(user = user)
-# 		device_id = Device_ID.objects.create(user = user_p, device_id = json.loads(request.body)['device_id'])
-# 		user_p.device_id.add(Device_ID.objects.get(device_id = json.loads(request.body)['device_id']))
-# 		user_p.save()
-# 		return JsonResponse({'status': 1, 'message': 'successfully saved'})
+def get_device(request):
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+		user_p = UserProfile.objects.get(user = user)
+		device_id = json.loads(request.body)['device_id']
+		device_ids = [x.device_id for x in Device_ID.objects.all()]
+		if not device_id in device_ids:
+			device_id = Device_ID.objects.create(user = user_p, device_id = json.loads(request.body)['device_id'])
+			user_p.device_id.add(Device_ID.objects.get(device_id = json.loads(request.body)['device_id']))
+			user_p.save()
+			return JsonResponse({'status': 1, 'message': 'successfully saved'})
+		else:
+			return JsonResponse({'status': 1, 'message': 'Device ID already registered'})
 
 @csrf_exempt
 def indi_msg_notification(request):
@@ -783,25 +792,29 @@ def indi_msg_notification(request):
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
+
 		user_p = UserProfile.objects.get(user = user)
 		message = json.loads(request.body)['message']
 		user_c = UserProfile.objects.get(nick_name = json.loads(request.body)['nick'])
 		# timestamp = json.loads(request.body)['time']
-		gcm = GCM('AAAANbxRpq0:APA91bFgSsNBCJc2qubCF7--FQagNloimWcsRCMk_DezOPP88NvOO8ifcKilq_L1cmzaK9JHLXxXFV0a4nw3Lf-VHn1dxsxn5I0_6Gb7yNLtc-xRL0OUP7XrdfeEwkouS9kmfDkJCzYD')
+		gcm = GCM('AAAA_ASFr2Y:APA91bF6FWFSH1TCUPVqX3-NkkNbHGuxvaqjdbLNXHAlBIbkvkBJ7zF8IjZPHOqZKvPlwo__YsEK2jbd-bWL3-J6Lpwt9AaM-XhCIqyBBojWnWxyEbuXI--r_o4VeA7M2uscx8kDUDAJ')
 		reg_ids = user_c.device_id.all()
 		print reg_ids
 		reg_ids_tmp = []
 		for x in reg_ids:
-			# for y in range(0, len(reg_ids)):
 			try:
 				reg_ids_tmp.append(x.device_id)
 			except:
 				pass
+		# title = '''New Message from %s''' % (user_p.nick_name)
+		# push_url = '''https://api.ionic.io/push/notifications/'''
+		# notification = {'tokens': reg_ids_tmp, 'profile': 'latch', 'notification': {'message': message, 'title': title}}
+		# post_notif = requests.post(push_url, notification)
+		# print post_notif.status_code
 		notification_msg = '''New Message from %s''' % (user_p.nick_name)
 		notification = {'title': 'New message', 'message': notification_msg, 'additionalData': {'isUser': 'isUser'}}
 		response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
-
-		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': json.loads(request.body)['isUser']})
+		return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
 
 @csrf_exempt
 def device_id(request):
@@ -814,21 +827,22 @@ def device_id(request):
 		except ObjectDoesNotExist:
 			response = {'status':0, 'message':'Kindly login first'}
 		user_p = UserProfile.objects.get(user = user)
-		device_id = Device_ID.objects.create(device_id = json.loads(request.body)['device_id'], user = user_p)
-		user_p.device_id.add(device_id)	
-		response = {'status': 1, 'message': 'device id successfully saved'}
-		return JsonResponse(response)
-	else:
-		session_key = json.loads(request.body)['session_key']
-		session = Session.objects.get(session_key = session_key)
-		uid = session.get_decoded().get('_auth_user_id')
-		try:
-			user = User.objects.get(pk=uid)
-		except ObjectDoesNotExist:
-			response = {'status':0, 'message':'Kindly login first'}
-		user_p = UserProfile.objects.get(user = user)
-		device_id = user_p.device_id.all()
-		return JsonResponse({'status': 1, 'device_id': device_id})		
+		device_id = [x.device_id for x in user_p.device_id.all()]
+		return JsonResponse({'status': 1, 'tokens': device_id})		
+
+	# 	session_key = json.loads(request.body)['session_key']
+	# 	session = Session.objects.get(session_key = session_key)
+	# 	uid = session.get_decoded().get('_auth_user_id')
+	# 	try:
+	# 		user = User.objects.get(pk=uid)
+	# 	except ObjectDoesNotExist:
+	# 		response = {'status':0, 'message':'Kindly login first'}
+	# 	user_p = UserProfile.objects.get(user = user)
+	# 	device_id = Device_ID.objects.create(device_id = json.loads(request.body)['device_id'], user = user_p)
+	# 	user_p.device_id.add(device_id)	
+	# 	response = {'status': 1, 'message': 'device id successfully saved'}
+	# 	return JsonResponse(response)
+	# else:
 
 @csrf_exempt
 def group_msg_notification(request):
@@ -845,22 +859,24 @@ def group_msg_notification(request):
 		message = json.loads(request.body)['message']
 		group = Group.objects.get(name = json.loads(request.body)['group_name'])
 		# timestamp = json.loads(request.body)['time']
-		gcm = GCM('AAAANbxRpq0:APA91bFgSsNBCJc2qubCF7--FQagNloimWcsRCMk_DezOPP88NvOO8ifcKilq_L1cmzaK9JHLXxXFV0a4nw3Lf-VHn1dxsxn5I0_6Gb7yNLtc-xRL0OUP7XrdfeEwkouS9kmfDkJCzYD')
-		reg_ids = [x.device_id.all() for x in UserProfile.objects.filter(groups = group)]
-		reg_ids_tmp = []
-		for x in reg_ids:
-			for y in range(0, len(reg_ids)):
-				try:
-					print x[y].device_id
-					reg_ids_tmp.append(x[y].device_id)
-				except:
-					pass
-		print reg_ids
+		gcm = GCM('AAAA_ASFr2Y:APA91bF6FWFSH1TCUPVqX3-NkkNbHGuxvaqjdbLNXHAlBIbkvkBJ7zF8IjZPHOqZKvPlwo__YsEK2jbd-bWL3-J6Lpwt9AaM-XhCIqyBBojWnWxyEbuXI--r_o4VeA7M2uscx8kDUDAJ')
+		reg_ids = [x.device_id for x in user_p.device_id.all()]
+		# title = '''%s@%s: %s''' % (user_p.nick_name,group.name, json.loads(request.body)['message'])
+		# notification = {'title': 'Latch', 'message': notification_msg}
+		# response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
+
+		# push_url = '''https://api.ionic.io/push/notifications/'''
+		# print message
+		# print title
+		# notification = {'tokens': reg_ids_tmp[0], 'profile': 'latch', 'notification': {'message': message, 'title': title}}
+		# headers = {'Accept': 'application/json'}
+		# post_notif = requests.post(push_url, params=json.dumps(dict(notification)), headers=headers)
 		notification_msg = '''%s@%s: %s''' % (user_p.nick_name,group.name, json.loads(request.body)['message'])
 		notification = {'title': 'Latch', 'message': notification_msg, 'additionalData': {'isUser': json.loads(request.body)['isUser']}}
-		response = gcm.json_request(registration_ids=reg_ids_tmp, data=notification)
+		response = gcm.json_request(registration_ids=reg_ids, data=notification)
+		print response
 
-		return JsonResponse({'status': 1, 'message': 'notification successfully sent', 'isUser': json.loads(request.body)['isUser']})
+		return JsonResponse({'status': 1, 'message': 'notification successfully sent'})
 
 @csrf_exempt
 def edit_profile(request):
@@ -1045,21 +1061,33 @@ def add_members_sos(request):
 			return JsonResponse(response)
 
 		user_p = UserProfile.objects.get(user = user)
-		user_p.sos = str(json.loads(request.body)['members'])[1:-1]
+		print str(json.loads(request.body)['members'])
+		user_p.sos = str(json.loads(request.body)['members'])
 		user_p.save()
 		return JsonResponse({'status': 1, 'messsage': 'SOS successfully set up'})
 
-# @csrf_exempt
-# def send_sos(request):
-# 	if request.method == "POST":
-# 		session_key = json.loads(request.body)['session_key']
-# 		session = Session.objects.get(session_key = session_key)
-# 		uid = session.get_decoded().get('_auth_user_id')
-# 		try:
-# 			user = User.objects.get(pk=uid)
-# 		except ObjectDoesNotExist:
-# 			response = {'status':0, 'message':'Kindly login first'}
-# 			return JsonResponse(response)
+@csrf_exempt
+def send_sos(request):
+	if request.method == "POST":
+		session_key = json.loads(request.body)['session_key']
+		session = Session.objects.get(session_key = session_key)
+		uid = session.get_decoded().get('_auth_user_id')
+		try:
+			user = User.objects.get(pk=uid)
+		except ObjectDoesNotExist:
+			response = {'status':0, 'message':'Kindly login first'}
+			return JsonResponse(response)
 
-# 		user_p = UserProfile.objects.get(user = user)
-# 		message = '''%s is in trouble. He sent you SOS. Click to view location %s''' % (user_p.name, location_url)
+		user_p = UserProfile.objects.get(user = user)
+		user_lat = json.loads(request.body)['lat']
+		user_long = json.loads(request.body)['longitude']
+		location_url = '''https://maps.google.com/?q=%s,%s''' % (user_lat, user_long)
+		message = '''%s is in trouble. He sent you SOS. Click to view location %s''' % (user_p.name, location_url)
+		nums = user_p.sos.split(',')
+		print nums
+		try:
+			sos_url = '''https://control.msg91.com/api/sendhttp.php?authkey=166486AW8yGyhB59730184&mobiles=%s&message=%s&sender=%s&route=1&country=91''' % (str(user_p.sos), message, user_p.name)
+			requests.get(sos_url)
+			return JsonResponse({'status': 1, 'message': 'SOS has been sent to the trusted mobile numbers'})
+		except:
+			return JsonResponse({'status': 0, 'message': 'You have not setup SOS'})

@@ -8,5 +8,6 @@ admin.site.register(Indi_group)
 admin.site.register(Indi_msg)
 admin.site.register(Group_user)
 admin.site.register(Device_ID)
+admin.site.register(User_group)
 
 # Register your models here.

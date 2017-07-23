@@ -1,32 +1,5 @@
 page-indi-chat {
 	
-	.item-inner{
-		margin-left: 0 !important;
-	}
-
-	ion-footer {
-		ion-icon{
-			font-size: 1.4em !important;
-		    margin: 8px 9px !important;
-		    display: flex;
-		    justify-content: center;
-		    align-items: center;
-		}
-
-		ion-list {
-		    margin-bottom: 0 !important;
-		}
-
-		ion-item{
-			padding-left:0 !important;
-			border: none !important;
-		}
-	}
-
-	ion-content{
-		background-color: color($colors,secondary) !important;
-	}
-
 
 
 }

@@ -82,15 +82,15 @@ export class GroupChatPage {
   }
 
   ionViewDidLoad() {
-  	setTimeout(()=>{
+  // 	setTimeout(()=>{
 
-  	let home = new EmojiPanel({
-                container: '#emoji',
-                // trigger: '#triggerEmoji',
-                // editable: '#inputField'
-    });
-    console.log(home);
-  },500)
+  // 	let home = new EmojiPanel({
+  //               container: '#emoji',
+  //               // trigger: '#triggerEmoji',
+  //               // editable: '#inputField'
+  //   });
+  //   console.log(home);
+  // },500)
     console.log('ionViewDidLoad GroupChat');
     var objDiv = document.getElementById("message-section-wrapper");
 			objDiv.scrollTop = objDiv.scrollHeight;

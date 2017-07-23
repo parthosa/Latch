@@ -80,7 +80,7 @@ export class IndiChatPage {
   }
 
   loadMessages(){
-  	this.data['nick'] = this.user['nick'];
+  	this.data['nick'] = this.nick_name;
   	 this.httpService.postData(this.globalVars.baseUrl+'/main/user/get/indi_chat/',this.data)
     .then(response=>{
     	for (var i = 0; i < response.messages.length; i++) {

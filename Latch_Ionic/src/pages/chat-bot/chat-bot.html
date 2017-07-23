@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title> {{ group_name }} </ion-title>
+    <ion-title> {{ chat_bot_name }} </ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -20,7 +20,6 @@
 			<ion-col col-12 >
 				<div class="message-wrapper" *ngFor="let message of messages" [ngClass]="{me : message.nick==user.nick,them: message.nick!=user.nick,'not-sent' : message.nick==user.nick && !message.sent}">
 					<div class="text-wrapper animated fadeIn">
-						<p class="name">{{ message.nick }}</p>
 						<p class="message-text" >{{ message.message }}</p>
 						<p class="time" >{{ message.time }}</p>
 					</div>

@@ -5,6 +5,10 @@ import { UUID } from 'angular2-uuid';
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
+
+declare var io;
+
+
 /**
  * Generated class for the IndiChat page.
  *
@@ -21,39 +25,75 @@ export class IndiChatPage {
   messages = [];
   newMessage = {};
   newMessageText = '';
-  user = {
-  	'nick' : 'parthosa'
-  };
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  	this.loadMessages();
+  user = {};
+  data = {};
+  nick_name = '';
+  socket: any;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private httpService: HttpService, private storage:Storage,private globalVars: GlobalVariables) {
+  	this.nick_name = this.navParams.get('chat')['nick_name'];
+	  this.storage.get('nick').then((nick)=>{
+	  	this.user['nick'] = nick;
+	  });
+	  this.storage.get('session_key').then((session_key) => {
+	  	this.data = {
+	  		'session_key' : session_key,
+	  	}
+		this.loadMessages();
+	  });
+	  this.socket = io.connect('172.16.1.139', {
+		  port: 4000
+		});
+	  this.socket.on('send_message_indi', (rawData)=>{
+	  		let data = JSON.parse(rawData);
+	  		// console.log(this.user['nick'] != data.nick
+		    data.message = atob(data.message);
+		    if (this.nick_name == data.nick_name && this.user['nick'] != data.nick) {
+		      this.messages.push(data);
+		      // chatScreen.scrollTop += $('.message-wrapper').outerHeight();
+		    } else if (this.user['nick'] == data.nick) {
+		    	console.log('yea');
+		      for (let i = this.messages.length - 1; i >= 0; i--) {
+		      	console.log(this.messages[i].msg_id ,data.msg_id);
+		        if (this.messages[i].msg_id == data.msg_id) {
+		          this.messages[i].sent = true;
+		          console.log('wooa');
+		        }
+		      }
+		        }
+		        else if(Object.getOwnPropertyNames(data).length > 0)  {
+		          // Materialize.toast('New Message in '+data.nick_name,1000);
+		          // notify
+		        }
+		          this.dispatchPush(data);
+
+		  });
+
+
+
+
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad IndiChat');
+    console.log('ionViewDidLoad GroupChat');
   }
 
   loadMessages(){
-  	this.messages = [{
-  		message: 'hello world',
-        nick: 'partho',
-        nick_name: 'itech',
-        time: '3:30pm',
-        sent: false,
-        msg_id: UUID.UUID(),
-        session_key: 'asaaa'
-  	},{
-  		message: 'yahoo',
-        nick: 'partho',
-        nick_name: 'itech',
-        time: '5:01am',
-        sent: false,
-        msg_id: UUID.UUID(),
-        session_key: 'asaaa'
-  	}]
+  	this.data['nick'] = this.user['nick'];
+  	 this.httpService.postData(this.globalVars.baseUrl+'/main/user/get/indi_chat/',this.data)
+    .then(response=>{
+    	for (var i = 0; i < response.messages.length; i++) {
+	        response.messages[i].nick = response.messages[i].nick_name;
+	     }
+	     // retreive from db
+    });
 
   }
 
   sendNewMessage(){
+  	 if(this.newMessageText == ''){
+  	 	return;
+  	 }
   	 let date = new Date();
      let dateString = new Date().toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
         hour: 'numeric',
@@ -61,18 +101,30 @@ export class IndiChatPage {
         minute: 'numeric'
       });
 
+    let encodedMessage = btoa(this.newMessageText); 
   	this.newMessage = {
-        message: this.newMessageText,
-        nick: 'partho',
-        nick_name: 'itech',
+        message: encodedMessage,
+        nick: this.user['nick'],
+        nick_name: this.nick_name,
         time: dateString,
         sent: false,
         msg_id: UUID.UUID(),
-        session_key: 'asaaa'
+        session_key: this.data['session_key']
       }
 
+    this.socket.emit('send_message_indi', JSON.stringify(this.newMessage));
+    this.newMessage['message'] = this.newMessageText;
     this.messages.push(this.newMessage);
     this.newMessageText = '';
+  }
+
+
+  dispatchPush(data){
+  	data['session_key'] =  this.data['session_key'];
+  	this.httpService.postData(this.globalVars.baseUrl+'/main/user/indi_notify/',data)
+    .then((response)=>{
+    	console.log('push');
+    });
   }
 
 }

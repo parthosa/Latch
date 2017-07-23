@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams,AlertController } from 'ionic-angular';
 import { HomePage } from '../home/home';
 
 import { GlobalVariables } from '../../providers/global-variables';
@@ -25,7 +25,7 @@ export class InterestsPage {
   lifestyle: boolean;
   data = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public alertCtrl: AlertController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
   	this.storage.get('session_key').then((session_key) => {
 	  	this.data = {
 	  		'session_key' : session_key,
@@ -49,7 +49,14 @@ export class InterestsPage {
   	this.data['interest'] = this.interests;
   	this.httpService.postData(this.globalVars.baseUrl+'/main/user/interests/',this.data)
     .then(response=>{
-	  	console.log(this.interests);
+    	if(response.status == 0){
+          this.alertCtrl.create({
+            title: 'Message',
+            subTitle: response.message,
+            buttons: ['OK']
+          }).present();
+          return;
+      }
 	  	if(response.status == 1)
 	  		this.addToChatRoom(); 
 	  });

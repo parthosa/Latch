@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams,AlertController } from 'ionic-angular';
 
-import { InterestsPage } from '../interests/interests';
+import { UploadPicPage } from '../upload-pic/upload-pic'
 
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
@@ -23,7 +23,7 @@ export class NickPage {
   nick = '';
   data = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public alertCtrl: AlertController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
   	this.storage.get('session_key').then((session_key) => {
 	  	this.data = {
 	  		'session_key' : session_key,
@@ -39,7 +39,8 @@ export class NickPage {
   	this.data['nick'] = this.nick;
   	this.httpService.postData(this.globalVars.baseUrl+'/main/user/nick/',this.data)
     .then(response=>{
-    		this.navCtrl.push(InterestsPage);
+
+    		this.navCtrl.push(UploadPicPage);
 	    });
 
   }

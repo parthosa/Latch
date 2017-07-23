@@ -1,21 +1,9 @@
 <div class="card-background-page">
 
-  <ion-card (click)="openChat()">
-    <img src="assets/images/travel.png"/>
-    <div class="card-title">Travel</div>
-    <div class="card-subtitle">41 Members</div>
-  </ion-card>
-
-  <ion-card (click)="openChat()">
-    <img src="assets/images/food.jpg"/>
-    <div class="card-title">Food</div>
-    <div class="card-subtitle">64 Members</div>
-  </ion-card>
-
-  <ion-card (click)="openChat()">
-    <img src="assets/images/acco.jpg"/>
-    <div class="card-title">Accomodation</div>
-    <div class="card-subtitle">72 Members</div>
+  <ion-card (click)="openChat(group)" *ngFor="let group of groups">
+    <img src="assets/images/{{ format(group.group_name) }}.jpg"/>
+    <div class="card-title">{{ group.group_name }}</div>
+    <div class="card-subtitle">{{ group.members }} Members</div>
   </ion-card>
 <!-- 
   <ion-card>

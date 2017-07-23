@@ -32,8 +32,7 @@ import { ToastController } from 'ionic-angular';
 
 declare var google;
 declare var pos;
-    declare var nick;
-    declare var session_key;
+    
 
  @Component({
    selector: 'location',
@@ -44,7 +43,8 @@ declare var pos;
    @ViewChild('map') mapElement: ElementRef;
    map: GoogleMap;
   data = {};
-
+  nick = '';
+  session_key = '';
    // map: any;
  
     constructor(public navCtrl: NavController, public platform: Platform, public geolocation: Geolocation,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables, public toastCtrl: ToastController) {
@@ -215,16 +215,16 @@ declare var pos;
     var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     this.storage.get('nick').then(result=>{
-      nick = result;
+      this.nick = result;
     })
 
     this.storage.get('session_key').then(result=>{
-      session_key = result;
+      this.session_key = result;
       this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_nearby/', { session_key: result}).then(response=>{
         if (response.status == 1) {
         var data = response.nearby_users;
         for (var i = 0; i < data.length; i++) {
-          if (data[i].nick != nick)
+          if (data[i].nick != this.nick)
             this.addMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), this.map, data[i].nick);
             // new CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), this.map, this.globalVars.baseUrl + data[i].pic, data[i].nick, data[i].distance)
         }
@@ -252,10 +252,11 @@ addMarker(location, map, label) {
               label: label,
               map: map
             });
+            var $this = this;
             marker.addListener('click', param=>{
               this.navCtrl.push(IndiChatPage,{
-                nick_name: nick,
-                session_key: session_key
+                nick_name: label,
+                session_key: $this.session_key
               });
             })
           }

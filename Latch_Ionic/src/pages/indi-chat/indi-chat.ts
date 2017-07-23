@@ -32,7 +32,7 @@ export class IndiChatPage {
   socket: any;
 
   constructor(public navCtrl: NavController, private imagePicker:ImagePicker, public navParams: NavParams, private httpService: HttpService, private storage:Storage,private globalVars: GlobalVariables) {
-  	this.nick_name = this.navParams.get('chat')['nick_name'];
+  	this.nick_name = this.navParams.get('nick_name');
 	  this.storage.get('nick').then((nick)=>{
 	  	this.user['nick'] = nick;
 	  });

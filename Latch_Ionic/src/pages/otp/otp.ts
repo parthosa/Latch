@@ -62,20 +62,20 @@ export class OtpPage {
 				      }
 			  		if(response.status == 1){
 				        this.storage.set('session_key', response.session_key);
-                this.push.register().then((t: PushToken) => {
-                  return this.push.saveToken(t);
-                }).then((t: PushToken) => {
-                  this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_device/',{'session_key':response.session_key,'device_id':t.token})
-                  .then(response=>{
-                  console.log('Token saved:', t.token);
+                // this.push.register().then((t: PushToken) => {
+                //   return this.push.saveToken(t);
+                // }).then((t: PushToken) => {
+                //   this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_device/',{'session_key':response.session_key,'device_id':t.token})
+                //   .then(response=>{
+                //   console.log('Token saved:', t.token);
                     
+
+
+            // });
   			  			this.navCtrl.push(NickPage);
 
-
-            });
-
-			  	});
-		  	};
+			  	}
+		  	});
 	   	});
    	});
 
@@ -84,8 +84,7 @@ export class OtpPage {
 
   });
 
-    });
-  }
-  }
+    }
+   }
 
 

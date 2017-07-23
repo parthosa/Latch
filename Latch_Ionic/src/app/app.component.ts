@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
-import { Platform,MenuController } from 'ionic-angular';
+// import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
+import { App,Platform,MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { LandingPage } from '../pages/landing/landing';
+import { SosPage } from '../pages/sos/sos';
 
 import { Push, PushObject, PushOptions } from '@ionic-native/push';
 
@@ -14,15 +15,19 @@ import { Push, PushObject, PushOptions } from '@ionic-native/push';
 })
 export class Latch {
   rootPage:any = LandingPage;
+  app:App;
+  isAnonymous:boolean;
 
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen,private push: Push,public menuCtrl: MenuController) {
+  constructor(app:App,platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen,private push: Push,public menuCtrl: MenuController) {
+    this.isAnonymous = false;
+    this.app = app;
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
       this.menuCtrl.enable(false);
-      this.initPush();
+      // this.initPush();
     });
 
    
@@ -64,5 +69,13 @@ export class Latch {
 
   logout(){
     // 
+  }
+
+  goToAddSos(){
+    this.app.getActiveNav().push(SosPage);
+  }
+
+  updateAnonymous(){
+    // bla
   }
 }

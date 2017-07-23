@@ -12,9 +12,16 @@
 		</ion-toolbar>
 	</ion-header>
 
-    <ion-content padding>
+    <ion-content class="menu" padding>
         <ion-list no-lines>
-             <button ion-item menuClose (click)="openPage(homePage)">
+             <button ion-item menuClose (click)="goToAddSos()">
+                Add Emergency Contacts
+            </button>
+            <ion-item>
+              <ion-label> Anonymous</ion-label>
+              <ion-toggle  [(ngModel)]="isAnonymous" (change)="updateAnonymous()"></ion-toggle>
+            </ion-item>
+            <button ion-item menuClose (click)="openPage(homePage)">
                 Profile
             </button>
              <button ion-item menuClose (click)="openPage(homePage)">

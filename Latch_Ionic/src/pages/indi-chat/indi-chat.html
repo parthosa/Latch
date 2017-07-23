@@ -7,7 +7,7 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title> User </ion-title>
+    <ion-title> {{ nick_name }} </ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -19,10 +19,18 @@
 		<ion-row justify-content-center>
 			<ion-col col-12 >
 				<div class="message-wrapper me " *ngFor="let message of messages" ngClass="{me : message.nick==user.nick,them: message.nick!=user.nick,'not-sent' : message.nick==user.nick && message.sent==false}">
+					<div >
 					<div class="text-wrapper animated fadeIn">
 						<p class="message-text" >{{ message.message }}</p>
 						<p class="time" >{{ message.time }}</p>
 					</div>
+				</div>
+				<!-- <div *ngIf="message.is_image">
+					<div class="text-wrapper animated fadeIn">
+						<img [src]="message.message" width="250px" />
+						<p class="time" >{{ message.time }}</p>
+					</div>
+				</div> -->
 				</div>
 			</ion-col>
 		</ion-row>
@@ -32,7 +40,7 @@
 <ion-footer>
 <ion-list>
   <ion-item>
-	  <ion-icon name="attach" item-start></ion-icon>
+	  <ion-icon name="attach" item-start (click)="attachPic()"></ion-icon>
     <ion-input type="text" placeholder="New Message" [(ngModel)]="newMessageText"></ion-input>
     <button class="send-new-message" item-end clear (click)="sendNewMessage()" >
 	    <ion-icon name="send" ></ion-icon>

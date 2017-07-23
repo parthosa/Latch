@@ -19,19 +19,18 @@
 			<ion-col col-10 >
 				<ion-list>
 				  <ion-item>
-				    
-				    <ion-input type="text" placeholder="Contact" [(ngModel)] = "user.contact"></ion-input>
+				    <ion-input type="text" id="sign-in" placeholder="Contact" [ngModel] = "user.contact">
+				    </ion-input>
 				  </ion-item>
-
 				  <ion-item>
 				    
-				    <ion-input type="password" placeholder="Password" [(ngModel)] = "user.password"></ion-input>
+				    <ion-input type="password" id="sign-2" placeholder="Password" [(ngModel)] = "user.password"></ion-input>
 				  </ion-item>
 
 				</ion-list>
 			</ion-col>
 			<ion-col col-10 >
-		        <button ion-button full color="primary" (click)="signIn()">Sign In</button>
+		        <button ion-button full color="primary" id="sign-3" (click)="signIn()">Sign In</button>
 		    </ion-col>
 		</ion-row>
 	</ion-grid>

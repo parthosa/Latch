@@ -6,6 +6,9 @@ import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
 
+import { GroupAddPage } from '../../pages/group-add/group-add';
+
+
 @Component({
   selector: 'groups',
   templateUrl: 'groups.html'
@@ -52,6 +55,10 @@ export class Groups {
 
   format(group_name){
   	return group_name.substr(group_name.indexOf('_')+1);
+  }
+
+  goToInterestPage(){
+  	this.navCtrl.push(GroupAddPage);
   }
 
 }

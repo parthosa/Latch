@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { UUID } from 'angular2-uuid';
-
+import { ImagePicker } from '@ionic-native/image-picker';
 
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
 
-
+// import { EmojiPanel } from 'emojipanel';
 // import * as io from 'socket.io-client';
 /**
  * Generated class for the GroupChat page.
@@ -17,6 +17,7 @@ import { Storage } from '@ionic/storage';
  */
 
 declare var io;
+declare var EmojiPanel;
 
 @Component({
   selector: 'page-group-chat',
@@ -33,8 +34,10 @@ export class GroupChatPage {
   socket: any;
   
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, private imagePicker:ImagePicker, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
 	  this.group_name = this.navParams.get('group')['group_name'];
+	  if(this.navParams.get('group')['uid']!=null)
+	  	this.data['uid'] = this.navParams.get('group')['uid'];
 	  this.storage.get('nick').then((nick)=>{
 	  	this.user['nick'] = nick;
 	  });
@@ -47,7 +50,6 @@ export class GroupChatPage {
 	  this.socket = io.connect('172.16.1.139', {
 		  port: 4000
 		});
-	  let $this;
 	  this.socket.on('send_message_group', (rawData)=>{
 	  		console.log(1);
 	  		let data = JSON.parse(rawData);
@@ -80,7 +82,18 @@ export class GroupChatPage {
   }
 
   ionViewDidLoad() {
+  // 	setTimeout(()=>{
+
+  // 	let home = new EmojiPanel({
+  //               container: '#emoji',
+  //               // trigger: '#triggerEmoji',
+  //               // editable: '#inputField'
+  //   });
+  //   console.log(home);
+  // },500)
     console.log('ionViewDidLoad GroupChat');
+    var objDiv = document.getElementById("message-section-wrapper");
+			objDiv.scrollTop = objDiv.scrollHeight;
   }
 
   loadMessages(){
@@ -92,6 +105,7 @@ export class GroupChatPage {
 	        response.messages[i].message  = atob(response.messages[i].message);
 	     }
 	     this.messages = response.messages;
+
 	     // retreive from db
     });
 
@@ -133,6 +147,38 @@ export class GroupChatPage {
     .then((response)=>{
     	console.log('push');
     });
+  }
+
+  attachPic() {
+    let options = {
+      maximumImagesCount: 1,
+    };
+    let date = new Date();
+    let dateString = new Date().toLocaleDateString() + ',' + date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        hour12: true,
+        minute: 'numeric'
+      });
+
+    this.imagePicker.getPictures(options).then((results) => {
+        for (var i = 0; i < results.length; i++) {
+            console.log('Image URI: ' + results[i]);
+            this.newMessage = {
+              message: results[i],
+              nick: this.user['nick'],
+              group_name: this.group_name,
+              time: dateString,
+              sent: false,
+              msg_id: UUID.UUID(),
+              session_key: this.data['session_key'],
+              is_image : true,
+            };
+            this.socket.emit('send_message_group', JSON.stringify(this.newMessage));
+            this.messages.push(this.newMessage);
+            this.newMessageText = '';
+
+        }
+      }, (err) => { });
   }
 
 }

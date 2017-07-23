@@ -57,8 +57,10 @@ export class Chats {
   	this.navCtrl.push(ChatBotPage);
   }
 
-  openChat(){
-  	this.navCtrl.push(IndiChatPage);
+  openChat(nick_name){
+  	this.navCtrl.push(IndiChatPage,{
+  		'nick_name':nick_name
+  	});
   }
 
 }

@@ -8,7 +8,7 @@
       <!-- <ion-note item-end>0 feet</ion-note> -->
 	</ion-item>
 
-	<ion-item (click)="openChat()" *ngFor="let chat of chats">
+	<ion-item (click)="openChat(chat.nick)" *ngFor="let chat of chats">
       <ion-avatar item-start>
         <img [src]="chat.pic">
       </ion-avatar>

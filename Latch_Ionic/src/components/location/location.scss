@@ -6,5 +6,11 @@ location {
         height: calc(100vh - 112px);
       }
  
+
+	 ion-fab{
+	    bottom: 0;
+		right: 0;
+	    margin: 2rem;
+	 }
     
 }

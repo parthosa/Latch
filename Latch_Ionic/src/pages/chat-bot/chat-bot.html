@@ -18,7 +18,7 @@
 	<ion-grid>
 		<ion-row justify-content-center>
 			<ion-col col-12 >
-				<div class="message-wrapper" *ngFor="let message of messages" [ngClass]="{me : message.nick==user.nick,them: message.nick!=user.nick,'not-sent' : message.nick==user.nick && !message.sent}">
+				<div class="message-wrapper" *ngFor="let message of messages" [ngClass]="{me : message.nick==user.nick,them: message.nick!=user.nick,'not-sent' : message.nick==user.nick && !message.sent}" (click)="openMap(message)">
 					<div class="text-wrapper animated fadeIn">
 						<p class="message-text" >{{ message.message }}</p>
 						<p class="time" >{{ message.time }}</p>

@@ -1,5 +1,7 @@
 import { Component,ViewChild, ElementRef } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
+import { NavController } from 'ionic-angular';
+import { IndiChatPage } from '../../pages/indi-chat/indi-chat';
 
 import {
  GoogleMaps,
@@ -30,32 +32,34 @@ import { ToastController } from 'ionic-angular';
 
 declare var google;
 declare var pos;
+    declare var nick;
+    declare var session_key;
 
  @Component({
- 	selector: 'location',
- 	templateUrl: 'location.html'
+   selector: 'location',
+   templateUrl: 'location.html'
  })
  export class Location {
 
- 	@ViewChild('map') mapElement: ElementRef;
- 	map: GoogleMap;
+   @ViewChild('map') mapElement: ElementRef;
+   map: GoogleMap;
   data = {};
 
-	 // map: any;
+   // map: any;
  
-    constructor(public platform: Platform, public geolocation: Geolocation,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables, public toastCtrl: ToastController) {
+    constructor(public navCtrl: NavController, public platform: Platform, public geolocation: Geolocation,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables, public toastCtrl: ToastController) {
 
     }
  
     ngAfterViewInit() {
         console.log('ionViewDidLoad Location');
         this.platform.ready().then(() => {
-    	this.loadMap();
+      this.loadMap();
     })
     }
 
      loadMap(){
-     	this.geolocation.getCurrentPosition().then((position) => {
+       this.geolocation.getCurrentPosition().then((position) => {
 
       var pos = {
             lat: position.coords.latitude,
@@ -93,18 +97,20 @@ declare var pos;
             longitude: pos.lng,
             'session_key' : session_key,
           }
-	       this.httpService.postData(this.globalVars.baseUrl+'/main/user/location/',this.data)
-	        .then(response=>{
-	           if (response.status != 1){
-	                this.toastCtrl.create({
-	                  message: 'Please enable location servies',
-	                  duration: 3000
-	                }).present();
-	              }
-	          });
+         this.httpService.postData(this.globalVars.baseUrl+'/main/user/location/',this.data)
+          .then(response=>{
+             if (response.status != 1){
+                  this.toastCtrl.create({
+                    message: 'Please enable location servies',
+                    duration: 3000
+                  }).present();
+                }
+            });
 
-	        this.getNearby();
+          this.getNearby();
         })
+
+
 
  
      }, (err) => {
@@ -126,7 +132,7 @@ declare var pos;
       this.distance = distance;
       this.latlng_ = latlng;
       this.imageSrc = imageSrc;
-      this.setMap(map);
+      this.setMap(this.map);
       markers.push(this);
     }
 
@@ -208,13 +214,19 @@ declare var pos;
 
     var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+    this.storage.get('nick').then(result=>{
+      nick = result;
+    })
+
     this.storage.get('session_key').then(result=>{
+      session_key = result;
       this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_nearby/', { session_key: result}).then(response=>{
         if (response.status == 1) {
         var data = response.nearby_users;
         for (var i = 0; i < data.length; i++) {
-          if (data[i].nick != window.localStorage.getItem('nick'))
-            new CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), this.map, this.globalVars.baseUrl + data[i].pic, data[i].nick, data[i].distance)
+          if (data[i].nick != nick)
+            this.addMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), this.map, data[i].nick);
+            // new CustomMarker(new google.maps.LatLng(data[i].lat, data[i].longitude), this.map, this.globalVars.baseUrl + data[i].pic, data[i].nick, data[i].distance)
         }
         console.log(markers);
 
@@ -232,6 +244,21 @@ declare var pos;
 
     }
 
+addMarker(location, map, label) {
+        // Add the marker at the clicked location, and add the next-available label
+        // from the array of alphabetical characters.
+            var marker = new google.maps.Marker({
+              position: location,
+              label: label,
+              map: map
+            });
+            marker.addListener('click', param=>{
+              this.navCtrl.push(IndiChatPage,{
+                nick_name: nick,
+                session_key: session_key
+              });
+            })
+          }
 
 
 

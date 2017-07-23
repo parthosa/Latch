@@ -561,9 +561,9 @@ def node_api_message_group(request):
 			signer = Signer()
 			message_encrypted = signer.sign(json.loads(request.body)['message'])
 			if str(json.loads(request.body)['is_image']) == 'true':
-				message_create = Message.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = True)
+				message_create = Message.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'])
 			else:
-				message_create = Message.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = False)
+				message_create = Message.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'])
  		except Exception, e:
  			print e
  			return e
@@ -583,7 +583,7 @@ def node_api_message_group(request):
 
 @csrf_exempt
 def node_api_message_user(request):
-	print request.POST
+	print request.body
 	try:
         #Get User from sessionid
 		# post_string = json.loads(request.body)['key']
@@ -594,7 +594,7 @@ def node_api_message_user(request):
 		try:
 			user = User.objects.get(pk=uid)
 		except ObjectDoesNotExist:
-			response = {'status':0, 'message':'Kindly login first'}
+			response = {'status': 0, 'message':'Kindly login first'}
 			return JsonResponse(response)
 
         #Create message
@@ -610,10 +610,11 @@ def node_api_message_user(request):
 			signer = Signer()
 			message_encrypted = signer.sign(json.loads(request.body)['message'])
 			if str(json.loads(request.body)['is_image']) == 'true':
-				message_create = Indi_msg.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = True)
+				message_create = Indi_msg.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'])
 			else:
-				message_create = Indi_msg.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'], is_image = False)
+				message_create = Indi_msg.objects.create(message = message_encrypted, user = user_p, group = group, msg_id = json.loads(request.body)['msg_id'], timestamp = json.loads(request.body)['time'])
 		except Exception, e:
+			print e
 			return e
  		message = Indi_msg.objects.get(msg_id = json.loads(request.body)['msg_id'])
  		group.message.add(message)
@@ -624,6 +625,7 @@ def node_api_message_user(request):
         
 		return HttpResponse("Everything worked :)")
 	except Exception, e:
+		print e
 		return e
 
 # zomato api key - 74c47b6322c6a40d4bef924bf238548c

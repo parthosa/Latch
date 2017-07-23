@@ -93,19 +93,19 @@ declare var pos;
             longitude: pos.lng,
             'session_key' : session_key,
           }
+	       this.httpService.postData(this.globalVars.baseUrl+'/main/user/location/',this.data)
+	        .then(response=>{
+	           if (response.status != 1){
+	                this.toastCtrl.create({
+	                  message: 'Please enable location servies',
+	                  duration: 3000
+	                }).present();
+	              }
+	          });
+
+	        this.getNearby();
         })
 
-       this.httpService.postData(this.globalVars.baseUrl+'/main/user/location/',this.data)
-        .then(response=>{
-           if (response.status != 1){
-                this.toastCtrl.create({
-                  message: 'Please enable location servies',
-                  duration: 3000
-                }).present();
-              }
-          });
-
-        this.getNearby();
  
      }, (err) => {
        console.log(err);

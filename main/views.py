@@ -693,6 +693,7 @@ def user_users(request):
 
 @csrf_exempt
 def get_indi_chat(request):
+	print request.body
 	session_key = json.loads(request.body)['session_key']
 	session = Session.objects.get(session_key = session_key)
 	uid = session.get_decoded().get('_auth_user_id')
@@ -701,6 +702,7 @@ def get_indi_chat(request):
 		user = User.objects.get(pk=uid)
 	except ObjectDoesNotExist:
 		response = {'status':0, 'message':'Kindly login first'}
+		return JsonResponse(response)
 	user_p = UserProfile.objects.get(user = user)
 	user_t = UserProfile.objects.get(nick_name = json.loads(request.body)['nick'])
 	try:
@@ -721,10 +723,10 @@ def get_indi_chat(request):
 	msg_list = []
 	signer = Signer()
 	for message in messages:
-		if message.is_image:
-			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
-		else:
-			msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
+		# if message.is_image:
+		msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
+		# else:
+		# 	msg_list.append({'message': signer.unsign(message.message), 'nick_name': message.user.nick_name, 'time': message.timestamp})
 	response = {'messages': msg_list}
 	return JsonResponse(response)
 

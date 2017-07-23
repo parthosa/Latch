@@ -26,6 +26,9 @@ export class HomePage {
 
   }
 
+  initSOS(){
+  	this.globalVars.updateLocation('/main/user/send/sos/');
+  }
  
 
 }

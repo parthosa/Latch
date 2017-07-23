@@ -21,6 +21,10 @@
 //   background: color($colors,primary);
 // }
 
+.emoji{
+    display:inline-block;
+}
+
 ion-navbar{
 	button, ion-title .toolbar-title{
 		  color:white !important;
@@ -73,8 +77,7 @@ ion-toolbar{
 			border: none !important;
 		}
 	}
-
-	ion-content{
+	ion-content:not(.menu){
 		background-color: color($colors,secondary) !important;
 	}
 

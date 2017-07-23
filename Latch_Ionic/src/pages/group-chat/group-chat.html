@@ -14,7 +14,7 @@
 
 
 <ion-content no-padding>
-<div class="message-section">
+<div class="message-section" id="message-section-wrapper">
 	<ion-grid>
 		<ion-row justify-content-center>
 			<ion-col col-12 >
@@ -34,7 +34,10 @@
 <ion-list>
   <ion-item>
 	  <ion-icon name="attach" item-start></ion-icon>
-    <ion-input type="text" placeholder="New Message" [(ngModel)]="newMessageText"></ion-input>
+	  <ion-icon name="happy" id="triggerEmoji" item-start></ion-icon>
+	    <div id="emoji"></div>
+
+    <ion-input type="text" placeholder="New Message" [(ngModel)]="newMessageText" id="input-field"></ion-input>
     <button class="send-new-message" item-end clear (click)="sendNewMessage()" >
 	    <ion-icon name="send" ></ion-icon>
     </button>

@@ -8,12 +8,9 @@ import { Storage } from '@ionic/storage';
 
 import { HomePage } from '../home/home';
 
-import {
-  Push,
-  PushToken
-} from '@ionic/cloud-angular';
 
-
+// import * as EmojiPanel from 'emojipanel/emojipanel.js';
+// declare var EmojiPanel;
 /**
  * Generated class for the SignIn page.
  *
@@ -29,13 +26,19 @@ export class SignInPage {
 
   user = {};
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public push: Push,public alertCtrl: AlertController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public alertCtrl: AlertController,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
   	this.user['contact'] = 'test167@gmail.com';
   	this.user['password'] = 'techiegeek';
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SignIn');
+  	 // let home = new EmojiPanel({
+    //             container: '#sign-in',
+    //             trigger: '#sign-2',
+    //             editable: '#sign-3'
+
+    // });
+    // console.log(home);
   }
 
   signIn(){
@@ -60,23 +63,23 @@ export class SignInPage {
        this.storage.set('pic', response.pic);
        this.storage.set('session_key', response.session_key);
        this.globalVars.updateLocation();
-        this.push.register().then((t: PushToken) => {
-        return this.push.saveToken(t);
-      }).then((t: PushToken) => {
-      	this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_device/',{'session_key':response.session_key,'device_id':t.token})
-        .then(response=>{
-        console.log('Token saved:', t.token);
+    //     this.push.register().then((t: PushToken) => {
+    //     return this.push.saveToken(t);
+    //   }).then((t: PushToken) => {
+    //   	this.httpService.postData(this.globalVars.baseUrl+'/main/user/get_device/',{'session_key':response.session_key,'device_id':t.token})
+    //     .then(response=>{
+    //     console.log('Token saved:', t.token);
         	
+
+
+	  	// });
        	  	this.navCtrl.setRoot(HomePage);
-
-
-	  	});
-  });
+  }
   	// signIn
 
-  }
+  });
 
 
-});
+};
 }
-}
+

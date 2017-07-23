@@ -7,7 +7,7 @@ import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
 
-
+// import { EmojiPanel } from 'emojipanel';
 // import * as io from 'socket.io-client';
 /**
  * Generated class for the GroupChat page.
@@ -17,6 +17,7 @@ import { Storage } from '@ionic/storage';
  */
 
 declare var io;
+declare var EmojiPanel;
 
 @Component({
   selector: 'page-group-chat',
@@ -34,6 +35,7 @@ export class GroupChatPage {
   
 
   constructor(public navCtrl: NavController, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
+  	
 	  this.group_name = this.navParams.get('group')['group_name'];
 	  this.storage.get('nick').then((nick)=>{
 	  	this.user['nick'] = nick;
@@ -80,7 +82,18 @@ export class GroupChatPage {
   }
 
   ionViewDidLoad() {
+  	setTimeout(()=>{
+
+  	let home = new EmojiPanel({
+                container: '#emoji',
+                // trigger: '#triggerEmoji',
+                // editable: '#inputField'
+    });
+    console.log(home);
+  },500)
     console.log('ionViewDidLoad GroupChat');
+    var objDiv = document.getElementById("message-section-wrapper");
+			objDiv.scrollTop = objDiv.scrollHeight;
   }
 
   loadMessages(){
@@ -92,6 +105,7 @@ export class GroupChatPage {
 	        response.messages[i].message  = atob(response.messages[i].message);
 	     }
 	     this.messages = response.messages;
+
 	     // retreive from db
     });
 

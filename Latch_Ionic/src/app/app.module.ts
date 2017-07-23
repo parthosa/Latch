@@ -5,6 +5,8 @@ import { FormsModule }   from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { Latch } from './app.component';
+import { NavController, NavParams } from 'ionic-angular';
+
 
 import { LandingPage } from '../pages/landing/landing';
 import { HomePage } from '../pages/home/home';
@@ -19,6 +21,8 @@ import { UploadPicPage } from '../pages/upload-pic/upload-pic';
 import { IndiChatPage } from '../pages/indi-chat/indi-chat';
 import { GroupChatPage } from '../pages/group-chat/group-chat';
 import { ChatBotPage } from '../pages/chat-bot/chat-bot';
+import { SosPage } from '../pages/sos/sos';
+import { GroupAddPage } from '../pages/group-add/group-add';
 import { Chats } from '../components/chats/chats';
 import { Groups } from '../components/groups/groups';
 import { Location } from '../components/location/location';
@@ -35,6 +39,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { File } from '@ionic-native/file';
 // import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
+import { Ng2EmojiModule } from 'ng2-emoji';
 // import { Push } from '@ionic-native/push';
 // import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer';
 // import { Crop } from '@ionic-native/crop';
@@ -75,8 +80,10 @@ const cloudSettings: CloudSettings = {
     ChatBotPage,
     IndiChatPage,
     GroupChatPage,
+    GroupAddPage,
      Chats,
     Groups,
+    SosPage,
     Location,
   ],
   imports: [
@@ -85,6 +92,7 @@ const cloudSettings: CloudSettings = {
     HttpModule,
     IonicModule.forRoot(Latch),
     IonicStorageModule.forRoot(),
+      Ng2EmojiModule.forRoot(),
     CloudModule.forRoot(cloudSettings)
   ],
   bootstrap: [IonicApp],
@@ -102,8 +110,10 @@ const cloudSettings: CloudSettings = {
     ChatBotPage,
     IndiChatPage,
     GroupChatPage,
+    GroupAddPage,
      Chats,
     Groups,
+    SosPage,
     Location,
   ],
   providers: [
@@ -119,7 +129,7 @@ const cloudSettings: CloudSettings = {
     HttpService,
     GlobalVariables,
     ImagePicker,
-    Push
+    Push,
   ]
 })
 export class AppModule {}

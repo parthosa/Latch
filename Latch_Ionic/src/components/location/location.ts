@@ -11,6 +11,7 @@ import {
  Marker
 } from '@ionic-native/google-maps';
 
+import { Platform } from 'ionic-angular';
 import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
@@ -40,19 +41,21 @@ declare var pos;
 
 	 // map: any;
  
-    constructor(public geolocation: Geolocation,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables, public toastCtrl: ToastController) {
+    constructor(public platform: Platform, public geolocation: Geolocation,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables, public toastCtrl: ToastController) {
 
     }
  
     ngAfterViewInit() {
         console.log('ionViewDidLoad Location');
+        this.platform.ready().then(() => {
     	this.loadMap();
+    })
     }
 
      loadMap(){
      	this.geolocation.getCurrentPosition().then((position) => {
 
-      pos = {
+      var pos = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };

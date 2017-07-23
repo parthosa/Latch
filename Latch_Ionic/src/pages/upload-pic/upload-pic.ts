@@ -78,7 +78,7 @@ export class UploadPicPage {
 		    ctx.drawImage(oc, 0, 0, oc.width, oc.height, 0, 0, canvas.width, canvas.height);
 		    uploadClass.dataURL = canvas.toDataURL();
 
-		    submit_button.setAttribute('disabled', 'false');
+		    submit_button.removeAttribute('disabled');
 
 		}
 	

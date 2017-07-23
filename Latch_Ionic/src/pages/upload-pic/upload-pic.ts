@@ -31,6 +31,7 @@ export class UploadPicPage {
 
 	constructor(public navCtrl: NavController, public navParams: NavParams,private transfer: FileTransfer,private imagePicker:ImagePicker, private file: File,  private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
 		this.dataURL;
+		this.globalVars.updateLocation();
 	}
 
  		

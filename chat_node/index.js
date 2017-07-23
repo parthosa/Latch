@@ -146,13 +146,14 @@ io.sockets.on('connection', function (socket) {
         //     console.log('worked');
         // });
         // request.post('http://localhost:8001/main/node_api/',{name:1});
+        console.log(data);
         var options = {
             // host: 'localhost',
             // port: 8001,
             // path: '/main/node_api/',
             url: 'http://172.16.1.139:8001/main/user/chat/indi/',
             method: 'POST',
-            form: JSON.parse(data),
+            form: data,
             headers: {
                 'Content-Type': 'application/json',
                 // 'Content-Length': values.length,
@@ -198,7 +199,7 @@ io.sockets.on('connection', function (socket) {
 io.sockets.on('connection', function (socket) {
     console.log(35);
     socket.on('send_message_group', function (data) {
-        console.log(JSON.parse(data));
+        console.log(data);
         // message_split=data.split(',');
         // console.log(sessionid);
         // console.log(socket.handshake.cookie['sessionid']);
@@ -225,7 +226,7 @@ io.sockets.on('connection', function (socket) {
             // path: '/main/node_api/',
             url: 'http://172.16.1.139:8001/main/room/message_send/',
             method: 'POST',
-            form: JSON.parse(data),
+            form: data,
             headers: {
                 'Content-Type': 'application/json',
                 // 'Content-Length': values.length,

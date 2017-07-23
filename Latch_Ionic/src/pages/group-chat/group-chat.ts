@@ -36,6 +36,8 @@ export class GroupChatPage {
 
   constructor(public navCtrl: NavController, private imagePicker:ImagePicker, public navParams: NavParams,private httpService: HttpService,private storage:Storage,private globalVars: GlobalVariables) {
 	  this.group_name = this.navParams.get('group')['group_name'];
+	  if(this.navParams.get('group')['uid']!=null)
+	  	this.data['uid'] = this.navParams.get('group')['uid'];
 	  this.storage.get('nick').then((nick)=>{
 	  	this.user['nick'] = nick;
 	  });
@@ -48,7 +50,6 @@ export class GroupChatPage {
 	  this.socket = io.connect('172.16.1.139', {
 		  port: 4000
 		});
-	  let $this;
 	  this.socket.on('send_message_group', (rawData)=>{
 	  		console.log(1);
 	  		let data = JSON.parse(rawData);

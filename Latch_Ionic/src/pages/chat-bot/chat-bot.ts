@@ -7,6 +7,7 @@ import { GlobalVariables } from '../../providers/global-variables';
 import { HttpService } from '../../providers/http-service';
 import { Storage } from '@ionic/storage';
 
+import { BotMapPage } from '../bot-map/bot-map';
 
 // import * as io from 'socket.io-client';
 /**
@@ -153,4 +154,26 @@ export class ChatBotPage {
   }
 
 
+  openMap (message) {
+  	var data = {};
+  if(message.type == "restaurants"){
+    data['lat'] = message.lat;
+    data['long'] = message.long;
+    var sep = message.message.indexOf('\n');
+    data['address'] = message.address;
+    data['locality'] = message.locality;
+    data['restId'] = message.id;
+    data['city'] = message.city;
+    
+  }
+  if(message.type == "hot"){
+    data['lat'] = message.lat;
+    data['long'] = message.long;
+    data['address'] = message.address;
+        var sep = message.message.indexOf('\n');
+  }
+   data['title'] = message.message.substr(0,sep);
+   this.navCtrl.push(BotMapPage,data);
 }
+}
+

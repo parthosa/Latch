@@ -21,6 +21,8 @@ import { UploadPicPage } from '../pages/upload-pic/upload-pic';
 import { IndiChatPage } from '../pages/indi-chat/indi-chat';
 import { GroupChatPage } from '../pages/group-chat/group-chat';
 import { ChatBotPage } from '../pages/chat-bot/chat-bot';
+import { BotMapPage } from '../pages/bot-map/bot-map';
+import { ModalPage } from '../pages/modal/modal';
 import { SosPage } from '../pages/sos/sos';
 import { GroupAddPage } from '../pages/group-add/group-add';
 import { Chats } from '../components/chats/chats';
@@ -80,7 +82,9 @@ const cloudSettings: CloudSettings = {
     ChatBotPage,
     IndiChatPage,
     GroupChatPage,
+    ModalPage,
     GroupAddPage,
+    BotMapPage,
      Chats,
     Groups,
     SosPage,
@@ -103,6 +107,8 @@ const cloudSettings: CloudSettings = {
     SignInPage,
     RegisterPage,
     MobileNumPage,
+    BotMapPage,
+    ModalPage,
     OtpPage,
     NickPage,
     InterestsPage,

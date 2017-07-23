@@ -43,12 +43,12 @@ export class HomePage {
           }
 	       this.httpService.postData(this.globalVars.baseUrl+'/main/user/send/sos/',data)
 	        .then(response=>{
-	           if (response.status != 1){
+	           // if (response.status != 1){
 	                this.toastCtrl.create({
-	                  message: 'Please enable location servies',
+	                  message: response.message,
 	                  duration: 3000
 	                }).present();
-	              }
+	              // }
 	          });
 	      })
 

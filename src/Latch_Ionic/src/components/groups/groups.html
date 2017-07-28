@@ -1,0 +1,22 @@
+<div class="card-background-page">
+
+  <ion-card (click)="openChat(group)" *ngFor="let group of groups">
+  
+    <img src="assets/images/{{ format(group.group_name) }}.jpg" *ngIf="group.uid==null"/>
+    <img src="assets/images/Travel.jpg" *ngIf="group.uid!=null"/>
+    <div class="card-title">{{ group.group_name }}</div>
+    <div class="card-subtitle">{{ group.members }} Members</div>
+  </ion-card>
+<!-- 
+  <ion-card>
+    <img src="assets/images/card-madison.png"/>
+    <div class="card-title">Madison</div>
+    <div class="card-subtitle">28 Listings</div>
+  </ion-card> -->
+<ion-fab>
+   <button ion-fab color="primary" (click)="goToInterestPage()">
+     <ion-icon name="add">
+     </ion-icon> 
+   </button>
+ </ion-fab>
+</div>

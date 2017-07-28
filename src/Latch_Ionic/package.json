@@ -1,0 +1,212 @@
+{
+    "name": "ionic-hello-world",
+    "version": "0.0.0",
+    "author": "Ionic Framework",
+    "homepage": "http://ionicframework.com/",
+    "private": true,
+    "scripts": {
+        "clean": "ionic-app-scripts clean",
+        "build": "ionic-app-scripts build",
+        "lint": "ionic-app-scripts lint",
+        "ionic:build": "ionic-app-scripts build",
+        "ionic:serve": "ionic-app-scripts serve"
+    },
+    "dependencies": {
+        "@angular/common": "4.1.3",
+        "@angular/compiler": "4.1.3",
+        "@angular/compiler-cli": "4.1.3",
+        "@angular/core": "4.1.3",
+        "@angular/forms": "4.1.3",
+        "@angular/http": "4.1.3",
+        "@angular/platform-browser": "4.1.3",
+        "@angular/platform-browser-dynamic": "4.1.3",
+        "@ionic-native/core": "3.12.1",
+        "@ionic-native/crop": "^4.1.0",
+        "@ionic-native/file": "^4.0.1",
+        "@ionic-native/file-transfer": "^4.0.1",
+        "@ionic-native/geolocation": "^4.0.1",
+        "@ionic-native/google-maps": "^3.12.1",
+        "@ionic-native/image-picker": "^4.1.0",
+        "@ionic-native/image-resizer": "^4.1.0",
+        "@ionic-native/push": "^4.1.0",
+        "@ionic-native/splash-screen": "3.12.1",
+        "@ionic-native/status-bar": "3.12.1",
+        "@ionic/cloud-angular": "^0.12.0",
+        "@ionic/storage": "^2.0.1",
+        "ImagePicker": "git+https://github.com/Keko94/ImagePicker.git",
+        "angular2-uuid": "^1.1.1",
+        "com.synconset.imagepicker": "https://github.com/suvigyavijay/ImagePicker.git",
+        "cordova-android": "^6.2.3",
+        "cordova-plugin-camera": "^2.4.1",
+        "cordova-plugin-compat": "^1.1.0",
+        "cordova-plugin-console": "1.0.5",
+        "cordova-plugin-crop": "^0.4.0",
+        "cordova-plugin-device": "1.1.4",
+        "cordova-plugin-file": "^4.3.3",
+        "cordova-plugin-file-transfer": "^1.6.3",
+        "cordova-plugin-geolocation": "^2.4.3",
+        "cordova-plugin-googlemaps": "^1.4.3",
+        "cordova-plugin-image-picker": "^1.1.3",
+        "cordova-plugin-splashscreen": "~4.0.1",
+        "cordova-plugin-statusbar": "2.2.2",
+        "cordova-plugin-telerik-imagepicker": "git+https://github.com/suvigyavijay/ImagePicker.git",
+        "cordova-plugin-whitelist": "1.3.1",
+        "cordova-sqlite-storage": "^2.0.4",
+        "emojipanel": "^1.0.0",
+        "info.protonet.imageresizer": "^0.1.1",
+        "ionic-angular": "3.5.3",
+        "ionic-plugin-keyboard": "~2.2.1",
+        "ionicons": "3.0.0",
+        "ng2-emoji": "^0.2.0",
+        "node-js-marker-clusterer": "^1.0.0",
+        "phonegap-plugin-push": "^1.10.5",
+        "rxjs": "5.4.0",
+        "socket.io-client": "^2.0.3",
+        "sw-toolbox": "3.6.0",
+        "zone.js": "0.8.12",
+        "cordova-plugin-android-permissions": "^1.0.0"
+    },
+    "devDependencies": {
+        "@ionic/app-scripts": "2.0.2",
+        "typescript": "2.3.4"
+    },
+    "cordovaPlugins": [
+        "cordova-plugin-console",
+        "cordova-plugin-device",
+        "cordova-plugin-splashscreen",
+        "cordova-plugin-whitelist",
+        "ionic-plugin-keyboard",
+        "cordova-plugin-statusbar"
+    ],
+    "cordovaPlatforms": [],
+    "description": "Latch: An Ionic project",
+    "cordova": {
+        "plugins": {
+            "cordova-plugin-file-transfer": {},
+            "cordova-plugin-googlemaps": {
+                "API_KEY_FOR_ANDROID": "AIzaSyCMWU0rhBZA84UD_oecdjT3SehyHTs4zvs",
+                "API_KEY_FOR_IOS": "AIzaSyCMWU0rhBZA84UD_oecdjT3SehyHTs4zvs"
+            },
+            "cordova-plugin-console": {},
+            "cordova-plugin-device": {},
+            "cordova-plugin-splashscreen": {},
+            "cordova-plugin-statusbar": {},
+            "cordova-plugin-whitelist": {},
+            "ionic-plugin-keyboard": {},
+            "cordova-plugin-geolocation": {},
+            "cordova-sqlite-storage": {},
+            "cordova-plugin-image-picker": {},
+            "phonegap-plugin-push": {
+                "SENDER_ID": "1082407628646"
+            },
+            "info.protonet.imageresizer": {},
+            "cordova-plugin-camera": {},
+            "com.synconset.imagepicker": {
+                "PHOTO_LIBRARY_USAGE_DESCRIPTION": "Upload Profile Pic"
+            },
+            "cordova-plugin-crop": {},
+            "cordova-plugin-android-permissions": {}
+        },
+        "dependencies": {
+            "@angular/common": "4.1.3",
+            "@angular/compiler": "4.1.3",
+            "@angular/compiler-cli": "4.1.3",
+            "@angular/core": "4.1.3",
+            "@angular/forms": "4.1.3",
+            "@angular/http": "4.1.3",
+            "@angular/platform-browser": "4.1.3",
+            "@angular/platform-browser-dynamic": "4.1.3",
+            "@ionic-native/core": "3.12.1",
+            "@ionic-native/crop": "^4.1.0",
+            "@ionic-native/file": "^4.0.1",
+            "@ionic-native/file-transfer": "^4.0.1",
+            "@ionic-native/geolocation": "^4.0.1",
+            "@ionic-native/google-maps": "^3.12.1",
+            "@ionic-native/image-picker": "^4.1.0",
+            "@ionic-native/image-resizer": "^4.1.0",
+            "@ionic-native/push": "^4.1.0",
+            "@ionic-native/splash-screen": "3.12.1",
+            "@ionic-native/status-bar": "3.12.1",
+            "@ionic/cloud-angular": "^0.12.0",
+            "@ionic/storage": "^2.0.1",
+            "ImagePicker": "git+https://github.com/Keko94/ImagePicker.git",
+            "angular2-uuid": "^1.1.1",
+            "com.synconset.imagepicker": "https://github.com/suvigyavijay/ImagePicker.git",
+            "cordova-android": "^6.2.3",
+            "cordova-plugin-android-permissions": "^1.0.0",
+            "cordova-plugin-camera": "^2.4.1",
+            "cordova-plugin-compat": "^1.1.0",
+            "cordova-plugin-console": "^1.0.5",
+            "cordova-plugin-crop": "^0.4.0",
+            "cordova-plugin-device": "^1.1.4",
+            "cordova-plugin-file": "^4.3.3",
+            "cordova-plugin-file-transfer": "^1.6.3",
+            "cordova-plugin-geolocation": "^2.4.3",
+            "cordova-plugin-googlemaps": "^1.4.3",
+            "cordova-plugin-image-picker": "^1.1.3",
+            "cordova-plugin-splashscreen": "^4.0.3",
+            "cordova-plugin-statusbar": "^2.2.2",
+            "cordova-plugin-telerik-imagepicker": "git+https://github.com/suvigyavijay/ImagePicker.git",
+            "cordova-plugin-whitelist": "^1.3.1",
+            "cordova-sqlite-storage": "^2.0.4",
+            "info.protonet.imageresizer": "^0.1.1",
+            "ionic-angular": "3.5.3",
+            "ionic-plugin-keyboard": "^2.2.1",
+            "ionicons": "3.0.0",
+            "node-js-marker-clusterer": "^1.0.0",
+            "phonegap-plugin-push": "^1.10.5",
+            "rxjs": "5.4.0",
+            "socket.io-client": "^2.0.3",
+            "sw-toolbox": "3.6.0",
+            "zone.js": "0.8.12"
+        },
+        "devDependencies": {
+            "@ionic/app-scripts": "2.0.2",
+            "typescript": "2.3.4"
+        },
+        "cordovaPlugins": [
+            "cordova-plugin-console",
+            "cordova-plugin-device",
+            "cordova-plugin-splashscreen",
+            "cordova-plugin-whitelist",
+            "ionic-plugin-keyboard",
+            "cordova-plugin-statusbar"
+        ],
+        "cordovaPlatforms": [],
+        "description": "Latch: An Ionic project",
+        "cordova": {
+            "plugins": {
+                "cordova-plugin-file-transfer": {},
+                "cordova-plugin-googlemaps": {
+                    "API_KEY_FOR_ANDROID": "AIzaSyCMWU0rhBZA84UD_oecdjT3SehyHTs4zvs",
+                    "API_KEY_FOR_IOS": "AIzaSyCMWU0rhBZA84UD_oecdjT3SehyHTs4zvs"
+                },
+                "cordova-plugin-console": {},
+                "cordova-plugin-device": {},
+                "cordova-plugin-splashscreen": {},
+                "cordova-plugin-statusbar": {},
+                "cordova-plugin-whitelist": {},
+                "ionic-plugin-keyboard": {},
+                "cordova-plugin-geolocation": {},
+                "cordova-sqlite-storage": {},
+                "cordova-plugin-image-picker": {},
+                "phonegap-plugin-push": {
+                    "SENDER_ID": "1082407628646"
+                },
+                "info.protonet.imageresizer": {},
+                "cordova-plugin-camera": {},
+                "com.synconset.imagepicker": {
+                    "PHOTO_LIBRARY_USAGE_DESCRIPTION": "Upload Profile Pic"
+                },
+                "cordova-plugin-crop": {},
+                "cordova-plugin-android-permissions": {}
+            }
+        },
+        "platforms": [
+            "android"
+        ]
+    },
+    "platforms": [
+        "android"
+    ]
+}

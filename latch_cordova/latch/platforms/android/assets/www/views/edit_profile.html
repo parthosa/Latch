@@ -1,0 +1,30 @@
+<div class="container main-content center valign-wrapper " ng-controller="EditProfileController">
+	<div class="row valign">
+		<form class="col s10 offset-s1 m6 offset-m3" >
+			<div class="row">
+				<div class="no-material input-field col s12">
+					<input placeholder="Name" type="text" class="validate" ng-model="name">
+				</div>
+				<div class="no-material input-field col s12">
+					<input placeholder="Email / Phone" type="text" class="validate" ng-model="contact">
+				</div>
+				<div class="no-material input-field col s12">
+					<input placeholder="Nick" type="text" class="validate" ng-model="nick">
+				</div>
+			
+                <canvas id="edit-pic" height="250" width="250" style="display:none"></canvas>
+				<div class="file-field no-material input-field col s12">
+					<div class="btn">
+						<span>UPLOAD</span>
+						<input type="file" id='edit-profile-pic-upload' onchange="previewFile('edit-pic')" >
+					</div>
+					<div class="file-path-wrapper">
+						<input class="  file-path validate " type="text" placeholder="Upload your profile picture" >
+					</div>
+				</div>
+
+				<a class="waves-effect waves-dark btn col s12 cust-btn " id="sign-up" ng-click="submit()">SAVE CHANGES</a>
+			</div>
+		</form>
+	</div>
+</div>

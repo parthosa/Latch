@@ -1,0 +1,24 @@
+<div ng-controller="LocationController">
+  <div id="map"></div>
+  <div class="fixed-action-btn" ng-click="getCurrLoc()">
+    <a class="btn-floating btn-large">
+      <i class="large material-icons">my_location</i>
+    </a>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="collection">
+    <div class="collection-item avatar">
+      <img ng-src="{{locModal.pic}}" alt="" class="circle">
+			<p class="title">{{locModal.nick}}</p>
+			<p class="chat-message">{{locModal.distance}} away</p>
+		 <a href="" ng-click="redirect(this)" class="secondary-content"><i class="material-icons medium">chat</i></a> 
+    </div>
+    </div>
+<!--
+    <div class="modal-footer">
+      <a href="#" class=" modal-action modal-close waves-effect waves-green btn-flat">Message</a>
+    </div>
+-->
+  </div>
+</div>

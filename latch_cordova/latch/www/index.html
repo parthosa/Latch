@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="latchApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head 
+         content must come *after* these tags -->
+
+    <title>Latch: The Location based Chat</title>
+    <!-- Preload CSS Files -->
+    <link rel="stylesheet" href="styles/materialize.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="styles/materialize.css.map">
+    <link href="styles/materialize.css">
+
+    <!-- build:css styles/main.css -->
+    <link href="styles/style.css" rel="stylesheet">
+    <!-- endbuild -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body ng-controller="MainController">
+    <div ui-view="header"></div>
+    <div ui-view="content"></div>
+    <!-- <div ui-view="footer"></div> -->
+    
+    
+    <!--Javascript Files-->
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/materialize.js"></script>
+    <script src="scripts/dexie.min.js"></script>
+    <script src="scripts/uuid.js"></script>
+    <script src="scripts/socket.io.min.js"></script>
+    <script src="scripts/angular.min.js"></script>
+    <script src="scripts/angular-ui-router.min.js"></script>
+    <script src="scripts/angular-resource.min.js"></script>
+    <script src="scripts/ng-cordova.min.js"></script>
+    
+    <!-- <script src="cordova.js"></script> -->
+	
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMWU0rhBZA84UD_oecdjT3SehyHTs4zvs"></script>
+
+	<script src="scripts/markerclusterer.js"></script>
+    
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/script.js"></script>
+ 
+    <script src="scripts/app.js"></script>
+    <script src="scripts/services.js"></script>
+    <script src="scripts/controllers.js"></script>
+
+    <script type="text/javascript">
+        
+
+
+
+        document.addEventListener("deviceready", function () {
+
+            if(window.localStorage.getItem('loggedIn') == true){
+                pushNotification();
+            }
+      
+});
+
+
+    </script>
+
+    <!-- endbuild -->
+
+</body>

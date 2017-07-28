@@ -1,0 +1,23 @@
+<div class="container main-content center valign-wrapper " ng-controller="RegisterController">
+	<div class="row valign">
+		<form class="col s10 offset-s1 m6 offset-m3" >
+			<div class="row">
+				<div class="no-material input-field col s12">
+					<input placeholder="Name" type="text" class="validate" ng-model="user.name">
+				</div>
+				<div class="no-material input-field col s12">
+					<input placeholder="Email" type="text" class="validate" ng-model="user.contact">
+				</div>
+				<div class="no-material input-field col s12">
+					<input placeholder="Password" type="password" class="validate" ng-model="user.password">
+				</div>
+				<div class="no-material input-field col s12">
+					<input placeholder="Confirm Password" type="password" class="validate" ng-model="user.confirm_password">
+				</div>
+				
+
+				<a class="waves-effect waves-dark btn col s12 cust-btn " id="sign-up" ng-click="submit()">SIGN UP</a>
+			</div>
+		</form>
+	</div>
+</div>

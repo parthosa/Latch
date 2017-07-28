@@ -1,0 +1,16 @@
+{
+  "name": "socketChat",
+  "version": "0.0.1",
+  "description": "chat bot framework",
+  "dependencies": {
+    "cookie": "~0.1.0",
+    "express": "4.10.2",
+    "node-redis-commands": "^0.1.5",
+    "options": "0.0.6",
+    "querystring": "~0.2.0",
+    "redis": "^2.6.5",
+    "request": "^2.79.0",
+    "socket.io": "^0.9.17",
+    "utils": "^0.3.1"
+  }
+}

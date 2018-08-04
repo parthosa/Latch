@@ -1,0 +1,45 @@
+<ion-header >
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Latch</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only>
+        <ion-icon name="search"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="initSOS()">
+        <ion-icon name="heart"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+  <ion-toolbar color="primary">
+    <ion-segment [(ngModel)]="screens" color="white">
+      <ion-segment-button value="Location">
+      Location
+    </ion-segment-button>
+    <ion-segment-button value="Chats">
+      Chats
+    </ion-segment-button>
+    <ion-segment-button value="Groups">
+      Groups
+    </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<div [ngSwitch]="screens">
+  <div *ngSwitchCase="'Location'">
+    <location></location>
+  </div>
+  <div *ngSwitchCase="'Chats'">
+    <chats></chats>
+  </div>
+  <div *ngSwitchCase="'Groups'">
+    <groups></groups>
+  </div>
+</div>
+
+
+</ion-content>

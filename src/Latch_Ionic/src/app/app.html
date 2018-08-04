@@ -1,0 +1,38 @@
+<ion-menu id="studentMenu" [content]="mainNav">
+	<ion-header>
+		<ion-toolbar>
+		<ion-list>
+		  <ion-item>
+			<!-- <ion-title>Menu</ion-title> -->
+			<ion-avatar>
+            <img src="assets/images/batman.png">
+            </ion-avatar>
+           </ion-item>
+          </ion-list>
+		</ion-toolbar>
+	</ion-header>
+
+    <ion-content class="menu" padding>
+        <ion-list no-lines>
+             <button ion-item menuClose (click)="goToAddSos()">
+                Add Emergency Contacts
+            </button>
+            <ion-item>
+              <ion-label> Anonymous</ion-label>
+              <ion-toggle  [(ngModel)]="isAnonymous" (change)="updateAnonymous()"></ion-toggle>
+            </ion-item>
+            <button ion-item menuClose (click)="openPage(homePage)">
+                Profile
+            </button>
+             <button ion-item menuClose (click)="openPage(homePage)">
+                Settings
+            </button>
+            <button ion-item menuClose (click)="logout()">
+                Logout
+            </button>
+        </ion-list>
+    </ion-content>
+
+</ion-menu>
+
+<ion-nav #mainNav [root]="rootPage"></ion-nav>
